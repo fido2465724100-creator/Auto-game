@@ -1,0 +1,120 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Company {
+  id                 String    @id @default(cuid())
+  name               String
+  cash               Int
+  reputation         Int
+  productionCapacity Int
+  overheadMonthly    Int
+  marketPresence     Json
+  gameState          GameState?
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+}
+
+model GameState {
+  id                  String            @id @default(cuid())
+  companyId           String            @unique
+  dateYear            Int
+  dateMonth           Int
+  unlockedTechnologyIds String[]
+  productionPlan      Json
+  createdAt           DateTime          @default(now())
+  updatedAt           DateTime          @updatedAt
+
+  company             Company           @relation(fields: [companyId], references: [id])
+  activeResearch      ResearchProject[]
+  vehicleModels       VehicleModel[]
+  monthlyReports      MonthlyReport[]
+}
+
+model Technology {
+  id                     String   @id
+  name                   String
+  yearAvailable          Int
+  category               String
+  description            String
+  researchCost           Int
+  researchDurationMonths Int
+  prerequisites          String[]
+  effects                Json
+}
+
+model ResearchProject {
+  id              String   @id @default(cuid())
+  gameStateId     String
+  technologyId    String
+  allocatedBudget Int
+  progressMonths  Int
+  totalMonths     Int
+  isCompleted     Boolean  @default(false)
+  startedAt       DateTime @default(now())
+
+  gameState       GameState @relation(fields: [gameStateId], references: [id])
+}
+
+model VehicleModel {
+  id                String   @id @default(cuid())
+  gameStateId       String
+  name              String
+  targetSegment     String
+  regionSuitability Json
+  components        Json
+  stats             Json
+  productionCost    Int
+  salePrice         Int
+  active            Boolean  @default(true)
+
+  gameState         GameState @relation(fields: [gameStateId], references: [id])
+}
+
+model Region {
+  id                  String @id
+  name                String
+  marketSize          Int
+  incomeLevel         Float
+  infrastructureLevel Float
+  priceSensitivity    Float
+  prestigeSensitivity Float
+  economySensitivity  Float
+  preferenceWeights   Json
+}
+
+model HistoricalEvent {
+  id              String   @id
+  name            String
+  startYear       Int
+  startMonth      Int
+  endYear         Int
+  endMonth        Int
+  affectedRegions String[]
+  description     String
+  modifiers       Json
+}
+
+model MonthlyReport {
+  id               String   @id
+  gameStateId      String
+  dateYear         Int
+  dateMonth        Int
+  unitsProduced    Int
+  unitsSold        Int
+  revenue          Int
+  expenses         Int
+  profit           Int
+  researchProgress Json
+  reputationChange Int
+  eventNotes       String[]
+  salesByRegion    Json
+  createdAt        DateTime @default(now())
+
+  gameState        GameState @relation(fields: [gameStateId], references: [id])
+}

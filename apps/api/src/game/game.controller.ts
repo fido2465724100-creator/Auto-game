@@ -1,0 +1,44 @@
+import { Body, Controller, Get, Patch, Post } from '@nestjs/common';
+import type { VehicleModel } from '@ait/shared-types';
+import { GameService } from './game.service';
+import { StartResearchDto, UpdateProductionDto, VehicleModelDto } from './dto';
+
+@Controller('game')
+export class GameController {
+  constructor(private readonly gameService: GameService) {}
+
+  @Get('state')
+  getState() {
+    return this.gameService.getGameState();
+  }
+
+  @Get('regions')
+  getRegions() {
+    return this.gameService.getRegions();
+  }
+
+  @Get('technologies')
+  getTechnologies() {
+    return this.gameService.getTechnologies();
+  }
+
+  @Post('research/start')
+  startResearch(@Body() dto: StartResearchDto) {
+    return this.gameService.startResearch(dto.technologyId, dto.allocatedBudget);
+  }
+
+  @Post('vehicles')
+  saveVehicleModel(@Body() dto: VehicleModelDto) {
+    return this.gameService.saveVehicleModel(dto as VehicleModel);
+  }
+
+  @Patch('production')
+  updateProduction(@Body() dto: UpdateProductionDto) {
+    return this.gameService.updateProductionPlan(dto.productionPlan);
+  }
+
+  @Post('end-turn')
+  endTurn() {
+    return this.gameService.endTurn();
+  }
+}
