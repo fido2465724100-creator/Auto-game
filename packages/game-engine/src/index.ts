@@ -14,7 +14,105 @@ import type {
   VehicleComponentOption,
   BankLoan,
   LoanTemplate,
+  MaterialType,
+  MaterialMarketItem,
+  FactoryInfo,
 } from '@ait/shared-types';
+
+export const MATERIALS_CATALOG: MaterialMarketItem[] = [
+  {
+    id: 'steel',
+    name: 'Сталь и Чугун',
+    basePrice: 25,
+    unit: 'кг',
+    yearAvailable: 1900,
+    description: 'Основной металл для блоков цилиндров, рам, рессор и мостов.',
+  },
+  {
+    id: 'wood',
+    name: 'Конструкционная древесина',
+    basePrice: 15,
+    unit: 'ед.',
+    yearAvailable: 1900,
+    description: 'Критически важный материал эпохи 1900–1920: каретные кузова, спицы колес, щитки.',
+  },
+  {
+    id: 'rubber',
+    name: 'Натуральный каучук',
+    basePrice: 30,
+    unit: 'кг',
+    yearAvailable: 1900,
+    description: 'Колониальный каучук для ранних сплошных и пневматических шин, сальников и ремней.',
+  },
+  {
+    id: 'leather',
+    name: 'Кожа и Обивочный текстиль',
+    basePrice: 40,
+    unit: 'м²',
+    yearAvailable: 1900,
+    description: 'Материал отделки открытых диванов экипажа и складных брезентово-кожаных крыш.',
+  },
+  {
+    id: 'aluminum',
+    name: 'Алюминий и Сплавы',
+    basePrice: 75,
+    unit: 'кг',
+    yearAvailable: 1915,
+    description: 'Легкий и дорогой металл. Снижает вес авто и повышает скоростные качества.',
+  },
+  {
+    id: 'plastic',
+    name: 'Полимеры и Пластик',
+    basePrice: 12,
+    unit: 'кг',
+    yearAvailable: 1950,
+    description: 'Инновация 1950-х годов: удешевляет интерьер, заменяет дерево и тяжелые панели.',
+  },
+];
+
+export function calculateMaterialRequirements(
+  segment: VehicleSegment,
+  selectedComponents: Partial<VehicleComponents>,
+  year: number = 1900
+): Record<MaterialType, number> {
+  const base: Record<VehicleSegment, Record<MaterialType, number>> = {
+    economy: { steel: 40, wood: 50, rubber: 12, leather: 5, aluminum: 0, plastic: 0 },
+    family: { steel: 70, wood: 65, rubber: 16, leather: 12, aluminum: 0, plastic: 0 },
+    luxury: { steel: 110, wood: 90, rubber: 22, leather: 30, aluminum: 0, plastic: 0 },
+    utility: { steel: 90, wood: 80, rubber: 18, leather: 6, aluminum: 0, plastic: 0 },
+  };
+
+  const req: Record<MaterialType, number> = { ...(base[segment] ?? base.economy) };
+
+  if (selectedComponents.comfort === 'luxury-cabin') {
+    req.leather += 15;
+    req.steel += 20;
+    req.wood += 20;
+  } else if (selectedComponents.comfort === 'wooden-cabin') {
+    req.wood += 30;
+  }
+
+  if (selectedComponents.engine === 'v4-electric') {
+    req.steel += 30;
+    req.rubber += 4;
+  } else if (selectedComponents.engine === 'inline-four') {
+    req.steel += 15;
+  }
+
+  if (selectedComponents.chassis === 'touring-frame') {
+    req.steel += 15;
+    req.wood += 10;
+  } else if (selectedComponents.chassis === 'reinforced-suspension') {
+    req.steel += 25;
+  }
+
+  if (year >= 1950) {
+    req.plastic = Math.round(req.wood * 0.7);
+    req.wood = Math.round(req.wood * 0.1);
+  }
+
+  return req;
+}
 
 export interface SegmentProfile {
   name: string;
@@ -137,11 +235,13 @@ export const LOAN_TEMPLATES: LoanTemplate[] = [
 export function calculateVehicleSpecs(
   segment: VehicleSegment,
   selectedComponents: VehicleComponents,
-  allComponents: VehicleComponentOption[]
+  allComponents: VehicleComponentOption[],
+  year: number = 1900
 ): {
   stats: VehicleStats;
   productionCost: number;
   regionSuitability: Record<RegionId, number>;
+  materialsRequired: Record<MaterialType, number>;
 } {
   const profile = SEGMENT_PROFILES[segment] ?? SEGMENT_PROFILES.economy;
   const compMap = new Map(allComponents.map((c) => [c.id, c]));
@@ -173,11 +273,13 @@ export function calculateVehicleSpecs(
 
   const productionCost = profile.baseProductionCost + extraCost;
   const suitability: Record<RegionId, number> = { ...profile.defaultRegionSuitability };
+  const materialsRequired = calculateMaterialRequirements(segment, selectedComponents, year);
 
   return {
     stats,
     productionCost,
     regionSuitability: suitability,
+    materialsRequired,
   };
 }
 
@@ -250,8 +352,97 @@ export function runEndTurn(input: EndTurnInput): EndTurnOutput {
   const unlockedTechnologyIds = [...currentState.unlockedTechnologyIds, ...completedTechIds];
   const activeResearch = researchProgress.filter((project) => !project.isCompleted);
 
+  // Factory capacity & inventory setup
+  const factoryCapacity = currentState.company.factory?.capacity ?? currentState.company.productionCapacity ?? 120;
+  const factoryOverhead = currentState.company.factory?.monthlyOverhead ?? 0;
+
+  const defaultInventory: Record<MaterialType, number> = {
+    steel: 1200,
+    wood: 1000,
+    rubber: 400,
+    leather: 300,
+    aluminum: 0,
+    plastic: 0,
+  };
+
+  const inventory: Record<MaterialType, number> = {
+    ...defaultInventory,
+    ...(currentState.company.inventoryMaterials ?? {}),
+  };
+
   const totalPlannedProduction = Object.values(currentState.productionPlan).reduce((acc, units) => acc + units, 0);
-  const producedUnits = Math.min(totalPlannedProduction, currentState.company.productionCapacity);
+  const targetProductionUnits = Math.min(totalPlannedProduction, factoryCapacity);
+
+  // Calculate material demand for all planned active models
+  const materialDemand: Record<MaterialType, number> = {
+    steel: 0,
+    wood: 0,
+    rubber: 0,
+    leather: 0,
+    aluminum: 0,
+    plastic: 0,
+  };
+
+  for (const model of currentState.vehicleModels.filter((item) => item.active)) {
+    const planned = currentState.productionPlan[model.id] ?? 0;
+    if (planned <= 0) continue;
+    const req = model.materialsRequired ?? calculateMaterialRequirements(model.targetSegment, model.components, currentState.date.year);
+    for (const mat of Object.keys(materialDemand) as MaterialType[]) {
+      materialDemand[mat] += (req[mat] ?? 0) * planned;
+    }
+  }
+
+  let materialProcurementCost = 0;
+  let currentCash = currentState.company.cash;
+
+  // Auto-procurement if enabled
+  if (currentState.company.autoProcurement) {
+    for (const item of MATERIALS_CATALOG) {
+      const needed = materialDemand[item.id];
+      const inStock = inventory[item.id];
+      if (needed > inStock) {
+        const shortage = needed - inStock;
+        const cost = shortage * item.basePrice;
+        if (currentCash >= cost) {
+          inventory[item.id] += shortage;
+          currentCash -= cost;
+          materialProcurementCost += cost;
+        } else {
+          const affordable = Math.max(0, Math.floor(currentCash / item.basePrice));
+          if (affordable > 0) {
+            inventory[item.id] += affordable;
+            currentCash -= affordable * item.basePrice;
+            materialProcurementCost += affordable * item.basePrice;
+          }
+        }
+      }
+    }
+  }
+
+  // Calculate material fulfillment ratio
+  let productionRatio = 1.0;
+  if (totalPlannedProduction > 0) {
+    for (const mat of Object.keys(materialDemand) as MaterialType[]) {
+      const needed = materialDemand[mat];
+      if (needed > 0 && inventory[mat] < needed) {
+        const ratio = inventory[mat] / needed;
+        if (ratio < productionRatio) {
+          productionRatio = ratio;
+        }
+      }
+    }
+  }
+
+  const producedUnits = Math.floor(targetProductionUnits * productionRatio);
+  const shortageOccurred = productionRatio < 0.99 && totalPlannedProduction > 0;
+
+  // Deduct consumed materials
+  const materialsConsumed: Partial<Record<MaterialType, number>> = {};
+  for (const mat of Object.keys(materialDemand) as MaterialType[]) {
+    const consumed = Math.min(inventory[mat], Math.ceil(materialDemand[mat] * productionRatio));
+    materialsConsumed[mat] = consumed;
+    inventory[mat] = Math.max(0, inventory[mat] - consumed);
+  }
 
   const salesByRegion: Record<RegionId, number> = {
     'north-america': 0,
@@ -307,11 +498,11 @@ export function runEndTurn(input: EndTurnInput): EndTurnOutput {
 
   const productionCost = currentState.vehicleModels.reduce((acc, model) => {
     const planned = currentState.productionPlan[model.id] ?? 0;
-    return acc + planned * model.productionCost;
+    return acc + Math.floor(planned * productionRatio) * model.productionCost;
   }, 0);
 
   const researchCost = currentState.activeResearch.reduce((acc, project) => acc + project.allocatedBudget, 0);
-  const expenses = productionCost + researchCost + currentState.company.overheadMonthly + loanPayments;
+  const expenses = productionCost + researchCost + currentState.company.overheadMonthly + factoryOverhead + loanPayments + materialProcurementCost;
   const profit = revenue - expenses;
 
   const reputationChange = unitsSold > 0 ? Math.min(3, Math.floor(unitsSold / 200)) : -1;
@@ -335,6 +526,10 @@ export function runEndTurn(input: EndTurnInput): EndTurnOutput {
     loanPayments,
     eventNotes: activeEvents.map((event) => event.name),
     salesByRegion,
+    materialsConsumed,
+    materialExpenses: materialProcurementCost,
+    capacityUsed: producedUnits,
+    shortageOccurred,
   };
 
   return {
@@ -348,6 +543,7 @@ export function runEndTurn(input: EndTurnInput): EndTurnOutput {
         cash: currentState.company.cash + profit,
         reputation: nextReputation,
         loans: updatedLoans,
+        inventoryMaterials: inventory,
       },
       reportHistory: [report, ...currentState.reportHistory].slice(0, 24),
     },

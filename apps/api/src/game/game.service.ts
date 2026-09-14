@@ -1,6 +1,18 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { runEndTurn, LOAN_TEMPLATES } from '@ait/game-engine';
-import type { GameState, Region, Technology, HistoricalEvent, VehicleModel, ResearchProject, VehicleComponentWithStatus, BankLoan, LoanTemplate } from '@ait/shared-types';
+import { runEndTurn, LOAN_TEMPLATES, MATERIALS_CATALOG, calculateMaterialRequirements } from '@ait/game-engine';
+import type {
+  GameState,
+  Region,
+  Technology,
+  HistoricalEvent,
+  VehicleModel,
+  ResearchProject,
+  VehicleComponentWithStatus,
+  BankLoan,
+  LoanTemplate,
+  MaterialType,
+  MaterialMarketItem,
+} from '@ait/shared-types';
 import { eventsSeed, regionsSeed, technologies1900to1915Seed, vehicleComponentSeed } from '../../../../data';
 
 @Injectable()
@@ -25,13 +37,29 @@ export class GameService {
         europe: 0.45,
         'middle-east': 0.2,
       },
+      inventoryMaterials: {
+        steel: 1500,
+        wood: 1200,
+        rubber: 500,
+        leather: 350,
+        aluminum: 0,
+        plastic: 0,
+      },
+      autoProcurement: true,
+      factory: {
+        name: 'Детройтская мануфактура №1',
+        level: 1,
+        capacity: 120,
+        monthlyOverhead: 8_000,
+        upgradeCost: 35_000,
+      },
     },
     unlockedTechnologyIds: ['standardized-steering-wheel'],
     activeResearch: [],
     vehicleModels: [
       {
         id: 'model-a',
-        name: 'Model A',
+        name: 'Model A Runabout',
         targetSegment: 'economy',
         regionSuitability: {
           'north-america': 0.9,
@@ -56,6 +84,14 @@ export class GameService {
         productionCost: 800,
         salePrice: 1400,
         active: true,
+        materialsRequired: {
+          steel: 40,
+          wood: 50,
+          rubber: 12,
+          leather: 5,
+          aluminum: 0,
+          plastic: 0,
+        },
       },
     ],
     productionPlan: {
@@ -124,10 +160,19 @@ export class GameService {
     const existingIndex = this.gameState.vehicleModels.findIndex((item) => item.id === model.id);
     const vehicleModels = [...this.gameState.vehicleModels];
 
+    const materialsRequired =
+      model.materialsRequired ??
+      calculateMaterialRequirements(model.targetSegment, model.components, this.gameState.date.year);
+
+    const modelWithMaterials: VehicleModel = {
+      ...model,
+      materialsRequired,
+    };
+
     if (existingIndex >= 0) {
-      vehicleModels[existingIndex] = model;
+      vehicleModels[existingIndex] = modelWithMaterials;
     } else {
-      vehicleModels.push(model);
+      vehicleModels.push(modelWithMaterials);
     }
 
     this.gameState = {
@@ -214,6 +259,95 @@ export class GameService {
         ...this.gameState.company,
         cash: this.gameState.company.cash - loan.remainingPrincipal,
         loans: currentLoans.filter((l) => l.id !== loanId),
+      },
+    };
+
+    return this.gameState;
+  }
+
+  getMaterialsMarket(): MaterialMarketItem[] {
+    const currentYear = this.gameState.date.year;
+    return MATERIALS_CATALOG.filter((item) => item.yearAvailable <= currentYear);
+  }
+
+  buyMaterial(materialId: MaterialType, amount: number): GameState {
+    const item = MATERIALS_CATALOG.find((m) => m.id === materialId);
+    if (!item) {
+      throw new NotFoundException(`Material ${materialId} not found`);
+    }
+    if (amount <= 0) return this.gameState;
+
+    const totalCost = item.basePrice * amount;
+    if (this.gameState.company.cash < totalCost) {
+      return this.gameState;
+    }
+
+    const currentInventory = this.gameState.company.inventoryMaterials ?? {
+      steel: 0,
+      wood: 0,
+      rubber: 0,
+      leather: 0,
+      aluminum: 0,
+      plastic: 0,
+    };
+
+    this.gameState = {
+      ...this.gameState,
+      company: {
+        ...this.gameState.company,
+        cash: this.gameState.company.cash - totalCost,
+        inventoryMaterials: {
+          ...currentInventory,
+          [materialId]: (currentInventory[materialId] ?? 0) + amount,
+        },
+      },
+    };
+
+    return this.gameState;
+  }
+
+  toggleAutoProcurement(enabled: boolean): GameState {
+    this.gameState = {
+      ...this.gameState,
+      company: {
+        ...this.gameState.company,
+        autoProcurement: enabled,
+      },
+    };
+    return this.gameState;
+  }
+
+  expandFactory(): GameState {
+    const factory = this.gameState.company.factory ?? {
+      name: 'Главная мануфактура',
+      level: 1,
+      capacity: this.gameState.company.productionCapacity,
+      monthlyOverhead: 8_000,
+      upgradeCost: 35_000,
+    };
+
+    if (this.gameState.company.cash < factory.upgradeCost) {
+      return this.gameState;
+    }
+
+    const newLevel = factory.level + 1;
+    const newCapacity = factory.capacity + 60;
+    const newOverhead = factory.monthlyOverhead + 4_000;
+    const nextUpgradeCost = Math.round(factory.upgradeCost * 1.5);
+
+    this.gameState = {
+      ...this.gameState,
+      company: {
+        ...this.gameState.company,
+        cash: this.gameState.company.cash - factory.upgradeCost,
+        productionCapacity: newCapacity,
+        factory: {
+          ...factory,
+          level: newLevel,
+          capacity: newCapacity,
+          monthlyOverhead: newOverhead,
+          upgradeCost: nextUpgradeCost,
+        },
       },
     };
 

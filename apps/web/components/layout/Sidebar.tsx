@@ -14,8 +14,9 @@ export function Sidebar(): React.JSX.Element {
 
   const menuItems = [
     { href: '/dashboard', label: t.nav.dashboard, icon: '🏛️' },
-    { href: '/research', label: t.nav.research, icon: '🔬' },
     { href: '/vehicle-design', label: t.nav.vehicleDesign, icon: '🚗' },
+    { href: '/production', label: t.nav.production, icon: '🏭' },
+    { href: '/research', label: t.nav.research, icon: '🔬' },
     { href: '/markets', label: t.nav.markets, icon: '🌐' },
     { href: '/bank', label: t.nav.bank, icon: '🏦' },
     { href: '/reports', label: t.nav.reports, icon: '📜' },

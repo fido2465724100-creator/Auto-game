@@ -7,11 +7,21 @@ import type {
   VehicleComponents,
   VehicleComponentWithStatus,
   ComponentCategory,
+  MaterialType,
 } from '@ait/shared-types';
 import { calculateVehicleSpecs, SEGMENT_PROFILES } from '@ait/game-engine';
 import { useGame } from '../../context/GameContext';
 import { useLanguage } from '../../lib/i18n';
 import { api } from '../../lib/api';
+
+const MATERIAL_ICONS: Record<MaterialType, string> = {
+  wood: '🪵',
+  steel: '⚙️',
+  rubber: '🛞',
+  leather: '🛋️',
+  aluminum: '✈️',
+  plastic: '🧪',
+};
 
 const STAT_COLORS: Record<string, string> = {
   reliability: 'bg-emerald-600',
@@ -75,12 +85,11 @@ export default function VehicleDesignPage(): React.JSX.Element {
   }, [availableComponents]);
 
   const calculatedSpecs = useMemo(() => {
-    return calculateVehicleSpecs(segment, selectedComponents, availableComponents);
-  }, [segment, selectedComponents, availableComponents]);
+    return calculateVehicleSpecs(segment, selectedComponents, availableComponents, gameState?.date.year ?? 1900);
+  }, [segment, selectedComponents, availableComponents, gameState?.date.year]);
 
   const profitPerUnit = salePrice - calculatedSpecs.productionCost;
-  const marginPercent =
-    salePrice > 0 ? Math.round((profitPerUnit / salePrice) * 100) : 0;
+  const marginPercent = Math.round((profitPerUnit / (salePrice || 1)) * 100);
 
   const handleSaveModel = async (e: React.FormEvent): Promise<void> => {
     e.preventDefault();
@@ -100,6 +109,7 @@ export default function VehicleDesignPage(): React.JSX.Element {
       productionCost: calculatedSpecs.productionCost,
       salePrice,
       active: true,
+      materialsRequired: calculatedSpecs.materialsRequired,
     };
 
     try {
@@ -356,6 +366,33 @@ export default function VehicleDesignPage(): React.JSX.Element {
                   ({marginPercent}%)
                 </span>
               </div>
+            </div>
+          </div>
+
+          {/* MATERIAL CONSUMPTION PREVIEW */}
+          <div className="rounded border border-stone-300 bg-[var(--paper)] p-5 shadow-sm">
+            <h3 className="mb-2 text-base font-semibold text-amber-950 flex items-center gap-2">
+              <span>🪵</span> {t.production.materialsRequiredPerUnit}
+            </h3>
+            <p className="mb-3 text-[11px] text-stone-600 font-sans">
+              Расход сырья на сборку одной машины данной модели на конвейере:
+            </p>
+            <div className="grid grid-cols-2 gap-2 text-xs">
+              {Object.entries(calculatedSpecs.materialsRequired).map(([matKey, amount]) => {
+                if (!amount || amount <= 0) return null;
+                const m = matKey as MaterialType;
+                const icon = MATERIAL_ICONS[m] ?? '📦';
+                const name = t.materials[m] ?? m;
+                const unit = t.materials.units[m] ?? 'ед.';
+                return (
+                  <div key={matKey} className="flex items-center justify-between p-2 rounded bg-stone-50 border border-stone-200">
+                    <span className="flex items-center gap-1.5 font-medium text-stone-700 text-[11px]">
+                      <span>{icon}</span> {name}:
+                    </span>
+                    <strong className="text-amber-950 text-xs">{amount} {unit}</strong>
+                  </div>
+                );
+              })}
             </div>
           </div>
 

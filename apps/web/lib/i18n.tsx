@@ -12,11 +12,30 @@ export const DICTIONARY = {
     // Nav
     nav: {
       dashboard: 'Кабинет директора',
-      research: 'НИОКР и технологии',
+      production: 'Заводы и производство',
       vehicleDesign: 'Конструктор авто',
+      research: 'НИОКР и технологии',
       markets: 'Рынки и сбыт',
       bank: 'Банк и займы',
       reports: 'Ежемесячные отчеты',
+    },
+
+    // Materials
+    materials: {
+      steel: 'Сталь и чугун',
+      wood: 'Конструкционная древесина',
+      rubber: 'Натуральный каучук',
+      leather: 'Кожа и отделка',
+      aluminum: 'Алюминий',
+      plastic: 'Пластик и полимеры',
+      units: {
+        steel: 'кг',
+        wood: 'ед.',
+        rubber: 'кг',
+        leather: 'м²',
+        aluminum: 'кг',
+        plastic: 'кг',
+      },
     },
 
     // Timeline & Topbar
@@ -93,6 +112,40 @@ export const DICTIONARY = {
       },
     },
 
+    // Production & Logistics
+    production: {
+      title: 'Производство и цепочки поставок',
+      subtitle: 'Управление мануфактурами, распределение линий сборки и снабжение материалами.',
+      factoryTitle: 'Текущий автозавод',
+      level: 'Уровень цеха',
+      capacity: 'Месячная мощность',
+      capacityUsed: 'Загрузка линий',
+      overheadMonthly: 'Содержание завода',
+      expandBtn: 'Расширить завод (+60 авто/мес)',
+      upgradeCost: 'Стоимость расширения',
+      insufficientFunds: 'Недостаточно капитала для расширения завода!',
+      plantExpanded: 'Завод успешно расширен! Мощность увеличена.',
+      linesTitle: 'Распределение производственных линий',
+      noModels: 'Нет спроектированных автомобилей. Сначала создайте модель в Конструкторе авто.',
+      plannedUnits: 'План выпуска (авто/мес)',
+      savePlanBtn: 'Сохранить план производства',
+      planSaved: 'План производства успешно утвержден!',
+      costPerUnit: 'Себестоимость сборки',
+      totalCost: 'Суммарные затраты на выпуск',
+      materialsRequiredPerUnit: 'Расход сырья на 1 авто',
+      warehouseTitle: 'Склад сырья и биржа материалов',
+      autoProcurement: 'Автоматическое снабжение сырьем под план (Just-In-Time)',
+      autoProcurementHint: 'При нехватке материалов завод автоматически докупит недостающее сырье с биржи перед выпуском.',
+      inStock: 'В наличии на складе',
+      marketPrice: 'Цена закупки',
+      needNextMonth: 'Потребность под план',
+      buyBatchBtn: 'Купить партию',
+      shortageAlert: 'Внимание! На складе недостаточно материалов для выполнения плана. Выпуск будет ограничен, если не включить автозакупку или не докупить сырье!',
+      materialBought: 'Материалы успешно закуплены и поступили на склад!',
+      autoProcurementUpdated: 'Режим автозакупки обновлен!',
+      yearAvailable: 'Доступно с года',
+    },
+
     // Bank
     bank: {
       title: 'Коммерческий Банк Автопромышленности',
@@ -162,11 +215,30 @@ export const DICTIONARY = {
     // Nav
     nav: {
       dashboard: 'Executive Office',
-      research: 'R&D & Technology',
+      production: 'Factory & Production',
       vehicleDesign: 'Vehicle Design',
+      research: 'R&D & Technology',
       markets: 'Markets & Sales',
       bank: 'Bank & Financing',
       reports: 'Monthly Reports',
+    },
+
+    // Materials
+    materials: {
+      steel: 'Steel & Iron',
+      wood: 'Hardwood Timber',
+      rubber: 'Natural Caoutchouc',
+      leather: 'Leather & Upholstery',
+      aluminum: 'Aluminum',
+      plastic: 'Plastics & Polymers',
+      units: {
+        steel: 'kg',
+        wood: 'units',
+        rubber: 'kg',
+        leather: 'sq.m',
+        aluminum: 'kg',
+        plastic: 'kg',
+      },
     },
 
     // Timeline & Topbar
@@ -241,6 +313,40 @@ export const DICTIONARY = {
         prestige: 'Prestige',
         complexity: 'Assembly Complexity',
       },
+    },
+
+    // Production & Logistics
+    production: {
+      title: 'Factory & Supply Chain Operations',
+      subtitle: 'Manage manufacturing plants, allocate assembly lines, and procure raw materials.',
+      factoryTitle: 'Current Automobile Plant',
+      level: 'Plant Level',
+      capacity: 'Monthly Capacity',
+      capacityUsed: 'Capacity Utilization',
+      overheadMonthly: 'Plant Overhead',
+      expandBtn: 'Expand Factory (+60 cars/mo)',
+      upgradeCost: 'Expansion Cost',
+      insufficientFunds: 'Insufficient corporate capital for factory expansion!',
+      plantExpanded: 'Plant expanded! Production capacity increased.',
+      linesTitle: 'Assembly Line Quota Allocation',
+      noModels: 'No designed models available. First create a model in the Vehicle Designer.',
+      plannedUnits: 'Production Quota (cars/mo)',
+      savePlanBtn: 'Save Production Plan',
+      planSaved: 'Production plan updated successfully!',
+      costPerUnit: 'Unit Assembly Cost',
+      totalCost: 'Total Production Budget',
+      materialsRequiredPerUnit: 'Materials per 1 Car',
+      warehouseTitle: 'Raw Materials Warehouse & Commodity Market',
+      autoProcurement: 'Automatic Material Procurement (Just-In-Time)',
+      autoProcurementHint: 'Automatically purchases required raw materials from the market right before production begins.',
+      inStock: 'In Warehouse Stock',
+      marketPrice: 'Procurement Price',
+      needNextMonth: 'Demand for Next Month',
+      buyBatchBtn: 'Buy Batch',
+      shortageAlert: 'Warning! Warehouse does not have sufficient materials to meet the production quota. Production will be throttled unless auto-procurement is enabled or materials are bought!',
+      materialBought: 'Materials purchased and added to warehouse inventory!',
+      autoProcurementUpdated: 'Auto-procurement setting updated!',
+      yearAvailable: 'Available from Year',
     },
 
     // Bank

@@ -5,6 +5,7 @@
   "main": "src/index.ts",
   "types": "src/index.ts",
   "scripts": {
+    "build": "echo \"built @ait/shared-types\"",
     "typecheck": "tsc --noEmit -p tsconfig.json"
   }
 }

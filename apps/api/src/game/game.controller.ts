@@ -1,5 +1,5 @@
 import { Body, Controller, Get, Patch, Post } from '@nestjs/common';
-import type { VehicleModel } from '@ait/shared-types';
+import type { VehicleModel, MaterialType } from '@ait/shared-types';
 import { GameService } from './game.service';
 import { StartResearchDto, UpdateProductionDto, VehicleModelDto } from './dto';
 
@@ -55,6 +55,26 @@ export class GameController {
   @Patch('production')
   updateProduction(@Body() dto: UpdateProductionDto) {
     return this.gameService.updateProductionPlan(dto.productionPlan);
+  }
+
+  @Get('materials/market')
+  getMaterialsMarket() {
+    return this.gameService.getMaterialsMarket();
+  }
+
+  @Post('materials/buy')
+  buyMaterial(@Body() body: { materialId: MaterialType; amount: number }) {
+    return this.gameService.buyMaterial(body.materialId, body.amount);
+  }
+
+  @Post('materials/auto-procurement')
+  setAutoProcurement(@Body() body: { enabled: boolean }) {
+    return this.gameService.toggleAutoProcurement(body.enabled);
+  }
+
+  @Post('factory/expand')
+  expandFactory() {
+    return this.gameService.expandFactory();
   }
 
   @Post('end-turn')

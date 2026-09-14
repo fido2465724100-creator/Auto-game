@@ -47,6 +47,25 @@ export interface LoanTemplate {
   monthlyPayment: number;
 }
 
+export type MaterialType = 'steel' | 'wood' | 'rubber' | 'leather' | 'aluminum' | 'plastic';
+
+export interface MaterialMarketItem {
+  id: MaterialType;
+  name: string;
+  basePrice: number;
+  unit: string;
+  yearAvailable: number;
+  description: string;
+}
+
+export interface FactoryInfo {
+  name: string;
+  level: number;
+  capacity: number;
+  monthlyOverhead: number;
+  upgradeCost: number;
+}
+
 export interface Company {
   id: string;
   name: string;
@@ -56,6 +75,9 @@ export interface Company {
   overheadMonthly: number;
   marketPresence: Record<RegionId, number>;
   loans?: BankLoan[];
+  inventoryMaterials?: Record<MaterialType, number>;
+  autoProcurement?: boolean;
+  factory?: FactoryInfo;
 }
 
 export interface GameDate {
@@ -121,6 +143,7 @@ export interface VehicleModel {
   productionCost: number;
   salePrice: number;
   active: boolean;
+  materialsRequired?: Partial<Record<MaterialType, number>>;
 }
 
 export interface Region {
@@ -177,6 +200,10 @@ export interface MonthlyReport {
   loanPayments?: number;
   eventNotes: string[];
   salesByRegion: Record<RegionId, number>;
+  materialsConsumed?: Partial<Record<MaterialType, number>>;
+  materialExpenses?: number;
+  capacityUsed?: number;
+  shortageOccurred?: boolean;
 }
 
 export interface GameState {

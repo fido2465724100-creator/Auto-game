@@ -1,4 +1,13 @@
-import type { GameState, Technology, Region, VehicleModel, VehicleComponentWithStatus, LoanTemplate } from '@ait/shared-types';
+import type {
+  GameState,
+  Technology,
+  Region,
+  VehicleModel,
+  VehicleComponentWithStatus,
+  LoanTemplate,
+  MaterialMarketItem,
+  MaterialType,
+} from '@ait/shared-types';
 
 const CONFIGURED_API_URL = process.env.NEXT_PUBLIC_API_URL?.trim();
 
@@ -52,4 +61,15 @@ export const api = {
     request<GameState>('/game/bank/loan', { method: 'POST', body: JSON.stringify({ templateId }) }),
   repayLoan: (loanId: string) =>
     request<GameState>('/game/bank/repay', { method: 'POST', body: JSON.stringify({ loanId }) }),
+  getMaterialsMarket: () => request<MaterialMarketItem[]>('/game/materials/market'),
+  buyMaterial: (materialId: MaterialType, amount: number) =>
+    request<GameState>('/game/materials/buy', { method: 'POST', body: JSON.stringify({ materialId, amount }) }),
+  setAutoProcurement: (enabled: boolean) =>
+    request<GameState>('/game/materials/auto-procurement', {
+      method: 'POST',
+      body: JSON.stringify({ enabled }),
+    }),
+  expandFactory: () => request<GameState>('/game/factory/expand', { method: 'POST' }),
+  updateProductionPlan: (productionPlan: Record<string, number>) =>
+    request<GameState>('/game/production', { method: 'PATCH', body: JSON.stringify({ productionPlan }) }),
 };
