@@ -125,8 +125,8 @@ export interface SegmentProfile {
 
 export const SEGMENT_PROFILES: Record<VehicleSegment, SegmentProfile> = {
   economy: {
-    name: 'Economy Runabout',
-    description: 'Affordable, simple personal transport for working families.',
+    name: 'Эконом (Ранэбаут)',
+    description: 'Доступная и простая самоходная повозка для рабочих семей и малого достатка.',
     baseProductionCost: 450,
     baseSalePrice: 900,
     baseStats: {
@@ -144,8 +144,8 @@ export const SEGMENT_PROFILES: Record<VehicleSegment, SegmentProfile> = {
     },
   },
   family: {
-    name: 'Family Touring Car',
-    description: 'Spacious carriage with balanced comfort and reliability.',
+    name: 'Семейный (Турер)',
+    description: 'Вместительный открытый фаэтон со сбалансированным комфортом и надежностью.',
     baseProductionCost: 700,
     baseSalePrice: 1400,
     baseStats: {
@@ -163,8 +163,8 @@ export const SEGMENT_PROFILES: Record<VehicleSegment, SegmentProfile> = {
     },
   },
   luxury: {
-    name: 'Luxury Town Car',
-    description: 'Exclusive hand-crafted vehicle for high-society prestige.',
+    name: 'Люкс (Лимузин)',
+    description: 'Эксклюзивный каретный экипаж высшего класса для престижа и знатных особ.',
     baseProductionCost: 1500,
     baseSalePrice: 3200,
     baseStats: {
@@ -182,8 +182,8 @@ export const SEGMENT_PROFILES: Record<VehicleSegment, SegmentProfile> = {
     },
   },
   utility: {
-    name: 'Utility Work Truck',
-    description: 'Heavy-duty transport for trade, cargo, and rural commerce.',
+    name: 'Грузовой / Развозной фургон',
+    description: 'Тяговитое прочное шасси для доставки грузов, мастерских и сельского хозяйства.',
     baseProductionCost: 600,
     baseSalePrice: 1200,
     baseStats: {

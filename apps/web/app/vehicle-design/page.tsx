@@ -33,7 +33,7 @@ const STAT_COLORS: Record<string, string> = {
 };
 
 export default function VehicleDesignPage(): React.JSX.Element {
-  const { gameState, saveVehicleModel } = useGame();
+  const { gameState, saveVehicleModel, updateProductionPlan } = useGame();
   const { t, lang } = useLanguage();
 
   const [availableComponents, setAvailableComponents] = useState<VehicleComponentWithStatus[]>([]);
@@ -44,6 +44,7 @@ export default function VehicleDesignPage(): React.JSX.Element {
   // Form State
   const [name, setName] = useState('Model 1900-B');
   const [segment, setSegment] = useState<VehicleSegment>('economy');
+  const [monthlyQuota, setMonthlyQuota] = useState<number>(40);
   const [selectedComponents, setSelectedComponents] = useState<VehicleComponents>({
     chassis: 'ladder-frame',
     engine: 'single-cylinder',
@@ -52,6 +53,8 @@ export default function VehicleDesignPage(): React.JSX.Element {
     package: 'package-none',
   });
   const [salePrice, setSalePrice] = useState<number>(SEGMENT_PROFILES.economy.baseSalePrice);
+
+  const factoryCapacity = gameState?.company.factory?.capacity ?? gameState?.company.productionCapacity ?? 120;
 
   useEffect(() => {
     api.getVehicleComponents()
@@ -114,7 +117,14 @@ export default function VehicleDesignPage(): React.JSX.Element {
 
     try {
       await saveVehicleModel(newModel);
-      setStatusMessage(`${t.design.successMsg} (${newModel.name})`);
+      if (monthlyQuota > 0) {
+        const currentPlan = gameState?.productionPlan ?? {};
+        await updateProductionPlan({
+          ...currentPlan,
+          [newModel.id]: monthlyQuota,
+        });
+      }
+      setStatusMessage(`${t.design.successMsg} (${newModel.name}, квота: ${monthlyQuota} ${t.design.unitsMonth})`);
       setName(`Model ${gameState?.date.year ?? 1900}-${String.fromCharCode(66 + (gameState?.vehicleModels.length ?? 0))}`);
     } catch (err) {
       setStatusMessage(`Ошибка: ${String(err)}`);
@@ -181,25 +191,26 @@ export default function VehicleDesignPage(): React.JSX.Element {
                   {(Object.keys(SEGMENT_PROFILES) as VehicleSegment[]).map((segKey) => {
                     const profile = SEGMENT_PROFILES[segKey];
                     const isSelected = segment === segKey;
+                    const segInfo = t.design.segments[segKey];
                     return (
                       <button
                         type="button"
                         key={segKey}
                         onClick={() => handleSegmentChange(segKey)}
-                        className={`rounded border p-2 text-left transition cursor-pointer ${
+                        className={`rounded border p-2.5 text-left transition cursor-pointer ${
                           isSelected
                             ? 'border-amber-800 bg-amber-100/70 font-semibold text-amber-950 ring-1 ring-amber-800'
                             : 'border-stone-300 bg-white/60 text-stone-700 hover:bg-stone-100'
                         }`}
                       >
-                        <div className="text-sm font-bold capitalize">{segKey}</div>
-                        <div className="text-[11px] text-stone-500">${profile.baseSalePrice}</div>
+                        <div className="text-sm font-bold">{segInfo?.name ?? profile.name}</div>
+                        <div className="text-[11px] text-stone-500">{segInfo?.tag} • ${profile.baseSalePrice}</div>
                       </button>
                     );
                   })}
                 </div>
-                <p className="mt-2 text-xs italic text-stone-600">
-                  {SEGMENT_PROFILES[segment].description}
+                <p className="mt-2 text-xs italic text-stone-600 font-sans">
+                  {t.design.segments[segment]?.description ?? SEGMENT_PROFILES[segment].description}
                 </p>
               </div>
             </div>
@@ -291,11 +302,41 @@ export default function VehicleDesignPage(): React.JSX.Element {
             </div>
           </div>
 
-          {/* 3. SUBMIT BUTTON */}
+          {/* 3. PRODUCTION QUOTA & LAUNCH */}
+          <div className="rounded border border-stone-300 bg-[var(--paper)] p-5 shadow-sm space-y-3">
+            <h3 className="text-base font-bold text-amber-950 flex items-center gap-2">
+              <span>🏭</span> {t.design.step3}
+            </h3>
+            <div>
+              <label htmlFor="monthly-quota" className="block text-xs font-semibold uppercase tracking-wider text-stone-700">
+                {t.design.initialQuotaLabel}
+              </label>
+              <p className="text-[11px] text-stone-500 font-sans mt-0.5">
+                {t.design.initialQuotaHint}
+              </p>
+              <div className="mt-3 flex items-center gap-3">
+                <input
+                  id="monthly-quota"
+                  type="number"
+                  min={0}
+                  max={factoryCapacity}
+                  step={5}
+                  value={monthlyQuota}
+                  onChange={(e) => setMonthlyQuota(Math.max(0, Number(e.target.value)))}
+                  className="w-28 rounded border border-stone-300 bg-white px-3 py-2 text-stone-900 font-bold text-sm shadow-inner focus:border-amber-700 focus:outline-none"
+                />
+                <span className="text-xs text-stone-600 font-sans">
+                  {t.design.unitsMonth} (мощность цехов завода: <strong>{factoryCapacity} {t.design.unitsMonth}</strong>)
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* SUBMIT BUTTON */}
           <button
             type="submit"
             disabled={saving}
-            className="w-full rounded bg-[var(--accent)] py-3 font-bold text-white shadow hover:bg-amber-900 transition disabled:opacity-60 cursor-pointer"
+            className="w-full rounded bg-[var(--accent)] py-3.5 font-bold text-white shadow hover:bg-amber-900 transition disabled:opacity-60 cursor-pointer text-sm"
           >
             {saving ? t.design.savingBtn : t.design.submitBtn}
           </button>
@@ -403,7 +444,9 @@ export default function VehicleDesignPage(): React.JSX.Element {
             <div className="space-y-2 text-xs">
               {Object.entries(calculatedSpecs.regionSuitability).map(([reg, val]) => (
                 <div key={reg} className="flex items-center justify-between">
-                  <span className="capitalize text-stone-800">{reg.replace('-', ' ')}</span>
+                  <span className="text-stone-800 font-medium">
+                    {t.regions[reg as keyof typeof t.regions] ?? reg.replace('-', ' ')}
+                  </span>
                   <span className="font-bold text-stone-900">{Math.round(val * 100)}%</span>
                 </div>
               ))}
@@ -425,8 +468,8 @@ export default function VehicleDesignPage(): React.JSX.Element {
               <article key={m.id} className="rounded border border-stone-300 bg-white p-4 shadow-sm">
                 <div className="flex items-start justify-between">
                   <h4 className="font-bold text-stone-900">{m.name}</h4>
-                  <span className="rounded bg-amber-100 px-2 py-0.5 text-xs font-semibold capitalize text-amber-900">
-                    {m.targetSegment}
+                  <span className="rounded bg-amber-100 px-2 py-0.5 text-xs font-semibold text-amber-900">
+                    {t.design.segments[m.targetSegment]?.name ?? m.targetSegment}
                   </span>
                 </div>
 
@@ -454,10 +497,16 @@ export default function VehicleDesignPage(): React.JSX.Element {
                     <span>{t.design.salePrice}:</span>
                     <span className="font-medium text-stone-900">${m.salePrice}</span>
                   </div>
+                  <div className="flex justify-between">
+                    <span>{t.production.plannedUnits}:</span>
+                    <span className="font-bold text-stone-900">
+                      {gameState?.productionPlan?.[m.id] ?? 0} {t.design.unitsMonth}
+                    </span>
+                  </div>
                   <div className="flex justify-between border-t border-stone-100 pt-1">
                     <span>{t.design.unitProfit}:</span>
                     <span className="font-bold text-emerald-700">
-                      +${m.salePrice - m.productionCost} ({Math.round(((m.salePrice - m.productionCost) / m.salePrice) * 100)}%)
+                      +${m.salePrice - m.productionCost} ({Math.round(((m.salePrice - m.productionCost) / (m.salePrice || 1)) * 100)}%)
                     </span>
                   </div>
                 </div>

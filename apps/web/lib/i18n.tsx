@@ -81,11 +81,38 @@ export const DICTIONARY = {
       modelName: 'Название модели',
       modelNamePlaceholder: 'Например: Model T Runabout',
       segment: 'Класс автомобиля',
+      segments: {
+        economy: {
+          name: 'Эконом',
+          tag: 'Ранэбаут',
+          description: 'Доступная и простая самоходная повозка для широких слоев населения.',
+        },
+        family: {
+          name: 'Семейный',
+          tag: 'Турер',
+          description: 'Вместительный экипаж со сбалансированным комфортом и надежностью.',
+        },
+        luxury: {
+          name: 'Люкс',
+          tag: 'Лимузин',
+          description: 'Эксклюзивный представительский экипаж высшего класса для престижа.',
+        },
+        utility: {
+          name: 'Грузовой',
+          tag: 'Фургон',
+          description: 'Тяговитое прочное шасси для коммерческих перевозок и торговли.',
+        },
+      },
       step2: '2. Выбор узлов и агрегатов',
       requiresTech: 'Требуется технология',
+      step3: '3. Производственная квота и запуск',
+      initialQuotaLabel: 'План выпуска новой модели в месяц',
+      initialQuotaHint: 'Укажите, сколько машин этой модели фабрика будет собирать каждый месяц (квоту можно менять в разделе «Заводы и производство»).',
+      availableCapacity: 'Доступная мощность завода',
+      unitsMonth: 'авто/мес',
       submitBtn: 'Утвердить и запустить модель в производство',
-      savingBtn: 'Сохранение модели...',
-      successMsg: 'Модель успешно спроектирована и готова к производству!',
+      savingBtn: 'Сохранение модели и постановка на конвейер...',
+      successMsg: 'Модель успешно спроектирована и поставлена на сборочную линию!',
       specsTitle: 'Характеристики автомобиля',
       financeTitle: 'Экономика единицы',
       productionCost: 'Себестоимость производства',
@@ -176,6 +203,13 @@ export const DICTIONARY = {
       priceSensitivity: 'Чувствительность к цене',
       prestigeSensitivity: 'Чувствительность к престижу',
       units: 'авто',
+    },
+
+    // Regions
+    regions: {
+      'north-america': 'Северная Америка',
+      europe: 'Европа',
+      'middle-east': 'Ближний Восток',
     },
 
     // Research
@@ -284,10 +318,37 @@ export const DICTIONARY = {
       modelName: 'Model Name',
       modelNamePlaceholder: 'e.g.: Model T Runabout',
       segment: 'Vehicle Class',
+      segments: {
+        economy: {
+          name: 'Economy',
+          tag: 'Runabout',
+          description: 'Affordable, simple personal transport for working families.',
+        },
+        family: {
+          name: 'Family',
+          tag: 'Tourer',
+          description: 'Spacious carriage with balanced comfort and reliability.',
+        },
+        luxury: {
+          name: 'Luxury',
+          tag: 'Town Car',
+          description: 'Exclusive hand-crafted vehicle for high-society prestige.',
+        },
+        utility: {
+          name: 'Utility',
+          tag: 'Work Truck',
+          description: 'Heavy-duty transport for trade, cargo, and rural commerce.',
+        },
+      },
       step2: '2. Component Selection',
       requiresTech: 'Requires technology',
-      submitBtn: 'Approve & Start Production',
-      savingBtn: 'Saving Model...',
+      step3: '3. Production Quota & Launch',
+      initialQuotaLabel: 'Initial Monthly Production Quota',
+      initialQuotaHint: 'Specify how many cars of this model your factory should assemble monthly (can be changed anytime in Factory & Production).',
+      availableCapacity: 'Available Factory Capacity',
+      unitsMonth: 'cars/mo',
+      submitBtn: 'Approve & Put Into Production',
+      savingBtn: 'Saving Model & Queuing Production...',
       successMsg: 'Model successfully designed and added to production line!',
       specsTitle: 'Vehicle Specifications',
       financeTitle: 'Unit Economics',
@@ -379,6 +440,13 @@ export const DICTIONARY = {
       priceSensitivity: 'Price Sensitivity',
       prestigeSensitivity: 'Prestige Sensitivity',
       units: 'cars',
+    },
+
+    // Regions
+    regions: {
+      'north-america': 'North America',
+      europe: 'Europe',
+      'middle-east': 'Middle East',
     },
 
     // Research

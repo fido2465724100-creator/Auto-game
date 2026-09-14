@@ -122,13 +122,17 @@ export default function DashboardPage(): React.JSX.Element {
             <div key={model.id} className="rounded border border-stone-200 bg-white p-3 text-xs space-y-1.5">
               <div className="flex justify-between items-start">
                 <span className="font-bold text-stone-900">{model.name}</span>
-                <span className="rounded bg-amber-100 px-1.5 py-0.5 text-[10px] font-semibold text-amber-900 capitalize">
-                  {model.targetSegment}
+                <span className="rounded bg-amber-100 px-1.5 py-0.5 text-[10px] font-semibold text-amber-900">
+                  {t.design.segments[model.targetSegment]?.name ?? model.targetSegment}
                 </span>
               </div>
               <div className="flex justify-between text-stone-600">
                 <span>Себестоимость: ${model.productionCost}</span>
                 <span className="font-semibold text-stone-900">Цена: ${model.salePrice}</span>
+              </div>
+              <div className="flex justify-between text-stone-700 font-semibold bg-stone-50 px-2 py-1 rounded">
+                <span>{t.production.plannedUnits}:</span>
+                <span className="text-amber-950">{gameState.productionPlan?.[model.id] ?? 0} авто/мес</span>
               </div>
               <div className="flex justify-between text-stone-500 text-[11px] border-t border-stone-100 pt-1">
                 <span>Надежность: {model.stats.reliability}</span>
