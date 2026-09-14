@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { runEndTurn } from '@ait/game-engine';
-import type { GameState, Region, Technology, HistoricalEvent, VehicleModel, ResearchProject } from '@ait/shared-types';
-import { eventsSeed, regionsSeed, technologies1900to1915Seed } from '../../../../data';
+import { runEndTurn, LOAN_TEMPLATES } from '@ait/game-engine';
+import type { GameState, Region, Technology, HistoricalEvent, VehicleModel, ResearchProject, VehicleComponentWithStatus, BankLoan, LoanTemplate } from '@ait/shared-types';
+import { eventsSeed, regionsSeed, technologies1900to1915Seed, vehicleComponentSeed } from '../../../../data';
 
 @Injectable()
 export class GameService {
@@ -153,6 +153,71 @@ export class GameService {
 
   getRegions(): Region[] {
     return this.regions;
+  }
+
+  getVehicleComponents(): VehicleComponentWithStatus[] {
+    const unlockedIds = new Set(this.gameState.unlockedTechnologyIds);
+    return vehicleComponentSeed.map((comp) => ({
+      ...comp,
+      isUnlocked: !comp.requiredTechnologyId || unlockedIds.has(comp.requiredTechnologyId),
+    }));
+  }
+
+  getLoanTemplates(): LoanTemplate[] {
+    return LOAN_TEMPLATES;
+  }
+
+  takeLoan(templateId: string): GameState {
+    const template = LOAN_TEMPLATES.find((t) => t.id === templateId);
+    if (!template) {
+      throw new NotFoundException(`Loan template ${templateId} not found`);
+    }
+
+    const newLoan: BankLoan = {
+      id: `loan-${template.id}-${Date.now().toString().slice(-4)}`,
+      name: template.name,
+      principal: template.amount,
+      remainingPrincipal: template.amount,
+      interestRate: template.interestRate,
+      monthlyPayment: template.monthlyPayment,
+      remainingMonths: template.durationMonths,
+      totalMonths: template.durationMonths,
+    };
+
+    const currentLoans = this.gameState.company.loans ?? [];
+    this.gameState = {
+      ...this.gameState,
+      company: {
+        ...this.gameState.company,
+        cash: this.gameState.company.cash + template.amount,
+        loans: [...currentLoans, newLoan],
+      },
+    };
+
+    return this.gameState;
+  }
+
+  repayLoan(loanId: string): GameState {
+    const currentLoans = this.gameState.company.loans ?? [];
+    const loan = currentLoans.find((l) => l.id === loanId);
+    if (!loan) {
+      throw new NotFoundException(`Loan ${loanId} not found`);
+    }
+
+    if (this.gameState.company.cash < loan.remainingPrincipal) {
+      return this.gameState;
+    }
+
+    this.gameState = {
+      ...this.gameState,
+      company: {
+        ...this.gameState.company,
+        cash: this.gameState.company.cash - loan.remainingPrincipal,
+        loans: currentLoans.filter((l) => l.id !== loanId),
+      },
+    };
+
+    return this.gameState;
   }
 
   endTurn(): GameState {

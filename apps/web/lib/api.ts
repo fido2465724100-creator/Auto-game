@@ -1,4 +1,4 @@
-import type { GameState, Technology, Region, VehicleModel } from '@ait/shared-types';
+import type { GameState, Technology, Region, VehicleModel, VehicleComponentWithStatus, LoanTemplate } from '@ait/shared-types';
 
 const CONFIGURED_API_URL = process.env.NEXT_PUBLIC_API_URL?.trim();
 
@@ -7,12 +7,13 @@ function getApiBaseUrl(): string {
     return CONFIGURED_API_URL.replace(/\/$/, '');
   }
 
-  // In browser/hosting, use same origin by default to avoid mixed-content errors.
   if (typeof window !== 'undefined') {
+    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+      return 'http://localhost:4000';
+    }
     return window.location.origin;
   }
 
-  // SSR/local dev fallback when no env is provided.
   return 'http://localhost:4000';
 }
 
@@ -45,4 +46,10 @@ export const api = {
   saveVehicleModel: (model: VehicleModel) =>
     request<GameState>('/game/vehicles', { method: 'POST', body: JSON.stringify(model) }),
   getRegions: () => request<Region[]>('/game/regions'),
+  getVehicleComponents: () => request<VehicleComponentWithStatus[]>('/game/components'),
+  getLoanTemplates: () => request<LoanTemplate[]>('/game/bank/templates'),
+  takeLoan: (templateId: string) =>
+    request<GameState>('/game/bank/loan', { method: 'POST', body: JSON.stringify({ templateId }) }),
+  repayLoan: (loanId: string) =>
+    request<GameState>('/game/bank/repay', { method: 'POST', body: JSON.stringify({ loanId }) }),
 };

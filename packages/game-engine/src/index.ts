@@ -8,7 +8,178 @@ import type {
   RegionId,
   Technology,
   VehicleModel,
+  VehicleSegment,
+  VehicleComponents,
+  VehicleStats,
+  VehicleComponentOption,
+  BankLoan,
+  LoanTemplate,
 } from '@ait/shared-types';
+
+export interface SegmentProfile {
+  name: string;
+  description: string;
+  baseProductionCost: number;
+  baseSalePrice: number;
+  baseStats: VehicleStats;
+  defaultRegionSuitability: Record<RegionId, number>;
+}
+
+export const SEGMENT_PROFILES: Record<VehicleSegment, SegmentProfile> = {
+  economy: {
+    name: 'Economy Runabout',
+    description: 'Affordable, simple personal transport for working families.',
+    baseProductionCost: 450,
+    baseSalePrice: 900,
+    baseStats: {
+      reliability: 40,
+      comfort: 25,
+      performance: 25,
+      efficiency: 45,
+      prestige: 15,
+      complexity: 20,
+    },
+    defaultRegionSuitability: {
+      'north-america': 0.85,
+      europe: 0.80,
+      'middle-east': 0.60,
+    },
+  },
+  family: {
+    name: 'Family Touring Car',
+    description: 'Spacious carriage with balanced comfort and reliability.',
+    baseProductionCost: 700,
+    baseSalePrice: 1400,
+    baseStats: {
+      reliability: 50,
+      comfort: 45,
+      performance: 35,
+      efficiency: 35,
+      prestige: 30,
+      complexity: 30,
+    },
+    defaultRegionSuitability: {
+      'north-america': 0.90,
+      europe: 0.85,
+      'middle-east': 0.50,
+    },
+  },
+  luxury: {
+    name: 'Luxury Town Car',
+    description: 'Exclusive hand-crafted vehicle for high-society prestige.',
+    baseProductionCost: 1500,
+    baseSalePrice: 3200,
+    baseStats: {
+      reliability: 45,
+      comfort: 70,
+      performance: 50,
+      efficiency: 20,
+      prestige: 75,
+      complexity: 55,
+    },
+    defaultRegionSuitability: {
+      'north-america': 0.70,
+      europe: 0.95,
+      'middle-east': 0.40,
+    },
+  },
+  utility: {
+    name: 'Utility Work Truck',
+    description: 'Heavy-duty transport for trade, cargo, and rural commerce.',
+    baseProductionCost: 600,
+    baseSalePrice: 1200,
+    baseStats: {
+      reliability: 60,
+      comfort: 15,
+      performance: 30,
+      efficiency: 30,
+      prestige: 10,
+      complexity: 25,
+    },
+    defaultRegionSuitability: {
+      'north-america': 0.95,
+      europe: 0.65,
+      'middle-east': 0.75,
+    },
+  },
+};
+
+export const LOAN_TEMPLATES: LoanTemplate[] = [
+  {
+    id: 'micro-credit',
+    name: 'Краткосрочный овердрафт',
+    description: 'Небольшой заем для экстренного покрытия кассового разрыва.',
+    amount: 15_000,
+    durationMonths: 6,
+    interestRate: 0.02,
+    monthlyPayment: 2680,
+  },
+  {
+    id: 'commercial-expansion',
+    name: 'Коммерческий заем на развитие',
+    description: 'Среднесрочный кредит на закупку оборудования и наем инженеров.',
+    amount: 50_000,
+    durationMonths: 12,
+    interestRate: 0.015,
+    monthlyPayment: 4590,
+  },
+  {
+    id: 'industrial-bond',
+    name: 'Индустриальная облигация',
+    description: 'Крупный заем для масштабного строительства и экспансии на рынки.',
+    amount: 120_000,
+    durationMonths: 24,
+    interestRate: 0.012,
+    monthlyPayment: 5790,
+  },
+];
+
+export function calculateVehicleSpecs(
+  segment: VehicleSegment,
+  selectedComponents: VehicleComponents,
+  allComponents: VehicleComponentOption[]
+): {
+  stats: VehicleStats;
+  productionCost: number;
+  regionSuitability: Record<RegionId, number>;
+} {
+  const profile = SEGMENT_PROFILES[segment] ?? SEGMENT_PROFILES.economy;
+  const compMap = new Map(allComponents.map((c) => [c.id, c]));
+
+  const stats: VehicleStats = { ...profile.baseStats };
+  let extraCost = 0;
+
+  for (const compId of Object.values(selectedComponents)) {
+    if (!compId) continue;
+    const comp = compMap.get(compId);
+    if (!comp) continue;
+
+    extraCost += comp.costModifier;
+    if (comp.statModifiers.reliability) stats.reliability += comp.statModifiers.reliability;
+    if (comp.statModifiers.comfort) stats.comfort += comp.statModifiers.comfort;
+    if (comp.statModifiers.performance) stats.performance += comp.statModifiers.performance;
+    if (comp.statModifiers.efficiency) stats.efficiency += comp.statModifiers.efficiency;
+    if (comp.statModifiers.prestige) stats.prestige += comp.statModifiers.prestige;
+    if (comp.statModifiers.complexity) stats.complexity += comp.statModifiers.complexity;
+  }
+
+  const clamp = (val: number) => Math.max(5, Math.min(100, val));
+  stats.reliability = clamp(stats.reliability);
+  stats.comfort = clamp(stats.comfort);
+  stats.performance = clamp(stats.performance);
+  stats.efficiency = clamp(stats.efficiency);
+  stats.prestige = clamp(stats.prestige);
+  stats.complexity = clamp(stats.complexity);
+
+  const productionCost = profile.baseProductionCost + extraCost;
+  const suitability: Record<RegionId, number> = { ...profile.defaultRegionSuitability };
+
+  return {
+    stats,
+    productionCost,
+    regionSuitability: suitability,
+  };
+}
 
 function nextMonth(date: GameDate): GameDate {
   if (date.month === 12) {
@@ -114,13 +285,33 @@ export function runEndTurn(input: EndTurnInput): EndTurnOutput {
     }
   }
 
+  const currentLoans = currentState.company.loans ?? [];
+  let loanPayments = 0;
+  const updatedLoans: BankLoan[] = [];
+
+  for (const loan of currentLoans) {
+    loanPayments += loan.monthlyPayment;
+    const interest = Math.round(loan.remainingPrincipal * loan.interestRate);
+    const principalReduction = Math.max(0, loan.monthlyPayment - interest);
+    const nextPrincipal = Math.max(0, loan.remainingPrincipal - principalReduction);
+    const nextMonths = loan.remainingMonths - 1;
+
+    if (nextMonths > 0 && nextPrincipal > 0) {
+      updatedLoans.push({
+        ...loan,
+        remainingPrincipal: nextPrincipal,
+        remainingMonths: nextMonths,
+      });
+    }
+  }
+
   const productionCost = currentState.vehicleModels.reduce((acc, model) => {
     const planned = currentState.productionPlan[model.id] ?? 0;
     return acc + planned * model.productionCost;
   }, 0);
 
   const researchCost = currentState.activeResearch.reduce((acc, project) => acc + project.allocatedBudget, 0);
-  const expenses = productionCost + researchCost + currentState.company.overheadMonthly;
+  const expenses = productionCost + researchCost + currentState.company.overheadMonthly + loanPayments;
   const profit = revenue - expenses;
 
   const reputationChange = unitsSold > 0 ? Math.min(3, Math.floor(unitsSold / 200)) : -1;
@@ -141,6 +332,7 @@ export function runEndTurn(input: EndTurnInput): EndTurnOutput {
       completed: project.isCompleted,
     })),
     reputationChange,
+    loanPayments,
     eventNotes: activeEvents.map((event) => event.name),
     salesByRegion,
   };
@@ -155,6 +347,7 @@ export function runEndTurn(input: EndTurnInput): EndTurnOutput {
         ...currentState.company,
         cash: currentState.company.cash + profit,
         reputation: nextReputation,
+        loans: updatedLoans,
       },
       reportHistory: [report, ...currentState.reportHistory].slice(0, 24),
     },

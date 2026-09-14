@@ -6,9 +6,9 @@ const links = [
   { href: '/vehicle-design', label: 'Vehicle Design' },
   { href: '/markets', label: 'Markets' },
   { href: '/reports', label: 'Reports' },
-];
+] as const;
 
-export function Navigation(): JSX.Element {
+export function Navigation(): React.JSX.Element {
   return (
     <nav className="mb-6 flex flex-wrap gap-2">
       {links.map((item) => (

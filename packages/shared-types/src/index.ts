@@ -11,6 +11,41 @@ export type TechnologyCategory =
 
 export type TechStatus = 'locked' | 'available' | 'researching' | 'completed';
 export type VehicleSegment = 'economy' | 'family' | 'luxury' | 'utility';
+export type ComponentCategory = 'chassis' | 'engine' | 'brakes' | 'comfort' | 'package';
+
+export interface VehicleComponentOption {
+  id: string;
+  category: ComponentCategory;
+  name: string;
+  statModifiers: Partial<VehicleStats>;
+  costModifier: number;
+  requiredTechnologyId?: string;
+}
+
+export interface VehicleComponentWithStatus extends VehicleComponentOption {
+  isUnlocked: boolean;
+}
+
+export interface BankLoan {
+  id: string;
+  name: string;
+  principal: number;
+  remainingPrincipal: number;
+  interestRate: number;
+  monthlyPayment: number;
+  remainingMonths: number;
+  totalMonths: number;
+}
+
+export interface LoanTemplate {
+  id: string;
+  name: string;
+  description: string;
+  amount: number;
+  durationMonths: number;
+  interestRate: number;
+  monthlyPayment: number;
+}
 
 export interface Company {
   id: string;
@@ -20,6 +55,7 @@ export interface Company {
   productionCapacity: number;
   overheadMonthly: number;
   marketPresence: Record<RegionId, number>;
+  loans?: BankLoan[];
 }
 
 export interface GameDate {
@@ -138,6 +174,7 @@ export interface MonthlyReport {
   profit: number;
   researchProgress: Array<{ technologyId: string; progressMonths: number; completed: boolean }>;
   reputationChange: number;
+  loanPayments?: number;
   eventNotes: string[];
   salesByRegion: Record<RegionId, number>;
 }

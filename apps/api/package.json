@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "start:dev": "nest start --watch",
+    "start:dev": "node --watch -r ts-node/register src/main.ts",
     "build": "nest build",
     "typecheck": "tsc --noEmit -p tsconfig.json"
   },

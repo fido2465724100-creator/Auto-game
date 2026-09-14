@@ -22,6 +22,26 @@ export class GameController {
     return this.gameService.getTechnologies();
   }
 
+  @Get('components')
+  getComponents() {
+    return this.gameService.getVehicleComponents();
+  }
+
+  @Get('bank/templates')
+  getLoanTemplates() {
+    return this.gameService.getLoanTemplates();
+  }
+
+  @Post('bank/loan')
+  takeLoan(@Body() body: { templateId: string }) {
+    return this.gameService.takeLoan(body.templateId);
+  }
+
+  @Post('bank/repay')
+  repayLoan(@Body() body: { loanId: string }) {
+    return this.gameService.repayLoan(body.loanId);
+  }
+
   @Post('research/start')
   startResearch(@Body() dto: StartResearchDto) {
     return this.gameService.startResearch(dto.technologyId, dto.allocatedBudget);
