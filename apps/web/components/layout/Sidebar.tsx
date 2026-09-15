@@ -41,7 +41,7 @@ export function Sidebar(): React.JSX.Element {
 
           <div className="mt-4 rounded border border-amber-800/20 bg-amber-50/60 p-2.5">
             <span className="block text-[10px] uppercase font-semibold text-stone-500 font-sans">
-              Ваша компания
+              {t.brandCompany}
             </span>
             <span className="font-bold text-xs text-amber-950 truncate block">
               {companyName}

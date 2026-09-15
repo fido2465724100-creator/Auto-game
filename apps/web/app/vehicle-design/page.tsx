@@ -262,7 +262,9 @@ export default function VehicleDesignPage(): React.JSX.Element {
                                   }
                                   className="text-amber-800 focus:ring-amber-700"
                                 />
-                                <span className="font-semibold text-stone-900">{opt.name}</span>
+                                <span className="font-semibold text-stone-900">
+                                  {t.components[opt.id] ?? opt.name}
+                                </span>
                               </div>
                               <span className="shrink-0 font-bold text-amber-900">
                                 {opt.costModifier > 0 ? `+$${opt.costModifier}` : '$0'}
@@ -289,7 +291,7 @@ export default function VehicleDesignPage(): React.JSX.Element {
 
                             {!isUnlocked && opt.requiredTechnologyId ? (
                               <div className="mt-2 text-[10px] font-semibold text-amber-900 bg-amber-100/60 rounded px-1.5 py-0.5">
-                                🔒 {t.design.requiresTech}: {opt.requiredTechnologyId}
+                                🔒 {t.design.requiresTech}: {t.technologies[opt.requiredTechnologyId]?.name ?? opt.requiredTechnologyId}
                               </div>
                             ) : null}
                           </label>
@@ -326,7 +328,7 @@ export default function VehicleDesignPage(): React.JSX.Element {
                   className="w-28 rounded border border-stone-300 bg-white px-3 py-2 text-stone-900 font-bold text-sm shadow-inner focus:border-amber-700 focus:outline-none"
                 />
                 <span className="text-xs text-stone-600 font-sans">
-                  {t.design.unitsMonth} (мощность цехов завода: <strong>{factoryCapacity} {t.design.unitsMonth}</strong>)
+                  {t.design.unitsMonth} ({t.design.factoryCapacityHint}: <strong>{factoryCapacity} {t.design.unitsMonth}</strong>)
                 </span>
               </div>
             </div>
@@ -416,7 +418,7 @@ export default function VehicleDesignPage(): React.JSX.Element {
               <span>🪵</span> {t.production.materialsRequiredPerUnit}
             </h3>
             <p className="mb-3 text-[11px] text-stone-600 font-sans">
-              Расход сырья на сборку одной машины данной модели на конвейере:
+              {t.design.materialConsumptionHint}
             </p>
             <div className="grid grid-cols-2 gap-2 text-xs">
               {Object.entries(calculatedSpecs.materialsRequired).map(([matKey, amount]) => {

@@ -147,8 +147,12 @@ export default function BankPage(): React.JSX.Element {
           {templates.map((tpl) => (
             <article key={tpl.id} className="rounded border border-stone-300 bg-[var(--paper)] p-5 shadow-sm flex flex-col justify-between space-y-4">
               <div>
-                <h4 className="font-bold text-amber-950 text-base">{tpl.name}</h4>
-                <p className="text-xs text-stone-600 mt-1 min-h-[36px]">{tpl.description}</p>
+                <h4 className="font-bold text-amber-950 text-base">
+                  {t.loans[tpl.id]?.name ?? tpl.name}
+                </h4>
+                <p className="text-xs text-stone-600 mt-1 min-h-[36px]">
+                  {t.loans[tpl.id]?.description ?? tpl.description}
+                </p>
                 <div className="my-3 border-t border-stone-200 pt-3 space-y-2 text-xs">
                   <div className="flex justify-between">
                     <span className="text-stone-500">{t.bank.amount}:</span>

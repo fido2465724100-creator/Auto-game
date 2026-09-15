@@ -59,11 +59,11 @@ export default function ReportsPage(): React.JSX.Element {
                 </div>
                 <div>
                   <span className="text-stone-500 block">{t.reports.produced}:</span>
-                  <span className="font-semibold text-stone-800">{report.unitsProduced} авто</span>
+                  <span className="font-semibold text-stone-800">{report.unitsProduced} {t.markets.units}</span>
                 </div>
                 <div>
                   <span className="text-stone-500 block">{t.reports.sold}:</span>
-                  <span className="font-bold text-amber-950">{report.unitsSold} авто</span>
+                  <span className="font-bold text-amber-950">{report.unitsSold} {t.markets.units}</span>
                 </div>
               </div>
 
@@ -77,11 +77,11 @@ export default function ReportsPage(): React.JSX.Element {
 
               {/* Sales by Region */}
               {report.salesByRegion ? (
-                <div className="text-[11px] text-stone-500 border-t border-stone-100 pt-2 flex gap-4">
-                  <span>Продажи по регионам:</span>
+                <div className="text-[11px] text-stone-500 border-t border-stone-100 pt-2 flex flex-wrap gap-4">
+                  <span>{t.reports.salesByRegion}</span>
                   {Object.entries(report.salesByRegion).map(([reg, units]) => (
-                    <span key={reg} className="capitalize">
-                      {reg.replace('-', ' ')}: <strong className="text-stone-800">{units} шт.</strong>
+                    <span key={reg}>
+                      {t.regions[reg as keyof typeof t.regions] ?? reg.replace('-', ' ')}: <strong className="text-stone-800">{units} {t.production.unitsShort}</strong>
                     </span>
                   ))}
                 </div>

@@ -51,7 +51,7 @@ export default function MarketsPage(): React.JSX.Element {
                   <h3 className="font-bold text-amber-950 text-base">{regionName}</h3>
                 </div>
                 <span className="rounded bg-amber-100 text-amber-900 px-2 py-0.5 text-xs font-bold">
-                  Доля: {share}%
+                  {t.markets.marketShare}: {share}%
                 </span>
               </div>
 
@@ -79,23 +79,23 @@ export default function MarketsPage(): React.JSX.Element {
               {/* Preferences breakdown */}
               <div className="border-t border-stone-200 pt-3 space-y-1.5 text-[11px]">
                 <span className="font-semibold text-stone-600 block mb-1">
-                  Предпочтения покупателей региона:
+                  {t.markets.preferencesTitle}
                 </span>
                 <div className="space-y-1 text-stone-700">
                   <div className="flex justify-between">
-                    <span>Комфорт:</span>
+                    <span>{t.design.stats.comfort}:</span>
                     <span className="font-semibold">{Math.round(region.preferenceWeights.comfort * 100)}%</span>
                   </div>
                   <div className="flex justify-between">
-                    <span>Экономичность:</span>
+                    <span>{t.design.stats.efficiency}:</span>
                     <span className="font-semibold">{Math.round(region.preferenceWeights.efficiency * 100)}%</span>
                   </div>
                   <div className="flex justify-between">
-                    <span>Скорость / Мощность:</span>
+                    <span>{t.design.stats.performance}:</span>
                     <span className="font-semibold">{Math.round(region.preferenceWeights.performance * 100)}%</span>
                   </div>
                   <div className="flex justify-between">
-                    <span>Престиж:</span>
+                    <span>{t.design.stats.prestige}:</span>
                     <span className="font-semibold">{Math.round(region.preferenceWeights.prestige * 100)}%</span>
                   </div>
                 </div>

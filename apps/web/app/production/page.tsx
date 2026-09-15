@@ -121,7 +121,7 @@ export default function ProductionPage(): React.JSX.Element {
 
     const totalCost = item.basePrice * amount;
     if (currentCash < totalCost) {
-      setStatusMsg(`Недостаточно средств для покупки партии ($${totalCost.toLocaleString()})!`);
+      setStatusMsg(`${t.production.insufficientFundsBatch} ($${totalCost.toLocaleString()})`);
       return;
     }
 
@@ -194,7 +194,7 @@ export default function ProductionPage(): React.JSX.Element {
             <span className="text-base">⚠️</span> {t.production.shortageAlert}
           </div>
           <p className="text-[11px] text-rose-700">
-            Для стабильного выпуска рекомендуется включить автоматическое снабжение Just-In-Time на складе ниже.
+            {t.production.shortageHint}
           </p>
         </div>
       )}
@@ -204,7 +204,7 @@ export default function ProductionPage(): React.JSX.Element {
         <div className="rounded-md border border-amber-400 bg-amber-50 p-3.5 text-amber-900 text-xs shadow-xs flex items-center gap-2">
           <span className="text-base">⚠️</span>
           <span>
-            Суммарный план выпуска ({totalPlannedUnits} авто) превышает лимит цехов завода ({factory.capacity} авто/мес)! Выпуск будет урезан до максимума мощности.
+            {t.production.overCapacityWarning} ({totalPlannedUnits} / {factory.capacity} {t.dashboard.unitsMonth})
           </span>
         </div>
       )}
@@ -220,7 +220,7 @@ export default function ProductionPage(): React.JSX.Element {
               </span>
             </div>
             <p className="text-xs text-stone-500 font-sans mt-0.5">
-              Историческая мануфактура сборки экипажей и безлошадных повозок
+              {t.production.historicalPlantSubtitle}
             </p>
           </div>
 
@@ -274,7 +274,7 @@ export default function ProductionPage(): React.JSX.Element {
               <span>🚗</span> {t.production.linesTitle}
             </h2>
             <p className="text-xs text-stone-500 font-sans">
-              Назначение месячных объемов производства для моделей на сборочных постах
+              {t.production.planSubtitle}
             </p>
           </div>
 
@@ -308,8 +308,8 @@ export default function ProductionPage(): React.JSX.Element {
                     <div>
                       <div className="flex items-center gap-2">
                         <span className="font-bold text-sm text-amber-950">{model.name}</span>
-                        <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-stone-200 text-stone-700">
-                          {model.targetSegment}
+                        <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-amber-100 text-amber-900">
+                          {t.design.segments[model.targetSegment]?.name ?? model.targetSegment}
                         </span>
                       </div>
                       <div className="flex items-center gap-4 mt-1 text-xs text-stone-600 font-sans">
@@ -338,7 +338,7 @@ export default function ProductionPage(): React.JSX.Element {
                             onChange={(e) => handlePlanChange(model.id, Number(e.target.value))}
                             className="w-24 rounded border border-stone-300 bg-white px-2.5 py-1 text-right text-xs font-bold text-stone-900 focus:border-amber-800 focus:outline-none"
                           />
-                          <span className="text-xs text-stone-500">шт.</span>
+                          <span className="text-xs text-stone-500">{t.production.unitsShort}</span>
                         </div>
                       </div>
                     </div>
@@ -385,7 +385,7 @@ export default function ProductionPage(): React.JSX.Element {
               <span>🪵</span> {t.production.warehouseTitle}
             </h2>
             <p className="text-xs text-stone-500 font-sans">
-              Запасы сырья на складе мануфактуры и закупки на сырьевой бирже
+              {t.production.warehouseSubtitle}
             </p>
           </div>
 

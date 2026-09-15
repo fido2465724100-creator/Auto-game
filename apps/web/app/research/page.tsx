@@ -63,7 +63,9 @@ export default function ResearchPage(): React.JSX.Element {
             >
               <div>
                 <div className="flex items-start justify-between gap-2">
-                  <h3 className="font-bold text-amber-950 text-base">{tech.name}</h3>
+                  <h3 className="font-bold text-amber-950 text-base">
+                    {t.technologies[tech.id]?.name ?? tech.name}
+                  </h3>
                   <span className={`rounded border px-2 py-0.5 text-[11px] font-bold ${badgeColor}`}>
                     {statusText}
                   </span>
@@ -75,7 +77,9 @@ export default function ResearchPage(): React.JSX.Element {
                   <span>{t.research.budgetMonth}: <strong className="text-stone-700">$2,000</strong></span>
                 </div>
 
-                <p className="my-3 text-xs text-stone-700 leading-relaxed">{tech.description}</p>
+                <p className="my-3 text-xs text-stone-700 leading-relaxed">
+                  {t.technologies[tech.id]?.description ?? tech.description}
+                </p>
               </div>
 
               {status === 'available' ? (
@@ -85,7 +89,7 @@ export default function ResearchPage(): React.JSX.Element {
                   onClick={() => void handleStartResearch(tech.id)}
                   className="w-full rounded bg-[var(--accent)] py-2 text-xs font-bold text-white shadow hover:bg-amber-900 transition disabled:opacity-60 cursor-pointer"
                 >
-                  {pendingId === tech.id ? 'Запуск...' : t.research.startBtn}
+                  {pendingId === tech.id ? t.research.starting : t.research.startBtn}
                 </button>
               ) : null}
             </article>

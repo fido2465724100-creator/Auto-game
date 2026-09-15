@@ -8,7 +8,8 @@ export const DICTIONARY = {
   ru: {
     brand: 'Auto Industry Tycoon',
     subtitle: 'Экономическая стратегия развития автомобилестроения (1900–2025)',
-    
+    brandCompany: 'Ваша компания',
+
     // Nav
     nav: {
       dashboard: 'Кабинет директора',
@@ -71,6 +72,13 @@ export const DICTIONARY = {
       noReport: 'Первый месяц еще не завершен. Нажмите «Завершить месяц» вверху.',
       activeModelsSummary: 'Автомобили на конвейере',
       quickNav: 'Быстрый переход',
+      availableCashHint: 'Доступно на счетах',
+      capacityHint: 'Лимит сборочных цехов',
+      reputationHint: 'Престиж марки на рынках',
+      researchHint: 'Проектов в лаборатории',
+      createModel: '+ Создать новую модель →',
+      unitCostLabel: 'Себестоимость',
+      priceLabel: 'Цена',
     },
 
     // Vehicle Design
@@ -83,7 +91,7 @@ export const DICTIONARY = {
       segment: 'Класс автомобиля',
       segments: {
         economy: {
-          name: 'Эконом',
+          name: 'Эконом (Стандарт)',
           tag: 'Ранэбаут',
           description: 'Доступная и простая самоходная повозка для широких слоев населения.',
         },
@@ -120,6 +128,8 @@ export const DICTIONARY = {
       unitProfit: 'Прибыль с машины (маржа)',
       marketAppeal: 'Привлекательность по рынкам',
       marketAppealHint: 'Базовое соответствие ожиданиям покупателей в различных регионах мира:',
+      factoryCapacityHint: 'мощность цехов завода',
+      materialConsumptionHint: 'Расход сырья на сборку одной машины данной модели на конвейере:',
       existingModels: 'Выпускаемые модели компании',
       noModels: 'У компании пока нет спроектированных автомобилей.',
       categories: {
@@ -168,9 +178,16 @@ export const DICTIONARY = {
       needNextMonth: 'Потребность под план',
       buyBatchBtn: 'Купить партию',
       shortageAlert: 'Внимание! На складе недостаточно материалов для выполнения плана. Выпуск будет ограничен, если не включить автозакупку или не докупить сырье!',
+      shortageHint: 'Для стабильного выпуска рекомендуется включить автоматическое снабжение Just-In-Time на складе ниже.',
+      overCapacityWarning: 'Суммарный план выпуска превышает лимит цехов завода! Выпуск будет урезан до максимума мощности.',
+      historicalPlantSubtitle: 'Историческая мануфактура сборки экипажей и безлошадных повозок',
+      planSubtitle: 'Назначение месячных объемов производства для моделей на сборочных постах',
+      warehouseSubtitle: 'Запасы сырья на складе мануфактуры и закупки на сырьевой бирже',
+      insufficientFundsBatch: 'Недостаточно средств для покупки партии!',
       materialBought: 'Материалы успешно закуплены и поступили на склад!',
       autoProcurementUpdated: 'Режим автозакупки обновлен!',
       yearAvailable: 'Доступно с года',
+      unitsShort: 'шт.',
     },
 
     // Bank
@@ -199,6 +216,8 @@ export const DICTIONARY = {
     markets: {
       title: 'Мировые рынки сбыта',
       subtitle: 'Характеристики регионов и потребительские предпочтения.',
+      marketShare: 'Доля рынка',
+      preferencesTitle: 'Предпочтения покупателей региона:',
       size: 'Емкость рынка',
       priceSensitivity: 'Чувствительность к цене',
       prestigeSensitivity: 'Чувствительность к престижу',
@@ -217,6 +236,7 @@ export const DICTIONARY = {
       title: 'Научно-исследовательский центр (НИОКР)',
       subtitle: 'Изобретение передовых узлов, материалов и методов сборки.',
       startBtn: 'Начать разработку',
+      starting: 'Запуск разработки...',
       year: 'Год появления',
       status: 'Статус',
       statuses: {
@@ -239,12 +259,101 @@ export const DICTIONARY = {
       expenses: 'Расходы',
       profit: 'Чистая прибыль',
       loansPaid: 'Выплаты по кредитам',
+      salesByRegion: 'Продажи по регионам:',
     },
+
+    // Technologies
+    technologies: {
+      'standardized-steering-wheel': {
+        name: 'Стандартизированное рулевое колесо',
+        description: 'Повышает управляемость и уверенность водителя.',
+      },
+      'mechanical-brake-upgrade': {
+        name: 'Модернизация механических тормозов',
+        description: 'Более надежная и долговечная механическая тормозная система.',
+      },
+      'carburetor-improvement': {
+        name: 'Улучшение карбюратора',
+        description: 'Стабилизирует сгорание смеси и снижает расход топлива.',
+      },
+      'interchangeable-parts': {
+        name: 'Взаимозаменяемые детали',
+        description: 'Позволяет стандартизировать компоненты при массовом выпуске.',
+      },
+      'basic-brand-advertising': {
+        name: 'Базовая реклама бренда',
+        description: 'Публикации в газетах повышают узнаваемость марки.',
+      },
+      'electric-starter': {
+        name: 'Электрический стартер',
+        description: 'Избавляет от необходимости заводить двигатель вручную рукояткой.',
+      },
+      'basic-assembly-line': {
+        name: 'Ранний сборочный конвейер',
+        description: 'Последовательные посты сборки значительно увеличивают выпуск.',
+      },
+      'improved-suspension': {
+        name: 'Улучшенная рессорная подвеска',
+        description: 'Повышает плавность хода и комфорт на неровных дорогах.',
+      },
+      'windshield-wipers': {
+        name: 'Стеклоочистители (дворники)',
+        description: 'Улучшают обзор и безопасность в дождливую погоду.',
+      },
+      'sales-dealer-network': {
+        name: 'Дилерская сеть продаж',
+        description: 'Разветвленные торговые точки расширяют региональный охват.',
+      },
+      'hydraulic-braking-concepts': {
+        name: 'Концепция гидравлических тормозов',
+        description: 'Ранние гидравлические принципы ускоряют тормозной отклик.',
+      },
+      'managerial-accounting-ledgers': {
+        name: 'Управленческий бухгалтерский учет',
+        description: 'Точный учет издержек снижает финансовые потери предприятия.',
+      },
+    } as Record<string, { name: string; description: string }>,
+
+    // Vehicle Components
+    components: {
+      'ladder-frame': 'Лестничная рама (базовая)',
+      'touring-frame': 'Туринговая лонжеронная рама',
+      'reinforced-suspension-frame': 'Рама с усиленной рессорной подвеской',
+      'single-cylinder': 'Одноцилиндровый двигатель (6 л.с.)',
+      'inline-four': 'Рядный четырехцилиндровый мотор (20 л.с.)',
+      'electric-start-v4': 'Мотор V4 с электростартером (35 л.с.)',
+      'band-brakes': 'Механические ленточные тормоза',
+      'drum-brakes': 'Усиленные барабанные тормоза',
+      'hydraulic-prototype-brakes': 'Прототип гидравлических тормозов',
+      'open-runabout': 'Открытый кузов «Ранэбаут»',
+      'basic-cabin': 'Деревянная каретная кабина',
+      'enclosed-limousine-cabin': 'Закрытый кузов «Лимузин»',
+      'package-none': 'Базовая комплектация (без пакета)',
+      'weather-package': 'Всепогодный пакет (дворники и тент)',
+      'touring-rally-kit': 'Туристический комплект надежности',
+    } as Record<string, string>,
+
+    // Bank Loans
+    loans: {
+      'micro-credit': {
+        name: 'Краткосрочный овердрафт',
+        description: 'Небольшой заем для экстренного покрытия кассового разрыва.',
+      },
+      'commercial-expansion': {
+        name: 'Коммерческий заем на развитие',
+        description: 'Среднесрочный кредит на закупку оборудования и наем инженеров.',
+      },
+      'industrial-bond': {
+        name: 'Индустриальная облигация',
+        description: 'Крупный заем для масштабного строительства и экспансии на рынки.',
+      },
+    } as Record<string, { name: string; description: string }>,
   },
 
   en: {
     brand: 'Auto Industry Tycoon',
     subtitle: 'Economic Strategy Simulator of the Automobile Industry (1900–2025)',
+    brandCompany: 'Your Company',
 
     // Nav
     nav: {
@@ -308,6 +417,13 @@ export const DICTIONARY = {
       noReport: 'First month is not finished yet. Click "End Month" above.',
       activeModelsSummary: 'Production Line Models',
       quickNav: 'Quick Navigation',
+      availableCashHint: 'Available in treasury',
+      capacityHint: 'Assembly line ceiling',
+      reputationHint: 'Brand prestige across markets',
+      researchHint: 'Active R&D projects',
+      createModel: '+ Create New Model →',
+      unitCostLabel: 'Cost',
+      priceLabel: 'Price',
     },
 
     // Vehicle Design
@@ -320,7 +436,7 @@ export const DICTIONARY = {
       segment: 'Vehicle Class',
       segments: {
         economy: {
-          name: 'Economy',
+          name: 'Economy (Standard)',
           tag: 'Runabout',
           description: 'Affordable, simple personal transport for working families.',
         },
@@ -357,6 +473,8 @@ export const DICTIONARY = {
       unitProfit: 'Margin per Unit',
       marketAppeal: 'Regional Market Appeal',
       marketAppealHint: 'Customer satisfaction baseline across global regions:',
+      factoryCapacityHint: 'factory assembly capacity',
+      materialConsumptionHint: 'Raw material requirements to assemble one vehicle of this model:',
       existingModels: 'Active Company Models',
       noModels: 'Your company has not designed any models yet.',
       categories: {
@@ -405,9 +523,16 @@ export const DICTIONARY = {
       needNextMonth: 'Demand for Next Month',
       buyBatchBtn: 'Buy Batch',
       shortageAlert: 'Warning! Warehouse does not have sufficient materials to meet the production quota. Production will be throttled unless auto-procurement is enabled or materials are bought!',
+      shortageHint: 'For uninterrupted assembly, enable Just-In-Time automated procurement below.',
+      overCapacityWarning: 'Total planned production exceeds factory assembly capacity! Production will be throttled to plant ceiling.',
+      historicalPlantSubtitle: 'Historical carriage manufacture and horseless carriage assembly plant',
+      planSubtitle: 'Assign monthly output quotas for models on assembly lines',
+      warehouseSubtitle: 'Raw material stockpiles and procurement on the commodity exchange',
+      insufficientFundsBatch: 'Insufficient company funds to purchase this batch!',
       materialBought: 'Materials purchased and added to warehouse inventory!',
       autoProcurementUpdated: 'Auto-procurement setting updated!',
       yearAvailable: 'Available from Year',
+      unitsShort: 'pcs.',
     },
 
     // Bank
@@ -436,6 +561,8 @@ export const DICTIONARY = {
     markets: {
       title: 'Global Markets & Demand',
       subtitle: 'Regional consumer demographics and purchasing preferences.',
+      marketShare: 'Market Share',
+      preferencesTitle: 'Regional Consumer Preferences:',
       size: 'Market Size',
       priceSensitivity: 'Price Sensitivity',
       prestigeSensitivity: 'Prestige Sensitivity',
@@ -454,6 +581,7 @@ export const DICTIONARY = {
       title: 'Research & Development Center (R&D)',
       subtitle: 'Innovate cutting-edge components, metallurgy and assembly techniques.',
       startBtn: 'Begin Research',
+      starting: 'Starting research...',
       year: 'Available Year',
       status: 'Status',
       statuses: {
@@ -476,7 +604,95 @@ export const DICTIONARY = {
       expenses: 'Expenses',
       profit: 'Net Profit',
       loansPaid: 'Debt Service',
+      salesByRegion: 'Sales by Region:',
     },
+
+    // Technologies
+    technologies: {
+      'standardized-steering-wheel': {
+        name: 'Standardized Steering Wheel',
+        description: 'Improves handling consistency and driver confidence.',
+      },
+      'mechanical-brake-upgrade': {
+        name: 'Mechanical Brake Upgrade',
+        description: 'Safer and more durable mechanical braking system.',
+      },
+      'carburetor-improvement': {
+        name: 'Carburetor Improvement',
+        description: 'Stabilizes combustion and reduces fuel waste.',
+      },
+      'interchangeable-parts': {
+        name: 'Interchangeable Parts',
+        description: 'Allows component standardization in production.',
+      },
+      'basic-brand-advertising': {
+        name: 'Basic Brand Advertising',
+        description: 'Newspaper presence increases brand recognition.',
+      },
+      'electric-starter': {
+        name: 'Electric Starter',
+        description: 'Removes manual crank start requirement.',
+      },
+      'basic-assembly-line': {
+        name: 'Basic Assembly Line',
+        description: 'Sequential assembly stations improve throughput.',
+      },
+      'improved-suspension': {
+        name: 'Improved Suspension',
+        description: 'Improves ride comfort on rough roads.',
+      },
+      'windshield-wipers': {
+        name: 'Windshield Wipers',
+        description: 'Improves usability in bad weather.',
+      },
+      'sales-dealer-network': {
+        name: 'Sales Dealer Network',
+        description: 'Distributed sales points improve regional reach.',
+      },
+      'hydraulic-braking-concepts': {
+        name: 'Hydraulic Braking Concepts',
+        description: 'Early hydraulic principles improve braking response.',
+      },
+      'managerial-accounting-ledgers': {
+        name: 'Managerial Accounting Ledgers',
+        description: 'Improved cost tracking reduces financial waste.',
+      },
+    } as Record<string, { name: string; description: string }>,
+
+    // Vehicle Components
+    components: {
+      'ladder-frame': 'Ladder Frame (Standard)',
+      'touring-frame': 'Touring Channel-Section Frame',
+      'reinforced-suspension-frame': 'Reinforced Leaf-Spring Chassis',
+      'single-cylinder': 'Single-Cylinder Engine (6 hp)',
+      'inline-four': 'Inline-Four Engine (20 hp)',
+      'electric-start-v4': 'Electric-Start V4 Engine (35 hp)',
+      'band-brakes': 'Mechanical Band Brakes',
+      'drum-brakes': 'Reinforced Drum Brakes',
+      'hydraulic-prototype-brakes': 'Prototype Hydraulic Brakes',
+      'open-runabout': 'Open Runabout Body',
+      'basic-cabin': 'Wooden Carriage Cabin',
+      'enclosed-limousine-cabin': 'Enclosed Limousine Cabin',
+      'package-none': 'Standard Configuration (No Package)',
+      'weather-package': 'All-Weather Package (Wipers & Soft Top)',
+      'touring-rally-kit': 'Touring Reliability Kit',
+    } as Record<string, string>,
+
+    // Bank Loans
+    loans: {
+      'micro-credit': {
+        name: 'Short-term Overdraft',
+        description: 'Small loan for emergency cash flow coverage.',
+      },
+      'commercial-expansion': {
+        name: 'Commercial Expansion Loan',
+        description: 'Medium-term loan for equipment purchase and engineer hiring.',
+      },
+      'industrial-bond': {
+        name: 'Industrial Bond',
+        description: 'Large-scale loan for plant expansion and market penetration.',
+      },
+    } as Record<string, { name: string; description: string }>,
   },
 };
 

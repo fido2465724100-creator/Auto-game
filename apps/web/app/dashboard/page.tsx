@@ -34,7 +34,7 @@ export default function DashboardPage(): React.JSX.Element {
           <div className="mt-1 text-2xl font-bold text-emerald-800">
             ${company.cash.toLocaleString()}
           </div>
-          <span className="text-[11px] text-stone-500">Доступно на счетах</span>
+          <span className="text-[11px] text-stone-500">{t.dashboard.availableCashHint}</span>
         </div>
 
         {/* Capacity */}
@@ -43,7 +43,7 @@ export default function DashboardPage(): React.JSX.Element {
           <div className="mt-1 text-2xl font-bold text-amber-950">
             {company.productionCapacity} <span className="text-xs font-normal text-stone-600">{t.dashboard.unitsMonth}</span>
           </div>
-          <span className="text-[11px] text-stone-500">Лимит сборочных цехов</span>
+          <span className="text-[11px] text-stone-500">{t.dashboard.capacityHint}</span>
         </div>
 
         {/* Reputation */}
@@ -52,7 +52,7 @@ export default function DashboardPage(): React.JSX.Element {
           <div className="mt-1 text-2xl font-bold text-amber-800">
             ★ {company.reputation} <span className="text-xs font-normal text-stone-500">/ 100</span>
           </div>
-          <span className="text-[11px] text-stone-500">Престиж марки на рынках</span>
+          <span className="text-[11px] text-stone-500">{t.dashboard.reputationHint}</span>
         </div>
 
         {/* Active Research */}
@@ -61,7 +61,7 @@ export default function DashboardPage(): React.JSX.Element {
           <div className="mt-1 text-2xl font-bold text-stone-800">
             {gameState.activeResearch.length}
           </div>
-          <span className="text-[11px] text-stone-500">Проектов в лаборатории</span>
+          <span className="text-[11px] text-stone-500">{t.dashboard.researchHint}</span>
         </div>
       </div>
 
@@ -93,7 +93,7 @@ export default function DashboardPage(): React.JSX.Element {
             </div>
             <div>
               <span className="text-stone-500 block">{t.dashboard.carsSold}:</span>
-              <span className="font-bold text-amber-950 text-sm">{latestReport.unitsSold} авто</span>
+              <span className="font-bold text-amber-950 text-sm">{latestReport.unitsSold} {t.markets.units}</span>
             </div>
           </div>
         ) : (
@@ -113,7 +113,7 @@ export default function DashboardPage(): React.JSX.Element {
             href="/vehicle-design"
             className="text-xs font-bold text-amber-900 hover:underline"
           >
-            + Создать новую модель →
+            {t.dashboard.createModel}
           </Link>
         </div>
 
@@ -127,17 +127,17 @@ export default function DashboardPage(): React.JSX.Element {
                 </span>
               </div>
               <div className="flex justify-between text-stone-600">
-                <span>Себестоимость: ${model.productionCost}</span>
-                <span className="font-semibold text-stone-900">Цена: ${model.salePrice}</span>
+                <span>{t.dashboard.unitCostLabel}: ${model.productionCost}</span>
+                <span className="font-semibold text-stone-900">{t.dashboard.priceLabel}: ${model.salePrice}</span>
               </div>
               <div className="flex justify-between text-stone-700 font-semibold bg-stone-50 px-2 py-1 rounded">
                 <span>{t.production.plannedUnits}:</span>
-                <span className="text-amber-950">{gameState.productionPlan?.[model.id] ?? 0} авто/мес</span>
+                <span className="text-amber-950">{gameState.productionPlan?.[model.id] ?? 0} {t.dashboard.unitsMonth}</span>
               </div>
               <div className="flex justify-between text-stone-500 text-[11px] border-t border-stone-100 pt-1">
-                <span>Надежность: {model.stats.reliability}</span>
-                <span>Комфорт: {model.stats.comfort}</span>
-                <span>Скорость: {model.stats.performance}</span>
+                <span>{t.design.stats.reliability}: {model.stats.reliability}</span>
+                <span>{t.design.stats.comfort}: {model.stats.comfort}</span>
+                <span>{t.design.stats.performance}: {model.stats.performance}</span>
               </div>
             </div>
           ))}
