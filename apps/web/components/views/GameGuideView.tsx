@@ -32,41 +32,47 @@ const CHAPTERS: GuideChapter[] = [
   { id: 'eras', icon: '🎨', titleRu: '8. Эпохи и Стиль (1900–2026)', titleEn: '8. Eras & Materials' },
 ];
 
-export default function GameGuideView(): React.JSX.Element {
+interface Props {
+  isModal?: boolean;
+}
+
+export default function GameGuideView({ isModal = false }: Props): React.JSX.Element {
   const { lang } = useLanguage();
   const [activeChapter, setActiveChapter] = useState<GuideChapterId>('overview');
 
   return (
-    <div className="space-y-6">
-      {/* HEADER BANNER */}
-      <div className="rounded-xl border border-amber-900/30 bg-[var(--paper)] p-6 shadow-sm">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div className="space-y-1">
-            <div className="flex items-center gap-2">
-              <span className="text-2xl">📖</span>
-              <h2 className="font-serif text-2xl font-bold text-amber-950">
-                {lang === 'en' ? 'Industrialist Handbook & Game Guide' : 'Справочник промышленника и Руководство по игре'}
-              </h2>
+    <div className="space-y-4">
+      {/* HEADER BANNER (ONLY IN STANDALONE TAB) */}
+      {!isModal && (
+        <div className="rounded-xl border border-amber-900/30 bg-[var(--paper)] p-6 shadow-sm">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div className="space-y-1">
+              <div className="flex items-center gap-2">
+                <span className="text-2xl">📖</span>
+                <h2 className="font-serif text-2xl font-bold text-amber-950">
+                  {lang === 'en' ? 'Industrialist Handbook & Game Guide' : 'Справочник промышленника и Руководство по игре'}
+                </h2>
+              </div>
+              <p className="text-xs text-stone-600 font-serif">
+                {lang === 'en'
+                  ? 'Comprehensive manual for managing an automobile concern from 1900 to 2026'
+                  : 'Полный свод правил, формул и механик для успешного руководства автомобильным концерном (1900–2026 гг.)'}
+              </p>
             </div>
-            <p className="text-xs text-stone-600 font-serif">
-              {lang === 'en'
-                ? 'Comprehensive manual for managing an automobile concern from 1900 to 2026'
-                : 'Полный свод правил, формул и механик для успешного руководства автомобильным концерном (1900–2026 гг.)'}
-            </p>
-          </div>
 
-          <div className="flex items-center gap-2 text-xs font-mono bg-amber-100/70 border border-amber-800/20 px-3 py-1.5 rounded-lg text-amber-900 self-start md:self-auto">
-            <span>⏳ 504 хода</span>
-            <span>•</span>
-            <span>4 кв./год</span>
-            <span>•</span>
-            <span>126 лет эпохи</span>
+            <div className="flex items-center gap-2 text-xs font-mono bg-amber-100/70 border border-amber-800/20 px-3 py-1.5 rounded-lg text-amber-900 self-start md:self-auto">
+              <span>⏳ 504 хода</span>
+              <span>•</span>
+              <span>4 кв./год</span>
+              <span>•</span>
+              <span>126 лет эпохи</span>
+            </div>
           </div>
         </div>
-      </div>
+      )}
 
       {/* TWO COLUMNS: NAVIGATION (LEFT) & CONTENT (RIGHT) */}
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-4 sm:gap-6 items-start">
         {/* CHAPTERS MENU */}
         <aside className="md:col-span-4 rounded-xl border border-stone-300 bg-[var(--paper)] p-3 shadow-xs space-y-1">
           <span className="text-[10px] font-bold uppercase tracking-wider text-stone-500 px-3 py-1.5 block">
