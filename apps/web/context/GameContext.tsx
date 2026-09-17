@@ -1,7 +1,7 @@
 'use client';
 
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
-import type { GameState, VehicleModel, MaterialType } from '@ait/shared-types';
+import type { GameState, VehicleModel, MaterialType, CountryId, FounderPerk, BadgeDesign } from '@ait/shared-types';
 import { api } from '../lib/api';
 
 interface GameContextType {
@@ -9,6 +9,8 @@ interface GameContextType {
   loading: boolean;
   error: string | null;
   pendingEndTurn: boolean;
+  isSetupModalOpen: boolean;
+  setSetupModalOpen: (open: boolean) => void;
   refreshState: () => Promise<void>;
   endTurn: () => Promise<void>;
   takeLoan: (templateId: string) => Promise<void>;
@@ -19,6 +21,8 @@ interface GameContextType {
   buyMaterial: (materialId: MaterialType, amount: number) => Promise<void>;
   setAutoProcurement: (enabled: boolean) => Promise<void>;
   expandFactory: () => Promise<void>;
+  setupCompany: (dto: { name: string; country: CountryId; founderPerk: FounderPerk; badge: BadgeDesign }) => Promise<void>;
+  resetGame: (dto?: Partial<{ name: string; country: CountryId; founderPerk: FounderPerk; badge: BadgeDesign }>) => Promise<void>;
 }
 
 const GameContext = createContext<GameContextType>({
@@ -26,6 +30,8 @@ const GameContext = createContext<GameContextType>({
   loading: true,
   error: null,
   pendingEndTurn: false,
+  isSetupModalOpen: false,
+  setSetupModalOpen: () => {},
   refreshState: async () => {},
   endTurn: async () => {},
   takeLoan: async () => {},
@@ -36,6 +42,8 @@ const GameContext = createContext<GameContextType>({
   buyMaterial: async () => {},
   setAutoProcurement: async () => {},
   expandFactory: async () => {},
+  setupCompany: async () => {},
+  resetGame: async () => {},
 });
 
 export function GameProvider({ children }: { children: ReactNode }): React.JSX.Element {
@@ -43,6 +51,7 @@ export function GameProvider({ children }: { children: ReactNode }): React.JSX.E
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [pendingEndTurn, setPendingEndTurn] = useState(false);
+  const [isSetupModalOpen, setSetupModalOpen] = useState(false);
 
   const refreshState = async (): Promise<void> => {
     try {
@@ -113,6 +122,26 @@ export function GameProvider({ children }: { children: ReactNode }): React.JSX.E
     setGameState(updated);
   };
 
+  const setupCompany = async (dto: {
+    name: string;
+    country: CountryId;
+    founderPerk: FounderPerk;
+    badge: BadgeDesign;
+  }): Promise<void> => {
+    const updated = await api.setupCompany(dto);
+    setGameState(updated);
+  };
+
+  const resetGame = async (dto?: Partial<{
+    name: string;
+    country: CountryId;
+    founderPerk: FounderPerk;
+    badge: BadgeDesign;
+  }>): Promise<void> => {
+    const updated = await api.resetGame(dto);
+    setGameState(updated);
+  };
+
   return (
     <GameContext.Provider
       value={{
@@ -120,6 +149,8 @@ export function GameProvider({ children }: { children: ReactNode }): React.JSX.E
         loading,
         error,
         pendingEndTurn,
+        isSetupModalOpen,
+        setSetupModalOpen,
         refreshState,
         endTurn,
         takeLoan,
@@ -130,6 +161,8 @@ export function GameProvider({ children }: { children: ReactNode }): React.JSX.E
         buyMaterial,
         setAutoProcurement,
         expandFactory,
+        setupCompany,
+        resetGame,
       }}
     >
       {children}

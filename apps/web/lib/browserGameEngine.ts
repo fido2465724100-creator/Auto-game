@@ -1,5 +1,9 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { runEndTurn, LOAN_TEMPLATES, MATERIALS_CATALOG, calculateMaterialRequirements } from '@ait/game-engine';
+import {
+  runEndTurn,
+  LOAN_TEMPLATES,
+  MATERIALS_CATALOG,
+  calculateMaterialRequirements,
+} from '@ait/game-engine';
 import type {
   GameState,
   Region,
@@ -26,7 +30,9 @@ import {
   vehicleComponentSeed,
   competitorsSeed,
   competitorMilestonesSeed,
-} from '../../../../data';
+} from '@ait/data';
+
+const STORAGE_KEY = 'ait_autogame_save_v1';
 
 function createInitialGameState(setup?: {
   name?: string;
@@ -131,17 +137,60 @@ function createInitialGameState(setup?: {
   };
 }
 
-@Injectable()
-export class GameService {
+class BrowserGameEngineClass {
   private readonly regions: Region[] = regionsSeed;
   private readonly technologies: Technology[] = technologies1900to1915Seed;
   private readonly events: HistoricalEvent[] = eventsSeed;
+  private gameState: GameState | null = null;
 
-  private gameState: GameState = createInitialGameState();
+  private loadFromStorage(): GameState {
+    if (typeof window === 'undefined') {
+      return createInitialGameState();
+    }
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw) as GameState;
+        if (parsed && parsed.date && parsed.company) {
+          return parsed;
+        }
+      }
+    } catch {
+      // Ignore storage read error
+    }
+    const initial = createInitialGameState();
+    this.saveToStorage(initial);
+    return initial;
+  }
+
+  private saveToStorage(state: GameState): void {
+    if (typeof window === 'undefined') return;
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    } catch {
+      // Ignore storage write error
+    }
+  }
+
+  private getState(): GameState {
+    if (!this.gameState) {
+      this.gameState = this.loadFromStorage();
+    }
+    return this.gameState;
+  }
+
+  private updateState(updater: (prev: GameState) => GameState): GameState {
+    const prev = this.getState();
+    const next = updater(prev);
+    this.gameState = next;
+    this.saveToStorage(next);
+    return next;
+  }
 
   getGameState(): GameState {
-    if (this.gameState.company.cash < 0) {
-      const deficit = -this.gameState.company.cash;
+    const current = this.getState();
+    if (current.company.cash < 0) {
+      const deficit = -current.company.cash;
       const loanAmount = Math.ceil((deficit + 1000) / 1000) * 1000;
       const overdraftLoan: BankLoan = {
         id: `overdraft-heal-${Date.now().toString().slice(-4)}`,
@@ -153,34 +202,33 @@ export class GameService {
         remainingMonths: 12,
         totalMonths: 12,
       };
-      const currentLoans = this.gameState.company.loans ?? [];
-      this.gameState = {
-        ...this.gameState,
+      const currentLoans = current.company.loans ?? [];
+      return this.updateState((s) => ({
+        ...s,
         company: {
-          ...this.gameState.company,
-          cash: this.gameState.company.cash + loanAmount,
+          ...s.company,
+          cash: s.company.cash + loanAmount,
           loans: [...currentLoans, overdraftLoan],
         },
-      };
+      }));
     }
-    return this.gameState;
+    return current;
   }
 
   getTechnologies(): Array<Technology & { status: 'locked' | 'available' | 'researching' | 'completed' }> {
-    const researchingIds = new Set(this.gameState.activeResearch.map((item) => item.technologyId));
-    const unlockedIds = new Set(this.gameState.unlockedTechnologyIds);
+    const state = this.getState();
+    const researchingIds = new Set(state.activeResearch.map((item) => item.technologyId));
+    const unlockedIds = new Set(state.unlockedTechnologyIds);
 
     return this.technologies.map((tech) => {
       if (unlockedIds.has(tech.id)) {
         return { ...tech, status: 'completed' as const };
       }
-
       if (researchingIds.has(tech.id)) {
         return { ...tech, status: 'researching' as const };
       }
-
       const available =
-        this.gameState.date.year >= tech.yearAvailable &&
+        state.date.year >= tech.yearAvailable &&
         tech.prerequisites.every((id) => unlockedIds.has(id));
 
       return { ...tech, status: available ? ('available' as const) : ('locked' as const) };
@@ -189,17 +237,11 @@ export class GameService {
 
   startResearch(technologyId: string, allocatedBudget: number): GameState {
     const tech = this.technologies.find((item) => item.id === technologyId);
-    if (!tech) {
-      throw new NotFoundException(`Technology ${technologyId} not found`);
-    }
+    if (!tech) return this.getState();
 
-    if (this.gameState.unlockedTechnologyIds.includes(technologyId)) {
-      return this.gameState;
-    }
-
-    if (this.gameState.activeResearch.some((item) => item.technologyId === technologyId)) {
-      return this.gameState;
-    }
+    const state = this.getState();
+    if (state.unlockedTechnologyIds.includes(technologyId)) return state;
+    if (state.activeResearch.some((item) => item.technologyId === technologyId)) return state;
 
     const project: ResearchProject = {
       id: `rp-${technologyId}`,
@@ -210,21 +252,20 @@ export class GameService {
       isCompleted: false,
     };
 
-    this.gameState = {
-      ...this.gameState,
-      activeResearch: [...this.gameState.activeResearch, project],
-    };
-
-    return this.gameState;
+    return this.updateState((s) => ({
+      ...s,
+      activeResearch: [...s.activeResearch, project],
+    }));
   }
 
   saveVehicleModel(model: VehicleModel): GameState {
-    const existingIndex = this.gameState.vehicleModels.findIndex((item) => item.id === model.id);
-    const vehicleModels = [...this.gameState.vehicleModels];
+    const state = this.getState();
+    const existingIndex = state.vehicleModels.findIndex((item) => item.id === model.id);
+    const vehicleModels = [...state.vehicleModels];
 
     const materialsRequired =
       model.materialsRequired ??
-      calculateMaterialRequirements(model.targetSegment, model.components, this.gameState.date.year);
+      calculateMaterialRequirements(model.targetSegment, model.components, state.date.year);
 
     const modelWithMaterials: VehicleModel = {
       ...model,
@@ -237,25 +278,21 @@ export class GameService {
       vehicleModels.push(modelWithMaterials);
     }
 
-    this.gameState = {
-      ...this.gameState,
+    return this.updateState((s) => ({
+      ...s,
       vehicleModels,
       productionPlan: {
-        ...this.gameState.productionPlan,
-        [model.id]: this.gameState.productionPlan[model.id] ?? 0,
+        ...s.productionPlan,
+        [model.id]: s.productionPlan[model.id] ?? 0,
       },
-    };
-
-    return this.gameState;
+    }));
   }
 
   updateProductionPlan(productionPlan: Record<string, number>): GameState {
-    this.gameState = {
-      ...this.gameState,
+    return this.updateState((s) => ({
+      ...s,
       productionPlan,
-    };
-
-    return this.gameState;
+    }));
   }
 
   getRegions(): Region[] {
@@ -263,7 +300,8 @@ export class GameService {
   }
 
   getVehicleComponents(): VehicleComponentWithStatus[] {
-    const unlockedIds = new Set(this.gameState.unlockedTechnologyIds);
+    const state = this.getState();
+    const unlockedIds = new Set(state.unlockedTechnologyIds);
     return vehicleComponentSeed.map((comp) => ({
       ...comp,
       isUnlocked: !comp.requiredTechnologyId || unlockedIds.has(comp.requiredTechnologyId),
@@ -276,9 +314,7 @@ export class GameService {
 
   takeLoan(templateId: string): GameState {
     const template = LOAN_TEMPLATES.find((t) => t.id === templateId);
-    if (!template) {
-      throw new NotFoundException(`Loan template ${templateId} not found`);
-    }
+    if (!template) return this.getState();
 
     const newLoan: BankLoan = {
       id: `loan-${template.id}-${Date.now().toString().slice(-4)}`,
@@ -291,117 +327,103 @@ export class GameService {
       totalMonths: template.durationMonths,
     };
 
-    const currentLoans = this.gameState.company.loans ?? [];
-    this.gameState = {
-      ...this.gameState,
-      company: {
-        ...this.gameState.company,
-        cash: this.gameState.company.cash + template.amount,
-        loans: [...currentLoans, newLoan],
-      },
-    };
-
-    return this.gameState;
+    return this.updateState((s) => {
+      const currentLoans = s.company.loans ?? [];
+      return {
+        ...s,
+        company: {
+          ...s.company,
+          cash: s.company.cash + template.amount,
+          loans: [...currentLoans, newLoan],
+        },
+      };
+    });
   }
 
   repayLoan(loanId: string): GameState {
-    const currentLoans = this.gameState.company.loans ?? [];
+    const state = this.getState();
+    const currentLoans = state.company.loans ?? [];
     const loan = currentLoans.find((l) => l.id === loanId);
-    if (!loan) {
-      throw new NotFoundException(`Loan ${loanId} not found`);
-    }
+    if (!loan || state.company.cash < loan.remainingPrincipal) return state;
 
-    if (this.gameState.company.cash < loan.remainingPrincipal) {
-      return this.gameState;
-    }
-
-    this.gameState = {
-      ...this.gameState,
+    return this.updateState((s) => ({
+      ...s,
       company: {
-        ...this.gameState.company,
-        cash: this.gameState.company.cash - loan.remainingPrincipal,
+        ...s.company,
+        cash: s.company.cash - loan.remainingPrincipal,
         loans: currentLoans.filter((l) => l.id !== loanId),
       },
-    };
-
-    return this.gameState;
+    }));
   }
 
   getMaterialsMarket(): MaterialMarketItem[] {
-    const currentYear = this.gameState.date.year;
+    const currentYear = this.getState().date.year;
     return MATERIALS_CATALOG.filter((item) => item.yearAvailable <= currentYear);
   }
 
   buyMaterial(materialId: MaterialType, amount: number): GameState {
     const item = MATERIALS_CATALOG.find((m) => m.id === materialId);
-    if (!item) {
-      throw new NotFoundException(`Material ${materialId} not found`);
-    }
-    if (amount <= 0) return this.gameState;
+    if (!item || amount <= 0) return this.getState();
 
     const totalCost = item.basePrice * amount;
-    if (this.gameState.company.cash < totalCost) {
-      return this.gameState;
-    }
+    const state = this.getState();
+    if (state.company.cash < totalCost) return state;
 
-    const currentInventory = this.gameState.company.inventoryMaterials ?? {
-      steel: 0,
-      wood: 0,
-      rubber: 0,
-      leather: 0,
-      aluminum: 0,
-      plastic: 0,
-    };
-
-    this.gameState = {
-      ...this.gameState,
-      company: {
-        ...this.gameState.company,
-        cash: this.gameState.company.cash - totalCost,
-        inventoryMaterials: {
-          ...currentInventory,
-          [materialId]: (currentInventory[materialId] ?? 0) + amount,
+    return this.updateState((s) => {
+      const currentInventory = s.company.inventoryMaterials ?? {
+        steel: 0,
+        wood: 0,
+        rubber: 0,
+        leather: 0,
+        aluminum: 0,
+        plastic: 0,
+      };
+      return {
+        ...s,
+        company: {
+          ...s.company,
+          cash: s.company.cash - totalCost,
+          inventoryMaterials: {
+            ...currentInventory,
+            [materialId]: (currentInventory[materialId] ?? 0) + amount,
+          },
         },
-      },
-    };
-
-    return this.gameState;
+      };
+    });
   }
 
-  toggleAutoProcurement(enabled: boolean): GameState {
-    this.gameState = {
-      ...this.gameState,
+  setAutoProcurement(enabled: boolean): GameState {
+    return this.updateState((s) => ({
+      ...s,
       company: {
-        ...this.gameState.company,
+        ...s.company,
         autoProcurement: enabled,
       },
-    };
-    return this.gameState;
+    }));
   }
 
   expandFactory(): GameState {
-    const factory = this.gameState.company.factory ?? {
+    const state = this.getState();
+    const factory = state.company.factory ?? {
       name: 'Кустарная мануфактура №1',
       level: 1,
-      capacity: this.gameState.company.productionCapacity,
+      capacity: state.company.productionCapacity,
       monthlyOverhead: 200,
       upgradeCost: 6_000,
     };
 
-    if (this.gameState.company.cash < factory.upgradeCost) {
-      return this.gameState;
-    }
+    if (state.company.cash < factory.upgradeCost) return state;
 
     const newLevel = factory.level + 1;
-    const newCapacity = factory.capacity + 4; // handcrafted expansion (+4 cars/quarter)
+    const newCapacity = factory.capacity + 4;
     const newOverhead = factory.monthlyOverhead + 150;
     const nextUpgradeCost = Math.round(factory.upgradeCost * 1.6);
 
-    this.gameState = {
-      ...this.gameState,
+    return this.updateState((s) => ({
+      ...s,
       company: {
-        ...this.gameState.company,
-        cash: this.gameState.company.cash - factory.upgradeCost,
+        ...s.company,
+        cash: s.company.cash - factory.upgradeCost,
         productionCapacity: newCapacity,
         factory: {
           ...factory,
@@ -411,9 +433,7 @@ export class GameService {
           upgradeCost: nextUpgradeCost,
         },
       },
-    };
-
-    return this.gameState;
+    }));
   }
 
   setupCompany(dto: {
@@ -427,24 +447,24 @@ export class GameService {
         ? { 'north-america': 0.25, europe: 0.02, 'middle-east': 0.01 }
         : { europe: 0.25, 'north-america': 0.02, 'middle-east': 0.01 };
 
-    this.gameState = {
-      ...this.gameState,
+    return this.updateState((s) => ({
+      ...s,
       company: {
-        ...this.gameState.company,
+        ...s.company,
         name: dto.name,
         country: dto.country,
         founderPerk: dto.founderPerk,
         badge: dto.badge,
         marketPresence: regionPresence,
       },
-    };
-    return this.gameState;
+    }));
   }
 
   getCompetitors(): { competitors: Competitor[]; milestones: CompetitorMilestone[] } {
+    const state = this.getState();
     return {
-      competitors: this.gameState.competitors ?? competitorsSeed,
-      milestones: this.gameState.competitorMilestones ?? competitorMilestonesSeed,
+      competitors: state.competitors ?? competitorsSeed,
+      milestones: state.competitorMilestones ?? competitorMilestonesSeed,
     };
   }
 
@@ -454,21 +474,27 @@ export class GameService {
     founderPerk?: FounderPerk;
     badge?: BadgeDesign;
   }): GameState {
-    this.gameState = createInitialGameState(dto);
-    return this.gameState;
+    const newState = createInitialGameState(dto);
+    this.gameState = newState;
+    this.saveToStorage(newState);
+    return newState;
   }
 
   endTurn(): GameState {
+    const state = this.getState();
     const output = runEndTurn({
-      gameState: this.gameState,
+      gameState: state,
       regions: this.regions,
       technologies: this.technologies,
       events: this.events,
-      ...(this.gameState.competitors ? { competitors: this.gameState.competitors } : {}),
-      ...(this.gameState.competitorMilestones ? { competitorMilestones: this.gameState.competitorMilestones } : {}),
+      ...(state.competitors ? { competitors: state.competitors } : {}),
+      ...(state.competitorMilestones ? { competitorMilestones: state.competitorMilestones } : {}),
     });
 
     this.gameState = output.gameState;
+    this.saveToStorage(output.gameState);
     return this.gameState;
   }
 }
+
+export const browserGameEngine = new BrowserGameEngineClass();

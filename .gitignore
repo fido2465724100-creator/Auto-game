@@ -5,3 +5,5 @@ dist
 coverage
 .keys/
 *.tsbuildinfo
+out
+

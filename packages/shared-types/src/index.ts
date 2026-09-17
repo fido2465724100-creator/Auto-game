@@ -1,4 +1,45 @@
 export type RegionId = 'north-america' | 'europe' | 'middle-east';
+export type CountryId = 'usa' | 'germany' | 'france' | 'uk';
+export type FounderPerk = 'mechanic' | 'merchant' | 'coachbuilder';
+export type PowertrainType = 'ice' | 'steam' | 'electric';
+export type FuelType = 'gasoline' | 'ethanol_blend' | 'steam_fuel' | 'electricity';
+
+export interface BadgeDesign {
+  icon: string;
+  color: string;
+  shape: string;
+}
+
+export interface CompetitorModel {
+  name: string;
+  segment: VehicleSegment;
+  price: number;
+  appeal: number;
+  releaseYear: number;
+  releaseQuarter: 1 | 2 | 3 | 4;
+}
+
+export interface Competitor {
+  id: string;
+  name: string;
+  country: CountryId;
+  reputation: number;
+  marketShares: Record<RegionId, number>;
+  activeModels: CompetitorModel[];
+  description: string;
+}
+
+export interface CompetitorMilestone {
+  year: number;
+  quarter: 1 | 2 | 3 | 4;
+  competitorId: string;
+  title: string;
+  description: string;
+  priceDropSegment?: VehicleSegment;
+  priceDropAmount?: number;
+  marketShareGain?: number;
+}
+
 export type TechnologyCategory =
   | 'engine'
   | 'chassis'
@@ -20,6 +61,8 @@ export interface VehicleComponentOption {
   statModifiers: Partial<VehicleStats>;
   costModifier: number;
   requiredTechnologyId?: string;
+  powertrainType?: PowertrainType;
+  fuelType?: FuelType;
 }
 
 export interface VehicleComponentWithStatus extends VehicleComponentOption {
@@ -69,6 +112,9 @@ export interface FactoryInfo {
 export interface Company {
   id: string;
   name: string;
+  country?: CountryId;
+  founderPerk?: FounderPerk;
+  badge?: BadgeDesign;
   cash: number;
   reputation: number;
   productionCapacity: number;
@@ -82,7 +128,8 @@ export interface Company {
 
 export interface GameDate {
   year: number;
-  month: number;
+  quarter: 1 | 2 | 3 | 4;
+  month?: number;
 }
 
 export interface TechnologyEffect {
@@ -199,12 +246,15 @@ export interface MonthlyReport {
   reputationChange: number;
   loanPayments?: number;
   eventNotes: string[];
+  competitorNews?: string[];
   salesByRegion: Record<RegionId, number>;
   materialsConsumed?: Partial<Record<MaterialType, number>>;
   materialExpenses?: number;
   capacityUsed?: number;
   shortageOccurred?: boolean;
 }
+
+export type QuarterlyReport = MonthlyReport;
 
 export interface GameState {
   id: string;
@@ -215,6 +265,8 @@ export interface GameState {
   vehicleModels: VehicleModel[];
   productionPlan: Record<string, number>;
   reportHistory: MonthlyReport[];
+  competitors?: Competitor[];
+  competitorMilestones?: CompetitorMilestone[];
 }
 
 export interface EndTurnInput {
@@ -222,6 +274,8 @@ export interface EndTurnInput {
   regions: Region[];
   technologies: Technology[];
   events: HistoricalEvent[];
+  competitors?: Competitor[];
+  competitorMilestones?: CompetitorMilestone[];
 }
 
 export interface EndTurnOutput {

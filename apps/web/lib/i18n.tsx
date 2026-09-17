@@ -42,6 +42,8 @@ export const DICTIONARY = {
     // Timeline & Topbar
     topbar: {
       year: 'Год',
+      quarter: 'Квартал',
+      quarters: ['I кв.', 'II кв.', 'III кв.', 'IV кв.'],
       month: 'Месяц',
       months: [
         'Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь',
@@ -51,10 +53,83 @@ export const DICTIONARY = {
       eraMassProduction: 'Эра конвейера (1915–1929)',
       eraModern: 'Современная эра',
       cash: 'Капитал',
-      lastProfit: 'Прибыль за месяц',
+      lastProfit: 'Прибыль за квартал',
       reputation: 'Репутация',
-      endTurn: 'Завершить месяц',
+      endTurn: 'Завершить квартал',
       simulating: 'Симуляция...',
+      turnProgress: 'Ход {turn} из 504 (1900–2026)',
+      setupCompanyBtn: 'Паспорт марки',
+      unitsQuarter: 'авто/кв.',
+    },
+
+    // Countries
+    countries: {
+      usa: { name: 'США', flag: '🇺🇸', description: 'Гигантский емкий рынок, акцент на практичность, взаимозаменяемые детали и массовый тираж.' },
+      germany: { name: 'Германия', flag: '🇩🇪', description: 'Родина автомобиля (Бенц и Даймлер), передовое машиностроение и высокая инженерная культура.' },
+      france: { name: 'Франция', flag: '🇫🇷', description: 'Мировая столица ранних автогонок, изящные каретные кузова и смелые технологические инновации.' },
+      uk: { name: 'Великобритания', flag: '🇬🇧', description: 'Метрополия Британской империи, вековые традиции мастерства и выносливые рессорные шасси.' },
+    },
+
+    // Founder Perks
+    founderPerks: {
+      mechanic: {
+        name: 'Талантливый механик',
+        badge: '🔧 Инженерия',
+        description: '+15% к базовой надежности всех создаваемых машин; +1 мес. ускорения к разработке двигателей и шасси.',
+      },
+      merchant: {
+        name: 'Опытный купец',
+        badge: '💰 Торговля',
+        description: '-15% скидка на оптовую закупку сырья на бирже; +10% к торговой маржинальности от розничных продаж авто.',
+      },
+      coachbuilder: {
+        name: 'Потомственный каретник',
+        badge: '👑 Престиж',
+        description: '+15% к комфорту и престижу создаваемых кузовов; -25% экономия расхода древесины и кожи на фабрике.',
+      },
+    },
+
+    // Powertrains & Fuels
+    powertrains: {
+      all: 'Все типы тяги',
+      ice: 'ДВС (Бензин / Спирт)',
+      steam: 'Паровая тяга 💨',
+      electric: 'Электропривод ⚡',
+    },
+    fuels: {
+      gasoline: 'Бензин',
+      ethanol_blend: 'Спиртовая смесь (Этанол)',
+      steam_fuel: 'Уголь и вода (Пар)',
+      electricity: 'Электроэнергия (АКБ)',
+    },
+    crankWarning: '⚠️ Ручная заводная рукоятка: опасность травмы кисти при отдаче, -10 к комфорту (до электростартера Кеттеринга 1912 г.)',
+
+    // Company Setup
+    companySetup: {
+      title: 'Основание автомобильной компании (1900 год)',
+      subtitle: 'Заложите основы автомобильной империи на заре XX века: выберите страну, геральдический шильдик и стартовое призвание.',
+      nameLabel: 'Название марки / завода',
+      namePlaceholder: 'Например: Detroit Motor Carriage',
+      countryLabel: 'Страна основания и мануфактуры',
+      perkLabel: 'Специализация основателя предприятия',
+      badgeLabel: 'Шильдик и геральдическая эмблема',
+      badgeColor: 'Цвет шильдика',
+      badgeShape: 'Форма шильдика',
+      badgeIcon: 'Геральдический символ',
+      submitBtn: 'Основать компанию и начать игру (1900 Q1)',
+      reconfigureBtn: 'Паспорт и геральдика марки',
+    },
+
+    // Competitors
+    competitors: {
+      title: 'Мировые автопроизводители и ориентиры',
+      subtitle: 'Исторические концерны, их рыночные доли, модели и поворотные моменты в индустрии.',
+      marketShare: 'Доля рынка в регионе',
+      activeModels: 'Модельный ряд конкурента',
+      milestonesTitle: 'Исторические вехи и потрясения рынка',
+      speedBenchmark: 'Эталон сегмента',
+      price: 'Цена',
+      appeal: 'Привлекательность',
     },
 
     // Dashboard
@@ -62,14 +137,14 @@ export const DICTIONARY = {
       title: 'Кабинет генерального директора',
       companyStats: 'Сводные показатели компании',
       capacity: 'Мощность завода',
-      unitsMonth: 'авто/мес',
+      unitsMonth: 'авто/кв.',
       activeResearchCount: 'Текущих разработок',
-      latestReport: 'Финансовый итог прошлого месяца',
+      latestReport: 'Финансовый итог прошлого квартала',
       revenue: 'Выручка',
       expenses: 'Расходы',
       profit: 'Чистая прибыль',
       carsSold: 'Продано автомобилей',
-      noReport: 'Первый месяц еще не завершен. Нажмите «Завершить месяц» вверху.',
+      noReport: 'Первый квартал еще не завершен. Нажмите «Завершить квартал» вверху.',
       activeModelsSummary: 'Автомобили на конвейере',
       quickNav: 'Быстрый переход',
       availableCashHint: 'Доступно на счетах',
@@ -114,10 +189,10 @@ export const DICTIONARY = {
       step2: '2. Выбор узлов и агрегатов',
       requiresTech: 'Требуется технология',
       step3: '3. Производственная квота и запуск',
-      initialQuotaLabel: 'План выпуска новой модели в месяц',
-      initialQuotaHint: 'Укажите, сколько машин этой модели фабрика будет собирать каждый месяц (квоту можно менять в разделе «Заводы и производство»).',
+      initialQuotaLabel: 'План выпуска новой модели в квартал',
+      initialQuotaHint: 'Укажите, сколько машин этой модели мастерская будет собирать каждый квартал (квоту можно менять в разделе «Заводы и производство»).',
       availableCapacity: 'Доступная мощность завода',
-      unitsMonth: 'авто/мес',
+      unitsMonth: 'авто/кв.',
       submitBtn: 'Утвердить и запустить модель в производство',
       savingBtn: 'Сохранение модели и постановка на конвейер...',
       successMsg: 'Модель успешно спроектирована и поставлена на сборочную линию!',
@@ -155,16 +230,16 @@ export const DICTIONARY = {
       subtitle: 'Управление мануфактурами, распределение линий сборки и снабжение материалами.',
       factoryTitle: 'Текущий автозавод',
       level: 'Уровень цеха',
-      capacity: 'Месячная мощность',
+      capacity: 'Квартальная мощность',
       capacityUsed: 'Загрузка линий',
-      overheadMonthly: 'Содержание завода',
-      expandBtn: 'Расширить завод (+60 авто/мес)',
+      overheadMonthly: 'Содержание завода в квартал',
+      expandBtn: 'Расширить завод (+4 авто/кв.)',
       upgradeCost: 'Стоимость расширения',
       insufficientFunds: 'Недостаточно капитала для расширения завода!',
       plantExpanded: 'Завод успешно расширен! Мощность увеличена.',
       linesTitle: 'Распределение производственных линий',
       noModels: 'Нет спроектированных автомобилей. Сначала создайте модель в Конструкторе авто.',
-      plannedUnits: 'План выпуска (авто/мес)',
+      plannedUnits: 'План выпуска (авто/кв.)',
       savePlanBtn: 'Сохранить план производства',
       planSaved: 'План производства успешно утвержден!',
       costPerUnit: 'Себестоимость сборки',
@@ -175,13 +250,13 @@ export const DICTIONARY = {
       autoProcurementHint: 'При нехватке материалов завод автоматически докупит недостающее сырье с биржи перед выпуском.',
       inStock: 'В наличии на складе',
       marketPrice: 'Цена закупки',
-      needNextMonth: 'Потребность под план',
+      needNextMonth: 'Потребность на квартал',
       buyBatchBtn: 'Купить партию',
       shortageAlert: 'Внимание! На складе недостаточно материалов для выполнения плана. Выпуск будет ограничен, если не включить автозакупку или не докупить сырье!',
       shortageHint: 'Для стабильного выпуска рекомендуется включить автоматическое снабжение Just-In-Time на складе ниже.',
       overCapacityWarning: 'Суммарный план выпуска превышает лимит цехов завода! Выпуск будет урезан до максимума мощности.',
       historicalPlantSubtitle: 'Историческая мануфактура сборки экипажей и безлошадных повозок',
-      planSubtitle: 'Назначение месячных объемов производства для моделей на сборочных постах',
+      planSubtitle: 'Назначение квартальных объемов производства для моделей на сборочных постах',
       warehouseSubtitle: 'Запасы сырья на складе мануфактуры и закупки на сырьевой бирже',
       insufficientFundsBatch: 'Недостаточно средств для покупки партии!',
       materialBought: 'Материалы успешно закуплены и поступили на склад!',
@@ -250,9 +325,9 @@ export const DICTIONARY = {
 
     // Reports
     reports: {
-      title: 'Архив ежемесячных отчетов',
+      title: 'Архив ежеквартальных отчетов',
       subtitle: 'История финансовой динамики и производственных результатов компании.',
-      noReports: 'Отчетов пока нет. Завершите первый рабочий месяц.',
+      noReports: 'Отчетов пока нет. Завершите первый квартал.',
       produced: 'Произведено',
       sold: 'Продано',
       revenue: 'Выручка',
@@ -260,6 +335,7 @@ export const DICTIONARY = {
       profit: 'Чистая прибыль',
       loansPaid: 'Выплаты по кредитам',
       salesByRegion: 'Продажи по регионам:',
+      competitorNews: 'Сводки конкурентов и рынка:',
     },
 
     // Technologies
@@ -267,6 +343,18 @@ export const DICTIONARY = {
       'standardized-steering-wheel': {
         name: 'Стандартизированное рулевое колесо',
         description: 'Повышает управляемость и уверенность водителя.',
+      },
+      'steam-condenser': {
+        name: 'Паровой конденсатор замкнутого цикла',
+        description: 'Позволяет повторно использовать воду, увеличивая запас хода паромобиля без частой дозаправки.',
+      },
+      'ethanol-carburetor': {
+        name: 'Двухтопливный спиртовой карбюратор',
+        description: 'Позволяет двигателю работать на домашнем спирте/этаноле фермерских регионов до введения Сухого закона.',
+      },
+      'edison-nickel-iron-battery': {
+        name: 'Никель-железный аккумулятор Эдисона',
+        description: 'Долговечные щелочные батареи повышенной емкости для тихих и чистых ранних электромобилей.',
       },
       'mechanical-brake-upgrade': {
         name: 'Модернизация механических тормозов',
@@ -285,8 +373,8 @@ export const DICTIONARY = {
         description: 'Публикации в газетах повышают узнаваемость марки.',
       },
       'electric-starter': {
-        name: 'Электрический стартер',
-        description: 'Избавляет от необходимости заводить двигатель вручную рукояткой.',
+        name: 'Электрический стартер Кеттеринга (1912)',
+        description: 'Исторический прорыв: запуск ключом без опасной рукоятки, окончательно вытеснивший пар и электрокары.',
       },
       'basic-assembly-line': {
         name: 'Ранний сборочный конвейер',
@@ -312,6 +400,30 @@ export const DICTIONARY = {
         name: 'Управленческий бухгалтерский учет',
         description: 'Точный учет издержек снижает финансовые потери предприятия.',
       },
+      'ford-moving-assembly-line': {
+        name: 'Движущийся сборочный конвейер',
+        description: 'Поточная сборка на движущихся лентах сокращает время сборки шасси с 12 часов до 93 минут.',
+      },
+      'all-steel-closed-body': {
+        name: 'Цельнометаллический закрытый кузов',
+        description: 'Штампованный стальной кузов устраняет гниение деревянного каркаса и защищает при авариях.',
+      },
+      'inline-4-monobloc-engine': {
+        name: 'Рядный 4-цилиндровый двигатель-моноблок',
+        description: 'Отливка цилиндров в едином блоке повышает жесткость и снижает себестоимость мотора.',
+      },
+      'four-wheel-hydraulic-brakes': {
+        name: 'Четырехколесные гидравлические тормоза',
+        description: 'Одновременное гидравлическое давление обеспечивает равное тормозное усилие на всех четырех колесах.',
+      },
+      'safety-laminated-glass': {
+        name: 'Безопасное многослойное стекло (Триплекс)',
+        description: 'Прослойка целлулоида предотвращает разлет осколков лобового стекла при ударе.',
+      },
+      'luxury-v8-overhead-valve': {
+        name: 'Престижный двигатель V8 с верхними клапанами',
+        description: 'Плавная и бесшумная мощь мотора V8 знаменует золотой век представительских автомобилей.',
+      },
     } as Record<string, { name: string; description: string }>,
 
     // Vehicle Components
@@ -319,18 +431,29 @@ export const DICTIONARY = {
       'ladder-frame': 'Лестничная рама (базовая)',
       'touring-frame': 'Туринговая лонжеронная рама',
       'reinforced-suspension-frame': 'Рама с усиленной рессорной подвеской',
-      'single-cylinder': 'Одноцилиндровый двигатель (6 л.с.)',
+      'reinforced-suspension': 'Усиленная эллиптическая подвеска',
+      'single-cylinder': 'Одноцилиндровый ДВС (6 л.с., пуск рукояткой)',
+      'steam-compound-twin': 'Двухцилиндровая паровая машина Компаунд (15 л.с.)',
+      'electric-traction-dc': 'Тяговый электромотор постоянного тока (10 л.с.)',
+      'ethanol-dual-engine': 'Двухтопливный ДВС Спирт/Бензин (8 л.с.)',
       'inline-four': 'Рядный четырехцилиндровый мотор (20 л.с.)',
       'electric-start-v4': 'Мотор V4 с электростартером (35 л.с.)',
       'band-brakes': 'Механические ленточные тормоза',
       'drum-brakes': 'Усиленные барабанные тормоза',
       'hydraulic-prototype-brakes': 'Прототип гидравлических тормозов',
       'open-runabout': 'Открытый кузов «Ранэбаут»',
-      'basic-cabin': 'Деревянная каретная кабина',
+      'basic-cabin': 'Простая каретная кабина',
+      'wooden-cabin': 'Качественная каретная кабина из дерева',
+      'luxury-cabin': 'Роскошный каретный салон с велюром и лаком',
       'enclosed-limousine-cabin': 'Закрытый кузов «Лимузин»',
       'package-none': 'Базовая комплектация (без пакета)',
       'weather-package': 'Всепогодный пакет (дворники и тент)',
       'touring-rally-kit': 'Туристический комплект надежности',
+      'all-steel-body': 'Штампованный стальной кузов (закрытый)',
+      'inline-4-monobloc': 'Рядный 4-цилиндровый двигатель-моноблок (24 л.с.)',
+      'luxury-v8-ohv': 'Престижный двигатель V8 с верхними клапанами (65 л.с.)',
+      'four-wheel-hydraulic': 'Четырехколесные гидравлические тормоза',
+      'triplex-safety-package': 'Пакет безопасности (триплекс-стекло)',
     } as Record<string, string>,
 
     // Bank Loans
@@ -387,6 +510,8 @@ export const DICTIONARY = {
     // Timeline & Topbar
     topbar: {
       year: 'Year',
+      quarter: 'Quarter',
+      quarters: ['Q1', 'Q2', 'Q3', 'Q4'],
       month: 'Month',
       months: [
         'January', 'February', 'March', 'April', 'May', 'June',
@@ -396,10 +521,83 @@ export const DICTIONARY = {
       eraMassProduction: 'Assembly Line Era (1915–1929)',
       eraModern: 'Modern Era',
       cash: 'Capital',
-      lastProfit: 'Monthly Profit',
+      lastProfit: 'Quarterly Profit',
       reputation: 'Reputation',
-      endTurn: 'End Month',
+      endTurn: 'End Quarter',
       simulating: 'Simulating...',
+      turnProgress: 'Turn {turn} of 504 (1900–2026)',
+      setupCompanyBtn: 'Brand Passport',
+      unitsQuarter: 'cars/qtr',
+    },
+
+    // Countries
+    countries: {
+      usa: { name: 'USA', flag: '🇺🇸', description: 'Vast rapidly expanding domestic market, focus on practicality, interchangeable parts, and mass production.' },
+      germany: { name: 'Germany', flag: '🇩🇪', description: 'Birthplace of the automobile (Benz & Daimler), precision mechanical engineering, and prestige heritage.' },
+      france: { name: 'France', flag: '🇫🇷', description: 'Early motor racing capital of the world, bespoke coachwork ateliers, and bold design innovation.' },
+      uk: { name: 'United Kingdom', flag: '🇬🇧', description: 'Metropole of the British Empire, storied coachbuilding tradition, and rugged leaf-spring chassis.' },
+    },
+
+    // Founder Perks
+    founderPerks: {
+      mechanic: {
+        name: 'Master Mechanic',
+        badge: '🔧 Engineering',
+        description: '+15% base reliability on all engineered cars; +1 month speed bonus on engine and chassis R&D projects.',
+      },
+      merchant: {
+        name: 'Resourceful Merchant',
+        badge: '💰 Commerce',
+        description: '-15% wholesale discount on all market materials; +10% trading profit margin on car sales revenue.',
+      },
+      coachbuilder: {
+        name: 'Hereditary Coachbuilder',
+        badge: '👑 Prestige',
+        description: '+15% comfort and prestige bonus on vehicle bodies; -25% savings on wood and leather materials.',
+      },
+    },
+
+    // Powertrains & Fuels
+    powertrains: {
+      all: 'All Powertrains',
+      ice: 'ICE (Gas / Ethanol)',
+      steam: 'Steam Engine 💨',
+      electric: 'Electric Traction ⚡',
+    },
+    fuels: {
+      gasoline: 'Gasoline',
+      ethanol_blend: 'Ethanol Blend (Alcohol)',
+      steam_fuel: 'Coal & Water (Steam)',
+      electricity: 'Storage Battery (EV)',
+    },
+    crankWarning: '⚠️ Manual hand-crank start: hazard of severe kickback injury, -10 comfort penalty (until Kettering electric starter in 1912)',
+
+    // Company Setup
+    companySetup: {
+      title: 'Founding Your Motor Company (Year 1900)',
+      subtitle: 'Forge your automotive legacy at the turn of the 20th century: select your nation, heraldic emblem, and founder specialization.',
+      nameLabel: 'Company / Marque Name',
+      namePlaceholder: 'e.g., Detroit Motor Carriage Works',
+      countryLabel: 'Founding Nation & Home Factory',
+      perkLabel: 'Founder Background & Specialization',
+      badgeLabel: 'Heraldic Badge & Crest',
+      badgeColor: 'Emblem Color',
+      badgeShape: 'Shield Shape',
+      badgeIcon: 'Heraldic Icon',
+      submitBtn: 'Incorporate & Begin Era (1900 Q1)',
+      reconfigureBtn: 'Brand Crest & Passport',
+    },
+
+    // Competitors
+    competitors: {
+      title: 'Global Automakers & Benchmarks',
+      subtitle: 'Historic industrial rivals, market shares, signature vehicles, and disruptive historical turning points.',
+      marketShare: 'Regional Market Share',
+      activeModels: 'Competitor Lineup',
+      milestonesTitle: 'Historical Milestones & Disruption',
+      speedBenchmark: 'Segment Benchmark',
+      price: 'Price',
+      appeal: 'Appeal',
     },
 
     // Dashboard
@@ -407,14 +605,14 @@ export const DICTIONARY = {
       title: 'Executive Director Office',
       companyStats: 'Company Key Metrics',
       capacity: 'Factory Capacity',
-      unitsMonth: 'cars/mo',
+      unitsMonth: 'cars/qtr',
       activeResearchCount: 'Active Research',
-      latestReport: 'Previous Month Financial Summary',
+      latestReport: 'Previous Quarter Financial Summary',
       revenue: 'Revenue',
       expenses: 'Expenses',
       profit: 'Net Profit',
       carsSold: 'Cars Sold',
-      noReport: 'First month is not finished yet. Click "End Month" above.',
+      noReport: 'First quarter is not finished yet. Click "End Quarter" above.',
       activeModelsSummary: 'Production Line Models',
       quickNav: 'Quick Navigation',
       availableCashHint: 'Available in treasury',
@@ -459,10 +657,10 @@ export const DICTIONARY = {
       step2: '2. Component Selection',
       requiresTech: 'Requires technology',
       step3: '3. Production Quota & Launch',
-      initialQuotaLabel: 'Initial Monthly Production Quota',
-      initialQuotaHint: 'Specify how many cars of this model your factory should assemble monthly (can be changed anytime in Factory & Production).',
+      initialQuotaLabel: 'Initial Quarterly Production Quota',
+      initialQuotaHint: 'Specify how many cars of this model your workshop should assemble quarterly (can be changed anytime in Factory & Production).',
       availableCapacity: 'Available Factory Capacity',
-      unitsMonth: 'cars/mo',
+      unitsMonth: 'cars/qtr',
       submitBtn: 'Approve & Put Into Production',
       savingBtn: 'Saving Model & Queuing Production...',
       successMsg: 'Model successfully designed and added to production line!',
@@ -500,16 +698,16 @@ export const DICTIONARY = {
       subtitle: 'Manage manufacturing plants, allocate assembly lines, and procure raw materials.',
       factoryTitle: 'Current Automobile Plant',
       level: 'Plant Level',
-      capacity: 'Monthly Capacity',
+      capacity: 'Quarterly Capacity',
       capacityUsed: 'Capacity Utilization',
-      overheadMonthly: 'Plant Overhead',
-      expandBtn: 'Expand Factory (+60 cars/mo)',
+      overheadMonthly: 'Plant Overhead per Quarter',
+      expandBtn: 'Expand Workshop (+4 cars/qtr)',
       upgradeCost: 'Expansion Cost',
       insufficientFunds: 'Insufficient corporate capital for factory expansion!',
       plantExpanded: 'Plant expanded! Production capacity increased.',
       linesTitle: 'Assembly Line Quota Allocation',
       noModels: 'No designed models available. First create a model in the Vehicle Designer.',
-      plannedUnits: 'Production Quota (cars/mo)',
+      plannedUnits: 'Production Quota (cars/qtr)',
       savePlanBtn: 'Save Production Plan',
       planSaved: 'Production plan updated successfully!',
       costPerUnit: 'Unit Assembly Cost',
@@ -520,13 +718,13 @@ export const DICTIONARY = {
       autoProcurementHint: 'Automatically purchases required raw materials from the market right before production begins.',
       inStock: 'In Warehouse Stock',
       marketPrice: 'Procurement Price',
-      needNextMonth: 'Demand for Next Month',
+      needNextMonth: 'Demand for Next Quarter',
       buyBatchBtn: 'Buy Batch',
       shortageAlert: 'Warning! Warehouse does not have sufficient materials to meet the production quota. Production will be throttled unless auto-procurement is enabled or materials are bought!',
       shortageHint: 'For uninterrupted assembly, enable Just-In-Time automated procurement below.',
       overCapacityWarning: 'Total planned production exceeds factory assembly capacity! Production will be throttled to plant ceiling.',
       historicalPlantSubtitle: 'Historical carriage manufacture and horseless carriage assembly plant',
-      planSubtitle: 'Assign monthly output quotas for models on assembly lines',
+      planSubtitle: 'Assign quarterly output quotas for models on assembly lines',
       warehouseSubtitle: 'Raw material stockpiles and procurement on the commodity exchange',
       insufficientFundsBatch: 'Insufficient company funds to purchase this batch!',
       materialBought: 'Materials purchased and added to warehouse inventory!',
@@ -595,9 +793,9 @@ export const DICTIONARY = {
 
     // Reports
     reports: {
-      title: 'Monthly Performance Archive',
+      title: 'Quarterly Performance Archive',
       subtitle: 'Historical ledger of corporate financials, sales and factory output.',
-      noReports: 'No monthly reports on file. Advance past the first month.',
+      noReports: 'No quarterly reports on file. Advance past the first quarter.',
       produced: 'Produced',
       sold: 'Sold',
       revenue: 'Revenue',
@@ -605,6 +803,7 @@ export const DICTIONARY = {
       profit: 'Net Profit',
       loansPaid: 'Debt Service',
       salesByRegion: 'Sales by Region:',
+      competitorNews: 'Competitor & Market Dispatches:',
     },
 
     // Technologies
@@ -612,6 +811,18 @@ export const DICTIONARY = {
       'standardized-steering-wheel': {
         name: 'Standardized Steering Wheel',
         description: 'Improves handling consistency and driver confidence.',
+      },
+      'steam-condenser': {
+        name: 'Closed-Loop Steam Condenser',
+        description: 'Recycles boiler steam, drastically extending range without refilling water.',
+      },
+      'ethanol-carburetor': {
+        name: 'Dual-Fuel Ethanol Carburetor',
+        description: 'Enables rural motorists to fuel up on farm alcohol/ethanol before Prohibition.',
+      },
+      'edison-nickel-iron-battery': {
+        name: 'Edison Nickel-Iron Battery',
+        description: 'Durable alkaline cells offering cleaner, silent operation for early electric cars.',
       },
       'mechanical-brake-upgrade': {
         name: 'Mechanical Brake Upgrade',
@@ -630,8 +841,8 @@ export const DICTIONARY = {
         description: 'Newspaper presence increases brand recognition.',
       },
       'electric-starter': {
-        name: 'Electric Starter',
-        description: 'Removes manual crank start requirement.',
+        name: 'Kettering Electric Starter (1912)',
+        description: 'Historic milestone: push-button starting, eliminating hazardous hand crank and deciding the ICE victory.',
       },
       'basic-assembly-line': {
         name: 'Basic Assembly Line',
@@ -657,6 +868,30 @@ export const DICTIONARY = {
         name: 'Managerial Accounting Ledgers',
         description: 'Improved cost tracking reduces financial waste.',
       },
+      'ford-moving-assembly-line': {
+        name: 'Ford Moving Assembly Line',
+        description: 'Moving conveyor assembly cuts chassis build time from 12 hours to 93 minutes.',
+      },
+      'all-steel-closed-body': {
+        name: 'All-Steel Closed Body',
+        description: 'Pressed steel body eliminates structural wood decay and withstands rollovers.',
+      },
+      'inline-4-monobloc-engine': {
+        name: 'Inline-4 Monobloc Engine',
+        description: 'Cylinders cast in a single iron block improve rigidity and lower machining costs.',
+      },
+      'four-wheel-hydraulic-brakes': {
+        name: 'Four-Wheel Hydraulic Brakes',
+        description: 'Hydraulic fluid pressure delivers equal stopping power to all four wheels.',
+      },
+      'safety-laminated-glass': {
+        name: 'Safety Laminated Glass',
+        description: 'Celluloid interlayer prevents windshield shattering into dangerous shards.',
+      },
+      'luxury-v8-overhead-valve': {
+        name: 'Luxury V8 Overhead Valve Engine',
+        description: 'Smooth and whisper-quiet V8 power defines the golden age of luxury automobiles.',
+      },
     } as Record<string, { name: string; description: string }>,
 
     // Vehicle Components
@@ -664,18 +899,29 @@ export const DICTIONARY = {
       'ladder-frame': 'Ladder Frame (Standard)',
       'touring-frame': 'Touring Channel-Section Frame',
       'reinforced-suspension-frame': 'Reinforced Leaf-Spring Chassis',
-      'single-cylinder': 'Single-Cylinder Engine (6 hp)',
+      'reinforced-suspension': 'Reinforced Elliptical Suspension',
+      'single-cylinder': 'Single-Cylinder ICE (6 hp, Hand-Crank)',
+      'steam-compound-twin': 'Twin Compound Steam Engine (15 hp)',
+      'electric-traction-dc': 'DC Traction Electric Motor (10 hp)',
+      'ethanol-dual-engine': 'Dual-Fuel ICE (Ethanol/Gas, 8 hp)',
       'inline-four': 'Inline-Four Engine (20 hp)',
       'electric-start-v4': 'Electric-Start V4 Engine (35 hp)',
       'band-brakes': 'Mechanical Band Brakes',
       'drum-brakes': 'Reinforced Drum Brakes',
       'hydraulic-prototype-brakes': 'Prototype Hydraulic Brakes',
       'open-runabout': 'Open Runabout Body',
-      'basic-cabin': 'Wooden Carriage Cabin',
+      'basic-cabin': 'Artisan Carriage Cabin',
+      'wooden-cabin': 'Fine Hardwood Coach Cabin',
+      'luxury-cabin': 'Luxury Bespoke Upholstered Cabin',
       'enclosed-limousine-cabin': 'Enclosed Limousine Cabin',
       'package-none': 'Standard Configuration (No Package)',
       'weather-package': 'All-Weather Package (Wipers & Soft Top)',
       'touring-rally-kit': 'Touring Reliability Kit',
+      'all-steel-body': 'Pressed Steel Closed Body',
+      'inline-4-monobloc': 'Inline-4 Monobloc Engine (24 hp)',
+      'luxury-v8-ohv': 'Luxury V8 Overhead Valve Engine (65 hp)',
+      'four-wheel-hydraulic': 'Four-Wheel Hydraulic Brakes',
+      'triplex-safety-package': 'Safety Laminated Glass Package',
     } as Record<string, string>,
 
     // Bank Loans

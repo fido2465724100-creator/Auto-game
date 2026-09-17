@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Patch, Post } from '@nestjs/common';
 import type { VehicleModel, MaterialType } from '@ait/shared-types';
 import { GameService } from './game.service';
-import { StartResearchDto, UpdateProductionDto, VehicleModelDto } from './dto';
+import { StartResearchDto, UpdateProductionDto, VehicleModelDto, SetupCompanyDto } from './dto';
 
 @Controller('game')
 export class GameController {
@@ -75,6 +75,21 @@ export class GameController {
   @Post('factory/expand')
   expandFactory() {
     return this.gameService.expandFactory();
+  }
+
+  @Post('company/setup')
+  setupCompany(@Body() dto: SetupCompanyDto) {
+    return this.gameService.setupCompany(dto);
+  }
+
+  @Get('competitors')
+  getCompetitors() {
+    return this.gameService.getCompetitors();
+  }
+
+  @Post('reset')
+  resetGame(@Body() dto?: Partial<SetupCompanyDto>) {
+    return this.gameService.resetGame(dto);
   }
 
   @Post('end-turn')

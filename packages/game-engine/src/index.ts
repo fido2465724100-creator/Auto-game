@@ -17,6 +17,9 @@ import type {
   MaterialType,
   MaterialMarketItem,
   FactoryInfo,
+  FounderPerk,
+  Competitor,
+  CompetitorMilestone,
 } from '@ait/shared-types';
 
 export const MATERIALS_CATALOG: MaterialMarketItem[] = [
@@ -73,7 +76,8 @@ export const MATERIALS_CATALOG: MaterialMarketItem[] = [
 export function calculateMaterialRequirements(
   segment: VehicleSegment,
   selectedComponents: Partial<VehicleComponents>,
-  year: number = 1900
+  year: number = 1900,
+  founderPerk?: FounderPerk
 ): Record<MaterialType, number> {
   const base: Record<VehicleSegment, Record<MaterialType, number>> = {
     economy: { steel: 40, wood: 50, rubber: 12, leather: 5, aluminum: 0, plastic: 0 },
@@ -109,6 +113,12 @@ export function calculateMaterialRequirements(
   if (year >= 1950) {
     req.plastic = Math.round(req.wood * 0.7);
     req.wood = Math.round(req.wood * 0.1);
+  }
+
+  // Coachbuilder founder perk: 25% savings on wood and leather
+  if (founderPerk === 'coachbuilder') {
+    req.wood = Math.max(1, Math.round(req.wood * 0.75));
+    req.leather = Math.max(1, Math.round(req.leather * 0.75));
   }
 
   return req;
@@ -236,7 +246,8 @@ export function calculateVehicleSpecs(
   segment: VehicleSegment,
   selectedComponents: VehicleComponents,
   allComponents: VehicleComponentOption[],
-  year: number = 1900
+  year: number = 1900,
+  founderPerk?: FounderPerk
 ): {
   stats: VehicleStats;
   productionCost: number;
@@ -263,6 +274,25 @@ export function calculateVehicleSpecs(
     if (comp.statModifiers.complexity) stats.complexity += comp.statModifiers.complexity;
   }
 
+  // Pre-1912 hand crank start penalty for internal combustion engines (dangerous and awkward)
+  const engineComp = compMap.get(selectedComponents.engine);
+  if (
+    engineComp &&
+    engineComp.powertrainType === 'ice' &&
+    year < 1912 &&
+    selectedComponents.engine !== 'v4-electric'
+  ) {
+    stats.comfort = Math.max(5, stats.comfort - 10);
+  }
+
+  // Founder perk bonuses
+  if (founderPerk === 'mechanic') {
+    stats.reliability = Math.round(stats.reliability * 1.15);
+  } else if (founderPerk === 'coachbuilder') {
+    stats.comfort = Math.round(stats.comfort * 1.15);
+    stats.prestige = Math.round(stats.prestige * 1.15);
+  }
+
   const clamp = (val: number) => Math.max(5, Math.min(100, val));
   stats.reliability = clamp(stats.reliability);
   stats.comfort = clamp(stats.comfort);
@@ -273,7 +303,7 @@ export function calculateVehicleSpecs(
 
   const productionCost = profile.baseProductionCost + extraCost;
   const suitability: Record<RegionId, number> = { ...profile.defaultRegionSuitability };
-  const materialsRequired = calculateMaterialRequirements(segment, selectedComponents, year);
+  const materialsRequired = calculateMaterialRequirements(segment, selectedComponents, year, founderPerk);
 
   return {
     stats,
@@ -283,16 +313,26 @@ export function calculateVehicleSpecs(
   };
 }
 
-function nextMonth(date: GameDate): GameDate {
-  if (date.month === 12) {
-    return { year: date.year + 1, month: 1 };
+export function nextQuarter(date: GameDate): GameDate {
+  const currentQ = date.quarter ?? (date.month ? (Math.ceil(date.month / 3) as 1 | 2 | 3 | 4) : 1);
+  if (currentQ === 4) {
+    return { year: date.year + 1, quarter: 1, month: 1 };
   }
+  const nextQ = (currentQ + 1) as 1 | 2 | 3 | 4;
+  return { year: date.year, quarter: nextQ, month: (nextQ - 1) * 3 + 1 };
+}
 
-  return { year: date.year, month: date.month + 1 };
+export function nextMonth(date: GameDate): GameDate {
+  if (date.month === 12) {
+    return { year: date.year + 1, month: 1, quarter: 1 };
+  }
+  const nextM = (date.month ?? 1) + 1;
+  return { year: date.year, month: nextM, quarter: Math.ceil(nextM / 3) as 1 | 2 | 3 | 4 };
 }
 
 function isEventActive(event: HistoricalEvent, date: GameDate): boolean {
-  const current = date.year * 12 + date.month;
+  const currentMonth = date.month ?? ((date.quarter ?? 1) - 1) * 3 + 1;
+  const current = date.year * 12 + currentMonth;
   const start = event.startYear * 12 + event.startMonth;
   const end = event.endYear * 12 + event.endMonth;
   return current >= start && current <= end;
@@ -316,7 +356,14 @@ function techAppealBonus(unlockedTechIds: string[], technologies: Technology[]):
   return 1 + bonus;
 }
 
-function simulateRegionDemand(model: VehicleModel, region: Region, reputation: number, eventMultiplier: number, appealBonus: number): number {
+function simulateRegionDemand(
+  model: VehicleModel,
+  region: Region,
+  reputation: number,
+  eventMultiplier: number,
+  appealBonus: number,
+  year: number = 1900
+): number {
   const weightedStats =
     model.stats.comfort * region.preferenceWeights.comfort +
     model.stats.efficiency * region.preferenceWeights.efficiency +
@@ -327,16 +374,30 @@ function simulateRegionDemand(model: VehicleModel, region: Region, reputation: n
   const pricePenalty = Math.max(0.45, 1 - model.salePrice / 100_000);
   const reputationFactor = 0.6 + reputation / 200;
 
-  const baseDemand = region.marketSize * normalizedStats * pricePenalty * reputationFactor * appealBonus;
-  return Math.max(0, Math.floor(baseDemand * eventMultiplier));
+  // Era scaling: pioneer automobile market in 1900-1905 is a handcrafted boutique niche
+  const eraDemandFactor = Math.min(1.0, 0.05 + Math.max(0, year - 1900) * 0.02);
+
+  const baseDemand = region.marketSize * normalizedStats * pricePenalty * reputationFactor * appealBonus * eraDemandFactor;
+  return Math.max(1, Math.floor(baseDemand * eventMultiplier));
 }
 
 export function runEndTurn(input: EndTurnInput): EndTurnOutput {
   const currentState = input.gameState;
-  const newDate = nextMonth(currentState.date);
+  const newDate = nextQuarter(currentState.date);
 
+  // Advance research by 3 months (quarterly step).
+  // Mechanic perk: +1 extra month for engine and chassis technologies.
   const researchProgress = currentState.activeResearch.map((project) => {
-    const nextProgress = Math.min(project.totalMonths, project.progressMonths + 1);
+    const tech = input.technologies.find((t) => t.id === project.technologyId);
+    let monthsToAdd = 3;
+    if (
+      currentState.company.founderPerk === 'mechanic' &&
+      tech &&
+      (tech.category === 'engine' || tech.category === 'chassis')
+    ) {
+      monthsToAdd = 4;
+    }
+    const nextProgress = Math.min(project.totalMonths, project.progressMonths + monthsToAdd);
     return {
       ...project,
       progressMonths: nextProgress,
@@ -352,15 +413,16 @@ export function runEndTurn(input: EndTurnInput): EndTurnOutput {
   const unlockedTechnologyIds = [...currentState.unlockedTechnologyIds, ...completedTechIds];
   const activeResearch = researchProgress.filter((project) => !project.isCompleted);
 
-  // Factory capacity & inventory setup
-  const factoryCapacity = currentState.company.factory?.capacity ?? currentState.company.productionCapacity ?? 120;
-  const factoryOverhead = currentState.company.factory?.monthlyOverhead ?? 0;
+  // Factory capacity & inventory setup (quarterly capacity)
+  const factoryCapacity = currentState.company.factory?.capacity ?? currentState.company.productionCapacity ?? 4;
+  const factoryMonthlyOverhead = currentState.company.factory?.monthlyOverhead ?? 0;
+  const quarterlyOverhead = (currentState.company.overheadMonthly + factoryMonthlyOverhead) * 3;
 
   const defaultInventory: Record<MaterialType, number> = {
-    steel: 1200,
-    wood: 1000,
-    rubber: 400,
-    leather: 300,
+    steel: 200,
+    wood: 250,
+    rubber: 60,
+    leather: 30,
     aluminum: 0,
     plastic: 0,
   };
@@ -373,7 +435,29 @@ export function runEndTurn(input: EndTurnInput): EndTurnOutput {
   const totalPlannedProduction = Object.values(currentState.productionPlan).reduce((acc, units) => acc + units, 0);
   const targetProductionUnits = Math.min(totalPlannedProduction, factoryCapacity);
 
-  // Calculate material demand for all planned active models
+  // Proportional effective plan scaled to factory capacity
+  const effectivePlan: Record<string, number> = {};
+  const activeModels = currentState.vehicleModels.filter((item) => item.active);
+  const plannedModels = activeModels.filter((item) => (currentState.productionPlan[item.id] ?? 0) > 0);
+
+  if (totalPlannedProduction > 0 && plannedModels.length > 0) {
+    const scale = targetProductionUnits / totalPlannedProduction;
+    let allocatedSum = 0;
+    for (let i = 0; i < plannedModels.length; i++) {
+      const model = plannedModels[i];
+      if (!model) continue;
+      const rawPlanned = currentState.productionPlan[model.id] ?? 0;
+      if (i === plannedModels.length - 1) {
+        effectivePlan[model.id] = Math.max(0, targetProductionUnits - allocatedSum);
+      } else {
+        const alloc = Math.floor(rawPlanned * scale);
+        effectivePlan[model.id] = alloc;
+        allocatedSum += alloc;
+      }
+    }
+  }
+
+  // Calculate material demand for effective planned units
   const materialDemand: Record<MaterialType, number> = {
     steel: 0,
     wood: 0,
@@ -383,10 +467,17 @@ export function runEndTurn(input: EndTurnInput): EndTurnOutput {
     plastic: 0,
   };
 
-  for (const model of currentState.vehicleModels.filter((item) => item.active)) {
-    const planned = currentState.productionPlan[model.id] ?? 0;
+  for (const model of plannedModels) {
+    const planned = effectivePlan[model.id] ?? 0;
     if (planned <= 0) continue;
-    const req = model.materialsRequired ?? calculateMaterialRequirements(model.targetSegment, model.components, currentState.date.year);
+    const req =
+      model.materialsRequired ??
+      calculateMaterialRequirements(
+        model.targetSegment,
+        model.components,
+        currentState.date.year,
+        currentState.company.founderPerk
+      );
     for (const mat of Object.keys(materialDemand) as MaterialType[]) {
       materialDemand[mat] += (req[mat] ?? 0) * planned;
     }
@@ -395,54 +486,115 @@ export function runEndTurn(input: EndTurnInput): EndTurnOutput {
   let materialProcurementCost = 0;
   let currentCash = currentState.company.cash;
 
+  // Merchant perk: 15% wholesale discount on materials
+  const materialPriceMultiplier = currentState.company.founderPerk === 'merchant' ? 0.85 : 1.0;
+
   // Auto-procurement if enabled
   if (currentState.company.autoProcurement) {
+    let totalShortageCost = 0;
+    const shortages: Partial<Record<MaterialType, { amount: number; cost: number; unitPrice: number }>> = {};
+
     for (const item of MATERIALS_CATALOG) {
-      const needed = materialDemand[item.id];
-      const inStock = inventory[item.id];
+      const needed = materialDemand[item.id] ?? 0;
+      const inStock = inventory[item.id] ?? 0;
+      const effectivePrice = Math.round(item.basePrice * materialPriceMultiplier);
       if (needed > inStock) {
         const shortage = needed - inStock;
-        const cost = shortage * item.basePrice;
-        if (currentCash >= cost) {
-          inventory[item.id] += shortage;
-          currentCash -= cost;
-          materialProcurementCost += cost;
-        } else {
-          const affordable = Math.max(0, Math.floor(currentCash / item.basePrice));
-          if (affordable > 0) {
-            inventory[item.id] += affordable;
-            currentCash -= affordable * item.basePrice;
-            materialProcurementCost += affordable * item.basePrice;
+        const cost = shortage * effectivePrice;
+        totalShortageCost += cost;
+        shortages[item.id] = { amount: shortage, cost, unitPrice: effectivePrice };
+      }
+    }
+
+    if (totalShortageCost > 0) {
+      if (currentCash >= totalShortageCost) {
+        // Full procurement
+        for (const [mat, info] of Object.entries(shortages) as Array<[MaterialType, { amount: number; cost: number; unitPrice: number }]>) {
+          inventory[mat] = (inventory[mat] ?? 0) + info.amount;
+          currentCash -= info.cost;
+          materialProcurementCost += info.cost;
+        }
+      } else {
+        // Balanced procurement: allocate available cash proportionally across all missing materials
+        // so that no critical material is left at 0
+        const budgetRatio = Math.max(0, (currentCash * 0.95) / totalShortageCost);
+        for (const [mat, info] of Object.entries(shortages) as Array<[MaterialType, { amount: number; cost: number; unitPrice: number }]>) {
+          const buyCount = Math.min(info.amount, Math.max(1, Math.floor(info.amount * budgetRatio)));
+          const itemCost = buyCount * info.unitPrice;
+          if (currentCash >= itemCost) {
+            inventory[mat] = (inventory[mat] ?? 0) + buyCount;
+            currentCash -= itemCost;
+            materialProcurementCost += itemCost;
           }
         }
       }
     }
   }
 
-  // Calculate material fulfillment ratio
-  let productionRatio = 1.0;
-  if (totalPlannedProduction > 0) {
-    for (const mat of Object.keys(materialDemand) as MaterialType[]) {
-      const needed = materialDemand[mat];
-      if (needed > 0 && inventory[mat] < needed) {
-        const ratio = inventory[mat] / needed;
-        if (ratio < productionRatio) {
-          productionRatio = ratio;
+  // Model-by-model assembly using available inventory
+  const materialsConsumed: Partial<Record<MaterialType, number>> = {
+    steel: 0,
+    aluminum: 0,
+    wood: 0,
+    rubber: 0,
+    leather: 0,
+    plastic: 0,
+  };
+
+  let totalProduced = 0;
+  const producedByModel: Record<string, number> = {};
+
+  // Sort models: produce simpler/high-priority models first so assembly never stalls completely
+  const modelsInPlan = plannedModels.slice();
+  let capacityRemaining = targetProductionUnits;
+  let canProduceMore = true;
+
+  while (capacityRemaining > 0 && canProduceMore) {
+    let producedInRound = 0;
+    for (const model of modelsInPlan) {
+      const planned = effectivePlan[model.id] ?? 0;
+      const alreadyProduced = producedByModel[model.id] ?? 0;
+      if (alreadyProduced >= planned || capacityRemaining <= 0) continue;
+
+      const req =
+        model.materialsRequired ??
+        calculateMaterialRequirements(
+          model.targetSegment,
+          model.components,
+          currentState.date.year,
+          currentState.company.founderPerk
+        );
+
+      // Check if all materials for 1 car are available in inventory
+      let canBuild = true;
+      for (const [mat, amount] of Object.entries(req)) {
+        if ((amount ?? 0) > (inventory[mat as MaterialType] ?? 0)) {
+          canBuild = false;
+          break;
         }
       }
+
+      if (canBuild) {
+        // Deduct materials for 1 unit
+        for (const [mat, amount] of Object.entries(req)) {
+          const m = mat as MaterialType;
+          inventory[m] = Math.max(0, (inventory[m] ?? 0) - (amount ?? 0));
+          materialsConsumed[m] = (materialsConsumed[m] ?? 0) + (amount ?? 0);
+        }
+        producedByModel[model.id] = (producedByModel[model.id] ?? 0) + 1;
+        totalProduced++;
+        capacityRemaining--;
+        producedInRound++;
+      }
+    }
+
+    if (producedInRound === 0) {
+      canProduceMore = false;
     }
   }
 
-  const producedUnits = Math.floor(targetProductionUnits * productionRatio);
-  const shortageOccurred = productionRatio < 0.99 && totalPlannedProduction > 0;
-
-  // Deduct consumed materials
-  const materialsConsumed: Partial<Record<MaterialType, number>> = {};
-  for (const mat of Object.keys(materialDemand) as MaterialType[]) {
-    const consumed = Math.min(inventory[mat], Math.ceil(materialDemand[mat] * productionRatio));
-    materialsConsumed[mat] = consumed;
-    inventory[mat] = Math.max(0, inventory[mat] - consumed);
-  }
+  const producedUnits = totalProduced;
+  const shortageOccurred = producedUnits < targetProductionUnits && totalPlannedProduction > 0;
 
   const salesByRegion: Record<RegionId, number> = {
     'north-america': 0,
@@ -463,10 +615,17 @@ export function runEndTurn(input: EndTurnInput): EndTurnOutput {
       }
 
       const eventMultiplier = getActiveEventMultiplier(input.events, region.id, newDate);
-      const expectedDemand = simulateRegionDemand(model, region, currentState.company.reputation, eventMultiplier, appealBonus);
+      const expectedDemand = simulateRegionDemand(
+        model,
+        region,
+        currentState.company.reputation,
+        eventMultiplier,
+        appealBonus,
+        newDate.year
+      );
       const marketPresence = currentState.company.marketPresence[region.id] ?? 0;
       const suitability = model.regionSuitability[region.id] ?? 0.5;
-      const adjustedDemand = Math.floor(expectedDemand * marketPresence * suitability);
+      const adjustedDemand = Math.max(1, Math.floor(expectedDemand * marketPresence * suitability));
       const sold = Math.min(remainingInventory, adjustedDemand);
 
       unitsSold += sold;
@@ -476,41 +635,89 @@ export function runEndTurn(input: EndTurnInput): EndTurnOutput {
     }
   }
 
+  // Merchant perk: +10% revenue margin
+  if (currentState.company.founderPerk === 'merchant') {
+    revenue = Math.round(revenue * 1.1);
+  }
+
+  // Quarterly loan amortization (3 months)
   const currentLoans = currentState.company.loans ?? [];
   let loanPayments = 0;
   const updatedLoans: BankLoan[] = [];
 
   for (const loan of currentLoans) {
-    loanPayments += loan.monthlyPayment;
-    const interest = Math.round(loan.remainingPrincipal * loan.interestRate);
-    const principalReduction = Math.max(0, loan.monthlyPayment - interest);
-    const nextPrincipal = Math.max(0, loan.remainingPrincipal - principalReduction);
-    const nextMonths = loan.remainingMonths - 1;
+    let principal = loan.remainingPrincipal;
+    let monthsLeft = loan.remainingMonths;
+    const monthsToProcess = Math.min(3, monthsLeft);
 
-    if (nextMonths > 0 && nextPrincipal > 0) {
+    for (let m = 0; m < monthsToProcess; m++) {
+      loanPayments += loan.monthlyPayment;
+      const interest = Math.round(principal * loan.interestRate);
+      const principalReduction = Math.max(0, loan.monthlyPayment - interest);
+      principal = Math.max(0, principal - principalReduction);
+      monthsLeft -= 1;
+    }
+
+    if (monthsLeft > 0 && principal > 0) {
       updatedLoans.push({
         ...loan,
-        remainingPrincipal: nextPrincipal,
-        remainingMonths: nextMonths,
+        remainingPrincipal: principal,
+        remainingMonths: monthsLeft,
       });
     }
   }
 
-  const productionCost = currentState.vehicleModels.reduce((acc, model) => {
-    const planned = currentState.productionPlan[model.id] ?? 0;
-    return acc + Math.floor(planned * productionRatio) * model.productionCost;
+  const productionCost = plannedModels.reduce((acc, model) => {
+    const built = producedByModel[model.id] ?? 0;
+    return acc + built * model.productionCost;
   }, 0);
 
-  const researchCost = currentState.activeResearch.reduce((acc, project) => acc + project.allocatedBudget, 0);
-  const expenses = productionCost + researchCost + currentState.company.overheadMonthly + factoryOverhead + loanPayments + materialProcurementCost;
+  // Quarterly research cost (3 months)
+  const researchCost = currentState.activeResearch.reduce((acc, project) => acc + project.allocatedBudget * 3, 0);
+  const expenses = productionCost + researchCost + quarterlyOverhead + loanPayments + materialProcurementCost;
   const profit = revenue - expenses;
 
-  const reputationChange = unitsSold > 0 ? Math.min(3, Math.floor(unitsSold / 200)) : -1;
+  // Reputation change
+  const reputationChange = unitsSold > 0 ? Math.max(1, Math.min(4, Math.floor(unitsSold / 50) + 1)) : -1;
   const nextReputation = Math.max(0, Math.min(100, currentState.company.reputation + reputationChange));
+
+  // Check competitor milestones for this quarter
+  const competitorNews: string[] = [];
+  const allMilestones = input.competitorMilestones ?? currentState.competitorMilestones ?? [];
+  for (const milestone of allMilestones) {
+    if (milestone.year === newDate.year && milestone.quarter === newDate.quarter) {
+      competitorNews.push(`${milestone.title}: ${milestone.description}`);
+    }
+  }
+
+  // Automatic Bank Overdraft / Emergency Credit on cash deficit
+  let finalCash = currentState.company.cash + profit;
+  const overdraftNotes: string[] = [];
+
+  if (finalCash < 0) {
+    const deficit = -finalCash;
+    // Issue emergency bank overdraft to cover deficit + provide $1,000 working cushion
+    const overdraftAmount = Math.ceil((deficit + 1000) / 1000) * 1000;
+    const overdraftLoan: BankLoan = {
+      id: `overdraft-${newDate.year}-Q${newDate.quarter}-${Date.now().toString().slice(-4)}`,
+      name: `Банковский заем на покрытие дефицита (${newDate.year} Q${newDate.quarter})`,
+      principal: overdraftAmount,
+      remainingPrincipal: overdraftAmount,
+      interestRate: 0.02,
+      monthlyPayment: Math.max(120, Math.round((overdraftAmount * 1.15) / 12)),
+      remainingMonths: 12,
+      totalMonths: 12,
+    };
+    updatedLoans.push(overdraftLoan);
+    finalCash += overdraftAmount;
+    overdraftNotes.push(
+      `⚠️ Дефицит капитала ($${deficit.toLocaleString()}): банк предоставил кредитную линию на $${overdraftAmount.toLocaleString()}`
+    );
+  }
 
   const activeEvents = input.events.filter((event) => isEventActive(event, newDate));
   const report: MonthlyReport = {
-    id: `${currentState.id}-${newDate.year}-${newDate.month}`,
+    id: `${currentState.id}-${newDate.year}-Q${newDate.quarter}`,
     date: newDate,
     unitsProduced: producedUnits,
     unitsSold,
@@ -524,7 +731,8 @@ export function runEndTurn(input: EndTurnInput): EndTurnOutput {
     })),
     reputationChange,
     loanPayments,
-    eventNotes: activeEvents.map((event) => event.name),
+    eventNotes: [...activeEvents.map((event) => event.name), ...overdraftNotes],
+    competitorNews,
     salesByRegion,
     materialsConsumed,
     materialExpenses: materialProcurementCost,
@@ -540,12 +748,12 @@ export function runEndTurn(input: EndTurnInput): EndTurnOutput {
       activeResearch,
       company: {
         ...currentState.company,
-        cash: currentState.company.cash + profit,
+        cash: finalCash,
         reputation: nextReputation,
         loans: updatedLoans,
         inventoryMaterials: inventory,
       },
-      reportHistory: [report, ...currentState.reportHistory].slice(0, 24),
+      reportHistory: [report, ...currentState.reportHistory].slice(0, 48),
     },
     report,
   };

@@ -53,3 +53,23 @@ export class UpdateProductionDto {
   @IsObject()
   productionPlan!: Record<string, number>;
 }
+
+export class SetupCompanyDto {
+  @IsString()
+  @IsNotEmpty()
+  name!: string;
+
+  @IsString()
+  country!: 'usa' | 'germany' | 'france' | 'uk';
+
+  @IsString()
+  founderPerk!: 'mechanic' | 'merchant' | 'coachbuilder';
+
+  @IsObject()
+  badge!: {
+    icon: string;
+    color: string;
+    shape: string;
+  };
+}
+
