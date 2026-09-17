@@ -233,32 +233,32 @@ export default function DashboardPage(): React.JSX.Element {
   return (
     <div className="space-y-4">
       {/* 1. ERA & ADVISOR STATUS BAR */}
-      <section className="rounded-lg border border-amber-900/20 bg-[var(--paper)] p-4 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
+      <section className="card-lux p-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
         {/* Left: Era material identity */}
         <div className="flex items-center gap-3">
-          <span className="text-3xl p-2 rounded bg-amber-100/60 border border-amber-900/10 select-none">
+          <span className="text-3xl p-2 rounded-xl bg-amber-100/80 border border-amber-900/20 shadow-2xs select-none">
             {eraTheme.icon}
           </span>
           <div>
             <div className="flex items-center gap-2">
               <h2 className="font-serif font-bold text-base text-amber-950">{eraTheme.nameRu}</h2>
-              <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-amber-200/60 text-amber-900 font-semibold">
+              <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-amber-200/80 text-amber-950 font-bold border border-amber-400/50">
                 {currentYear} г. ({currentQuarter}/4 кв.)
               </span>
             </div>
             <p className="text-xs text-stone-600 font-serif italic">
-              Материалы и стиль эпохи: <strong className="text-stone-800">{eraTheme.materialRu}</strong>
+              Материалы и стиль эпохи: <strong className="text-stone-900">{eraTheme.materialRu}</strong>
             </p>
           </div>
         </div>
 
         {/* Right: Quick actions (Newspaper & Design Car) */}
-        <div className="flex items-center gap-2 self-stretch md:self-auto">
+        <div className="flex items-center gap-2 self-stretch md:self-auto flex-wrap">
           {latestReport && (
             <button
               type="button"
               onClick={() => setIsGazetteModalOpen(true)}
-              className="flex-1 md:flex-initial rounded border border-amber-900/30 bg-amber-50 px-3 py-1.5 text-xs font-serif font-bold text-amber-950 hover:bg-amber-100 shadow-xs flex items-center justify-center gap-1.5"
+              className="flex-1 md:flex-initial rounded-lg border border-amber-900/30 bg-amber-50/80 px-3 py-1.5 text-xs font-serif font-bold text-amber-950 hover:bg-amber-100 shadow-2xs flex items-center justify-center gap-1.5 transition cursor-pointer"
             >
               <span>📰</span>
               <span>Свежий выпуск газеты</span>
@@ -268,7 +268,7 @@ export default function DashboardPage(): React.JSX.Element {
           <button
             type="button"
             onClick={() => setIsDesignModalOpen(true)}
-            className="flex-1 md:flex-initial rounded bg-amber-900 px-3.5 py-1.5 text-xs font-serif font-bold text-white hover:bg-amber-950 shadow-xs flex items-center justify-center gap-1.5 cursor-pointer"
+            className="btn-brass flex-1 md:flex-initial rounded-lg px-3.5 py-1.5 text-xs font-bold text-white shadow-md flex items-center justify-center gap-1.5 cursor-pointer"
           >
             <span>📐</span>
             <span>+ Спроектировать модель</span>
@@ -277,7 +277,7 @@ export default function DashboardPage(): React.JSX.Element {
           <button
             type="button"
             onClick={() => setHallOfFameOpen(true)}
-            className="flex-1 md:flex-initial rounded border border-amber-900/30 bg-amber-50 px-3 py-1.5 text-xs font-serif font-bold text-amber-950 hover:bg-amber-100 shadow-xs flex items-center justify-center gap-1.5 cursor-pointer"
+            className="flex-1 md:flex-initial rounded-lg border border-amber-900/30 bg-amber-50/80 px-3 py-1.5 text-xs font-serif font-bold text-amber-950 hover:bg-amber-100 shadow-2xs flex items-center justify-center gap-1.5 transition cursor-pointer"
             title="Зал Славы, Ордена и Сохранения"
           >
             <span>🏆</span>
@@ -287,7 +287,7 @@ export default function DashboardPage(): React.JSX.Element {
           <button
             type="button"
             onClick={() => handleTabChange('guide')}
-            className="flex-1 md:flex-initial rounded border border-amber-900/30 bg-amber-50 px-3 py-1.5 text-xs font-serif font-bold text-amber-950 hover:bg-amber-100 shadow-xs flex items-center justify-center gap-1.5 cursor-pointer"
+            className="flex-1 md:flex-initial rounded-lg border border-amber-900/30 bg-amber-50/80 px-3 py-1.5 text-xs font-serif font-bold text-amber-950 hover:bg-amber-100 shadow-2xs flex items-center justify-center gap-1.5 transition cursor-pointer"
             title="Руководство промышленника и правила игры"
           >
             <span>📖</span>
@@ -297,7 +297,7 @@ export default function DashboardPage(): React.JSX.Element {
       </section>
 
       {/* 2. UNIFIED WORKSPACE DESK DOCK (ЕДИНОЕ ОКНО) */}
-      <nav className="flex items-center gap-1.5 overflow-x-auto pb-1 border-b border-stone-300/80">
+      <nav className="flex items-center gap-1.5 overflow-x-auto pb-1 border-b-2 border-amber-900/30">
         {DESK_TABS.map((tab) => {
           const isActive = activeTab === tab.id;
           return (
@@ -305,14 +305,14 @@ export default function DashboardPage(): React.JSX.Element {
               key={tab.id}
               type="button"
               onClick={() => handleTabChange(tab.id)}
-              className={`flex items-center gap-2 px-3.5 py-2 rounded-t-lg text-xs font-serif font-bold transition-all whitespace-nowrap cursor-pointer select-none border-t border-x ${
+              className={`flex items-center gap-2 px-4 py-2.5 rounded-t-xl text-xs font-serif font-bold transition-all whitespace-nowrap cursor-pointer select-none border-t-2 border-x ${
                 isActive
-                  ? 'bg-[var(--paper)] text-amber-950 border-t-amber-800 border-x-stone-300 border-t-2 shadow-xs -mb-[1px] z-10'
-                  : 'bg-stone-100/70 border-transparent text-stone-600 hover:text-stone-900 hover:bg-stone-200/50'
+                  ? 'bg-[var(--paper-card)] text-amber-950 border-t-amber-800 border-x-amber-900/30 shadow-md -mb-[2px] z-10'
+                  : 'bg-stone-200/50 border-transparent text-stone-600 hover:text-stone-900 hover:bg-stone-200/80'
               }`}
             >
-              <span className="text-sm">{tab.icon}</span>
-              <span>{lang === 'en' ? tab.labelEn : tab.labelRu}</span>
+              <span className="text-base">{tab.icon}</span>
+              <span className="tracking-wide">{lang === 'en' ? tab.labelEn : tab.labelRu}</span>
             </button>
           );
         })}
@@ -322,291 +322,292 @@ export default function DashboardPage(): React.JSX.Element {
       {activeTab === 'overview' && (
         <div className="space-y-4">
           {/* ADVISORS LIVE FEEDBACK STRIP */}
-      <section className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
-        {/* Chief Mechanic */}
-        <div className="rounded border border-stone-200 bg-[var(--paper)] p-2.5 flex items-start gap-2 shadow-2xs">
-          <span className="text-lg">👨‍🔧</span>
-          <div className="leading-snug">
-            <span className="font-bold text-stone-900 block font-serif">{eraTheme.advisorTitles.engineerRu}:</span>
-            <span className="text-stone-600">
-              {hasShortage
-                ? 'Сэр, запасы сырья на исходе! Часть сборочных постов может встать.'
-                : activeResearch
-                ? `Лаборатория работает над: ${t.technologies[activeResearch.technologyId as keyof typeof t.technologies]?.name ?? activeResearch.technologyId}.`
-                : 'Конструкторы свободны. Откройте новый исследовательский проект!'}
-            </span>
-          </div>
-        </div>
-
-        {/* Treasurer */}
-        <div className="rounded border border-stone-200 bg-[var(--paper)] p-2.5 flex items-start gap-2 shadow-2xs">
-          <span className="text-lg">💼</span>
-          <div className="leading-snug">
-            <span className="font-bold text-stone-900 block font-serif">{eraTheme.advisorTitles.financeRu}:</span>
-            <span className="text-stone-600">
-              {company.cash < 2500
-                ? 'Оборотный капитал на минимуме! Рекомендуется привлечь банковский заем.'
-                : activeLoans.length > 0
-                ? `Обслуживаем ${activeLoans.length} займа (-$${totalQuarterlyLoanPayment.toLocaleString()} / кв.). Казна стабильна.`
-                : `Свободный капитал $${company.cash.toLocaleString()}. Финансы в идеальном порядке.`}
-            </span>
-          </div>
-        </div>
-
-        {/* Plant Foreman */}
-        <div className="rounded border border-stone-200 bg-[var(--paper)] p-2.5 flex items-start gap-2 shadow-2xs">
-          <span className="text-lg">🏭</span>
-          <div className="leading-snug">
-            <span className="font-bold text-stone-900 block font-serif">{eraTheme.advisorTitles.plantRu}:</span>
-            <span className="text-stone-600">
-              {isOverCapacity
-                ? `Перегруз! Запланировано ${totalPlannedUnits} при лимите цеха ${factory.capacity} авто/кв.`
-                : `Загрузка линий: ${totalPlannedUnits} / ${factory.capacity} авто/кв. (${Math.round((totalPlannedUnits / factory.capacity) * 100)}%).`}
-            </span>
-          </div>
-        </div>
-      </section>
-
-      {/* 3. MAIN WORKSPACE GRID: FACTORY (LEFT 7/12) & DISPATCH/RESEARCH (RIGHT 5/12) */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
-        {/* ================= LEFT COLUMN: THE FACTORY FLOOR ================= */}
-        <div className="lg:col-span-7 space-y-4">
-          {/* Active Production Lines */}
-          <section className="rounded-lg border border-stone-300 bg-[var(--paper)] p-4 shadow-sm space-y-3">
-            <div className="flex flex-wrap items-center justify-between gap-2 border-b border-stone-200 pb-2.5">
-              <div>
-                <h3 className="font-serif font-bold text-base text-amber-950 flex items-center gap-2">
-                  <span>🚗</span>
-                  <span>Сборочные посты и производство</span>
-                </h3>
-                <span className="text-xs text-stone-500">
-                  {factory.name} • Мощность: <strong>{factory.capacity} авто/кв.</strong> • Содержание: <strong>${factory.monthlyOverhead * 3}/кв.</strong>
+          <section className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
+            {/* Chief Mechanic */}
+            <div className="rounded-xl border border-amber-900/20 bg-linear-to-b from-[var(--paper-card)] to-amber-50/40 p-3 flex items-start gap-2.5 shadow-2xs">
+              <span className="text-xl p-1.5 rounded-lg bg-amber-100/80 border border-amber-900/15 shadow-2xs select-none">👨‍🔧</span>
+              <div className="leading-snug">
+                <span className="font-serif font-bold text-amber-950 block text-xs tracking-wide">{eraTheme.advisorTitles.engineerRu}:</span>
+                <span className="text-stone-700 text-[11px] leading-relaxed mt-0.5 block">
+                  {hasShortage
+                    ? 'Сэр, запасы сырья на исходе! Часть сборочных постов может встать.'
+                    : activeResearch
+                    ? `Лаборатория работает над: ${t.technologies[activeResearch.technologyId as keyof typeof t.technologies]?.name ?? activeResearch.technologyId}.`
+                    : 'Конструкторы свободны. Откройте новый исследовательский проект!'}
                 </span>
               </div>
+            </div>
 
-              <div className="flex items-center gap-2">
-                {planSavedNotice && (
-                  <span className="text-xs font-bold text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded animate-pulse">
-                    ✓ План сохранен
-                  </span>
-                )}
-                <button
-                  type="button"
-                  disabled={planSaving}
-                  onClick={handleSavePlan}
-                  className="rounded bg-amber-900 px-3 py-1 text-xs font-bold text-white hover:bg-amber-950 disabled:opacity-50 shadow-xs"
-                >
-                  {planSaving ? 'Запись...' : 'Сохранить план'}
-                </button>
+            {/* Treasurer */}
+            <div className="rounded-xl border border-amber-900/20 bg-linear-to-b from-[var(--paper-card)] to-amber-50/40 p-3 flex items-start gap-2.5 shadow-2xs">
+              <span className="text-xl p-1.5 rounded-lg bg-amber-100/80 border border-amber-900/15 shadow-2xs select-none">💼</span>
+              <div className="leading-snug">
+                <span className="font-serif font-bold text-amber-950 block text-xs tracking-wide">{eraTheme.advisorTitles.financeRu}:</span>
+                <span className="text-stone-700 text-[11px] leading-relaxed mt-0.5 block">
+                  {company.cash < 2500
+                    ? 'Оборотный капитал на минимуме! Рекомендуется привлечь банковский заем.'
+                    : activeLoans.length > 0
+                    ? `Обслуживаем ${activeLoans.length} займа (-$${totalQuarterlyLoanPayment.toLocaleString()} / кв.). Казна стабильна.`
+                    : `Свободный капитал $${company.cash.toLocaleString()}. Финансы в идеальном порядке.`}
+                </span>
               </div>
             </div>
 
-            {/* Models list */}
-            {activeModels.length === 0 ? (
-              <div className="rounded border border-dashed border-stone-300 p-8 text-center text-xs text-stone-500">
-                <p>У компании нет активных моделей для сборки.</p>
-                <button
-                  onClick={() => setIsDesignModalOpen(true)}
-                  className="mt-2 rounded bg-amber-900 px-3 py-1.5 text-white font-bold"
-                >
-                  + Спроектировать первый автомобиль
-                </button>
+            {/* Plant Foreman */}
+            <div className="rounded-xl border border-amber-900/20 bg-linear-to-b from-[var(--paper-card)] to-amber-50/40 p-3 flex items-start gap-2.5 shadow-2xs">
+              <span className="text-xl p-1.5 rounded-lg bg-amber-100/80 border border-amber-900/15 shadow-2xs select-none">🏭</span>
+              <div className="leading-snug">
+                <span className="font-serif font-bold text-amber-950 block text-xs tracking-wide">{eraTheme.advisorTitles.plantRu}:</span>
+                <span className="text-stone-700 text-[11px] leading-relaxed mt-0.5 block">
+                  {isOverCapacity
+                    ? `Перегруз! Запланировано ${totalPlannedUnits} при лимите цеха ${factory.capacity} авто/кв.`
+                    : `Загрузка линий: ${totalPlannedUnits} / ${factory.capacity} авто/кв. (${Math.round((totalPlannedUnits / factory.capacity) * 100)}%).`}
+                </span>
               </div>
-            ) : (
-              <div className="space-y-3">
-                {activeModels.map((model) => {
-                  const quota = planDraft[model.id] ?? 0;
-                  const trSeg = t.design.segments[model.targetSegment]?.name ?? model.targetSegment;
-
-                  // Powertrain type
-                  const powertrain = model.components.engine.includes('steam')
-                    ? 'steam'
-                    : model.components.engine.includes('electric')
-                    ? 'electric'
-                    : 'ice';
-
-                  return (
-                    <div
-                      key={model.id}
-                      className="rounded border border-stone-200 bg-white p-3 shadow-2xs space-y-2"
-                    >
-                      <div className="grid grid-cols-1 sm:grid-cols-12 gap-3 items-center">
-                        {/* 2D Blueprint preview */}
-                        <div className="sm:col-span-4">
-                          <CarBlueprintSilhouette
-                            segment={model.targetSegment}
-                            powertrain={powertrain}
-                            className="h-20"
-                          />
-                        </div>
-
-                        {/* Model Specs & Info */}
-                        <div className="sm:col-span-5 space-y-1 text-xs">
-                          <div className="flex items-center gap-1.5">
-                            <span className="font-serif font-bold text-sm text-stone-900">{model.name}</span>
-                            <span className="text-[10px] px-1.5 py-0.2 rounded bg-amber-100 text-amber-900 font-semibold">
-                              {trSeg}
-                            </span>
-                          </div>
-
-                          <div className="flex gap-3 text-[11px] text-stone-600">
-                            <span>Себестоимость: <strong>${model.productionCost}</strong></span>
-                            <span>Цена: <strong className="text-amber-950">${model.salePrice}</strong></span>
-                          </div>
-
-                          <div className="flex gap-2 text-[10px] text-stone-500 font-mono">
-                            <span>Надеж: {model.stats.reliability}%</span>
-                            <span>Комфорт: {model.stats.comfort}</span>
-                            <span>Престиж: {model.stats.prestige}</span>
-                          </div>
-                        </div>
-
-                        {/* Interactive Quota Controls */}
-                        <div className="sm:col-span-3 flex flex-col items-end justify-center bg-stone-50 p-2 rounded border border-stone-200">
-                          <span className="text-[10px] uppercase font-bold text-stone-500">Квота выпуска</span>
-                          <div className="flex items-center gap-1 mt-1">
-                            <button
-                              type="button"
-                              onClick={() => handleQuotaChange(model.id, quota - 1)}
-                              className="h-6 w-6 rounded bg-stone-200 hover:bg-stone-300 font-bold text-stone-800 text-xs flex items-center justify-center"
-                            >
-                              -
-                            </button>
-                            <input
-                              type="number"
-                              min={0}
-                              max={factory.capacity}
-                              value={quota}
-                              onChange={(e) => handleQuotaChange(model.id, Number(e.target.value))}
-                              className="h-6 w-12 text-center rounded border border-stone-300 font-bold text-xs text-stone-900 bg-white"
-                            />
-                            <button
-                              type="button"
-                              onClick={() => handleQuotaChange(model.id, quota + 1)}
-                              className="h-6 w-6 rounded bg-stone-200 hover:bg-stone-300 font-bold text-stone-800 text-xs flex items-center justify-center"
-                            >
-                              +
-                            </button>
-                          </div>
-                          <span className="text-[10px] text-stone-500 mt-0.5">авто/кв.</span>
-                        </div>
-                      </div>
-
-                      {/* Materials required strip */}
-                      <div className="flex flex-wrap gap-2 text-[10px] border-t border-stone-100 pt-1.5 text-stone-600">
-                        <span className="text-stone-400">Сырье на авто:</span>
-                        {Object.entries(model.materialsRequired ?? {}).map(([mat, amt]) => {
-                          if (!amt) return null;
-                          return (
-                            <span key={mat} className="flex items-center gap-0.5">
-                              <span>{MATERIAL_ICONS[mat as MaterialType] ?? ''}</span>
-                              <span>{(t.materials[mat as MaterialType] as string | undefined) ?? mat}: {amt}</span>
-                            </span>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
+            </div>
           </section>
 
-          {/* Warehouse & Materials */}
-          <section className="rounded-lg border border-stone-300 bg-[var(--paper)] p-4 shadow-sm space-y-3">
-            <div className="flex items-center justify-between border-b border-stone-200 pb-2">
-              <h3 className="font-serif font-bold text-sm text-amber-950 flex items-center gap-1.5">
-                <span>📦</span>
-                <span>Склад сырья и автозакупка</span>
-              </h3>
-
-              <div className="flex items-center gap-2 text-xs">
-                <span className="text-stone-600 font-sans">Автозакупка сырья:</span>
-                <button
-                  type="button"
-                  onClick={() => setAutoProcurement(!isAutoProcure)}
-                  className={`rounded px-2.5 py-0.5 text-[11px] font-bold transition ${
-                    isAutoProcure
-                      ? 'bg-emerald-700 text-white'
-                      : 'bg-stone-300 text-stone-700'
-                  }`}
-                >
-                  {isAutoProcure ? '✓ ВКЛ' : 'ВЫКЛ'}
-                </button>
-              </div>
-            </div>
-
-            {/* Grid of Materials */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs">
-              {(['steel', 'wood', 'rubber', 'leather', 'aluminum', 'plastic'] as MaterialType[]).map((mat) => {
-                const inStock = inventory[mat] ?? 0;
-                const needed = materialDemand[mat] ?? 0;
-                const isShort = needed > inStock;
-                const icon = MATERIAL_ICONS[mat] ?? '📦';
-
-                return (
-                  <div
-                    key={mat}
-                    className={`rounded border p-2 flex flex-col justify-between ${
-                      isShort
-                        ? inStock === 0
-                          ? 'border-rose-300 bg-rose-50/70'
-                          : 'border-amber-300 bg-amber-50/50'
-                        : 'border-stone-200 bg-white'
-                    }`}
-                  >
-                    <div className="flex justify-between items-start">
-                      <div className="flex items-center gap-1">
-                        <span>{icon}</span>
-                        <span className="font-bold text-stone-800">{t.materials[mat] ?? mat}</span>
-                      </div>
-                      <span className="text-[10px] text-stone-500">Потр: {needed}</span>
-                    </div>
-
-                    <div className="mt-1 flex items-baseline justify-between">
-                      <span className="text-sm font-bold text-stone-900">{inStock.toLocaleString()}</span>
-                      {isShort && (
-                        <button
-                          type="button"
-                          onClick={() => handleQuickBuy(mat, Math.max(10, needed - inStock))}
-                          className="rounded bg-amber-800 px-1.5 py-0.5 text-[9px] font-bold text-white hover:bg-amber-900"
-                        >
-                          + Купить
-                        </button>
-                      )}
-                    </div>
+          {/* 3. MAIN WORKSPACE GRID: FACTORY (LEFT 7/12) & DISPATCH/RESEARCH (RIGHT 5/12) */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
+            {/* ================= LEFT COLUMN: THE FACTORY FLOOR ================= */}
+            <div className="lg:col-span-7 space-y-4">
+              {/* Active Production Lines */}
+              <section className="card-lux p-4 space-y-3.5">
+                <div className="flex flex-wrap items-center justify-between gap-2 border-b border-amber-900/20 pb-2.5">
+                  <div>
+                    <h3 className="font-serif font-bold text-base text-amber-950 flex items-center gap-2">
+                      <span className="text-lg">🚗</span>
+                      <span>Сборочные посты и производство</span>
+                    </h3>
+                    <span className="text-xs text-stone-600 font-serif">
+                      {factory.name} • Мощность: <strong className="font-sans text-amber-950">{factory.capacity} авто/кв.</strong> • Содержание: <strong className="font-sans text-stone-800">${factory.monthlyOverhead * 3}/кв.</strong>
+                    </span>
                   </div>
-                );
-              })}
+
+                  <div className="flex items-center gap-2">
+                    {planSavedNotice && (
+                      <span className="text-xs font-bold text-emerald-900 bg-emerald-100 border border-emerald-300 px-2.5 py-1 rounded-lg animate-pulse shadow-2xs">
+                        ✓ План сохранен
+                      </span>
+                    )}
+                    <button
+                      type="button"
+                      disabled={planSaving}
+                      onClick={handleSavePlan}
+                      className="btn-brass px-3 py-1.5 text-xs font-bold text-white disabled:opacity-50 shadow-md cursor-pointer"
+                    >
+                      {planSaving ? 'Запись...' : 'Сохранить план'}
+                    </button>
+                  </div>
+                </div>
+
+                {/* Models list */}
+                {activeModels.length === 0 ? (
+                  <div className="rounded-xl border border-dashed border-amber-900/30 bg-amber-50/30 p-8 text-center text-xs text-stone-600 font-serif">
+                    <p className="text-sm text-stone-700">У компании пока нет спроектированных моделей для выпуска.</p>
+                    <button
+                      onClick={() => setIsDesignModalOpen(true)}
+                      className="btn-brass mt-3 px-4 py-2 text-white font-bold text-xs cursor-pointer shadow-md inline-flex items-center gap-1.5"
+                    >
+                      <span>📐</span>
+                      <span>+ Спроектировать первый автомобиль</span>
+                    </button>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {activeModels.map((model) => {
+                      const quota = planDraft[model.id] ?? 0;
+                      const trSeg = t.design.segments[model.targetSegment]?.name ?? model.targetSegment;
+
+                      // Powertrain type
+                      const powertrain = model.components.engine.includes('steam')
+                        ? 'steam'
+                        : model.components.engine.includes('electric')
+                        ? 'electric'
+                        : 'ice';
+
+                      return (
+                        <div
+                          key={model.id}
+                          className="rounded-xl border border-amber-900/20 bg-white/90 p-3 shadow-sm space-y-2.5 hover:border-amber-700/40 transition"
+                        >
+                          <div className="grid grid-cols-1 sm:grid-cols-12 gap-3 items-center">
+                            {/* 2D Blueprint preview */}
+                            <div className="sm:col-span-5">
+                              <CarBlueprintSilhouette
+                                segment={model.targetSegment}
+                                powertrain={powertrain}
+                                className="w-full shadow-2xs"
+                              />
+                            </div>
+
+                            {/* Model Specs & Info */}
+                            <div className="sm:col-span-4 space-y-1.5 text-xs">
+                              <div className="flex items-center gap-1.5 flex-wrap">
+                                <span className="font-serif font-bold text-sm text-amber-950">{model.name}</span>
+                                <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-100/90 text-amber-950 font-bold border border-amber-900/20">
+                                  {trSeg}
+                                </span>
+                              </div>
+
+                              <div className="flex flex-wrap gap-2 text-[11px] text-stone-700 font-serif">
+                                <span>Себест: <strong className="font-mono text-stone-900">${model.productionCost}</strong></span>
+                                <span>Цена: <strong className="font-mono text-amber-950">${model.salePrice}</strong></span>
+                              </div>
+
+                              <div className="flex flex-wrap gap-1 text-[10px] text-stone-600 font-mono">
+                                <span className="bg-emerald-50 text-emerald-900 px-1.5 py-0.2 rounded border border-emerald-200">Над: {model.stats.reliability}%</span>
+                                <span className="bg-amber-50 text-amber-900 px-1.5 py-0.2 rounded border border-amber-200">Комф: {model.stats.comfort}</span>
+                                <span className="bg-purple-50 text-purple-900 px-1.5 py-0.2 rounded border border-purple-200">Прест: {model.stats.prestige}</span>
+                              </div>
+                            </div>
+
+                            {/* Interactive Quota Controls */}
+                            <div className="sm:col-span-3 flex flex-col items-end justify-center bg-amber-50/40 p-2.5 rounded-xl border border-amber-900/15">
+                              <span className="text-[10px] uppercase font-bold text-amber-900 tracking-wider">Квота выпуска</span>
+                              <div className="flex items-center gap-1 mt-1">
+                                <button
+                                  type="button"
+                                  onClick={() => handleQuotaChange(model.id, quota - 1)}
+                                  className="h-6 w-6 rounded bg-stone-200 hover:bg-stone-300 font-bold text-stone-800 text-xs flex items-center justify-center border border-stone-300 cursor-pointer transition"
+                                >
+                                  -
+                                </button>
+                                <input
+                                  type="number"
+                                  min={0}
+                                  max={factory.capacity}
+                                  value={quota}
+                                  onChange={(e) => handleQuotaChange(model.id, Number(e.target.value))}
+                                  className="h-6 w-12 text-center rounded border border-amber-900/30 font-bold font-mono text-xs text-stone-900 bg-white shadow-inner"
+                                />
+                                <button
+                                  type="button"
+                                  onClick={() => handleQuotaChange(model.id, quota + 1)}
+                                  className="h-6 w-6 rounded bg-stone-200 hover:bg-stone-300 font-bold text-stone-800 text-xs flex items-center justify-center border border-stone-300 cursor-pointer transition"
+                                >
+                                  +
+                                </button>
+                              </div>
+                              <span className="text-[10px] text-stone-500 font-mono mt-0.5">авто/кв.</span>
+                            </div>
+                          </div>
+
+                          {/* Materials required strip */}
+                          <div className="flex flex-wrap gap-2 text-[10px] border-t border-amber-900/10 pt-1.5 text-stone-600">
+                            <span className="text-stone-400 font-serif">Сырье на единицу:</span>
+                            {Object.entries(model.materialsRequired ?? {}).map(([mat, amt]) => {
+                              if (!amt) return null;
+                              return (
+                                <span key={mat} className="flex items-center gap-0.5 bg-stone-50 px-1.5 py-0.5 rounded border border-stone-200 text-stone-700">
+                                  <span>{MATERIAL_ICONS[mat as MaterialType] ?? ''}</span>
+                                  <span>{(t.materials[mat as MaterialType] as string | undefined) ?? mat}: <strong>{amt}</strong></span>
+                                </span>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </section>
+
+              {/* Warehouse & Materials */}
+              <section className="card-lux p-4 space-y-3">
+                <div className="flex items-center justify-between border-b border-amber-900/20 pb-2">
+                  <h3 className="font-serif font-bold text-sm text-amber-950 flex items-center gap-1.5">
+                    <span className="text-base">📦</span>
+                    <span>Склад сырья и автозакупка</span>
+                  </h3>
+
+                  <div className="flex items-center gap-2 text-xs">
+                    <span className="text-stone-600 font-serif">Автозакупка:</span>
+                    <button
+                      type="button"
+                      onClick={() => setAutoProcurement(!isAutoProcure)}
+                      className={`rounded-lg px-2.5 py-1 text-[11px] font-bold transition shadow-2xs cursor-pointer ${
+                        isAutoProcure
+                          ? 'bg-emerald-700 hover:bg-emerald-800 text-white'
+                          : 'bg-stone-300 hover:bg-stone-400 text-stone-800'
+                      }`}
+                    >
+                      {isAutoProcure ? '✓ ВКЛ' : 'ВЫКЛ'}
+                    </button>
+                  </div>
+                </div>
+
+                {/* Grid of Materials */}
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs">
+                  {(['steel', 'wood', 'rubber', 'leather', 'aluminum', 'plastic'] as MaterialType[]).map((mat) => {
+                    const inStock = inventory[mat] ?? 0;
+                    const needed = materialDemand[mat] ?? 0;
+                    const isShort = needed > inStock;
+                    const icon = MATERIAL_ICONS[mat] ?? '📦';
+
+                    return (
+                      <div
+                        key={mat}
+                        className={`rounded-lg border p-2 flex flex-col justify-between transition ${
+                          isShort
+                            ? inStock === 0
+                              ? 'border-rose-300 bg-rose-50/80 shadow-2xs'
+                              : 'border-amber-300 bg-amber-50/70 shadow-2xs'
+                            : 'border-stone-200 bg-white/90 shadow-2xs'
+                        }`}
+                      >
+                        <div className="flex justify-between items-start">
+                          <div className="flex items-center gap-1">
+                            <span className="text-sm">{icon}</span>
+                            <span className="font-serif font-bold text-stone-900">{t.materials[mat] ?? mat}</span>
+                          </div>
+                          <span className="text-[10px] text-stone-500 font-mono">Потр: {needed}</span>
+                        </div>
+
+                        <div className="mt-1.5 flex items-baseline justify-between">
+                          <span className="text-sm font-bold font-mono text-stone-900">{inStock.toLocaleString()}</span>
+                          {isShort && (
+                            <button
+                              type="button"
+                              onClick={() => handleQuickBuy(mat, Math.max(10, needed - inStock))}
+                              className="rounded bg-amber-900 hover:bg-amber-950 px-2 py-0.5 text-[9px] font-bold text-white shadow-2xs transition cursor-pointer"
+                            >
+                              + Купить
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </section>
             </div>
-          </section>
-        </div>
 
         {/* ================= RIGHT COLUMN: R&D, MARKETS, AND BANK ================= */}
         <div className="lg:col-span-5 space-y-4">
           {/* 1. Research & Development Widget */}
-          <section className="rounded-lg border border-stone-300 bg-[var(--paper)] p-4 shadow-sm space-y-3">
-            <div className="flex items-center justify-between border-b border-stone-200 pb-2">
+          <section className="card-lux p-4 space-y-3">
+            <div className="flex items-center justify-between border-b border-amber-900/20 pb-2">
               <h3 className="font-serif font-bold text-sm text-amber-950 flex items-center gap-1.5">
-                <span>🔬</span>
+                <span className="text-base">🔬</span>
                 <span>Инженерное бюро (НИОКР)</span>
               </h3>
               <button
                 type="button"
                 onClick={() => setIsResearchModalOpen(true)}
-                className="text-xs font-bold text-amber-900 hover:underline"
+                className="text-xs font-serif font-bold text-amber-900 hover:text-amber-950 hover:underline cursor-pointer"
               >
                 {activeResearch ? 'Сменить проект' : '+ Выбрать технологию'}
               </button>
             </div>
 
             {activeResearch ? (
-              <div className="rounded border border-amber-300 bg-amber-50/60 p-3 space-y-2 text-xs">
+              <div className="rounded-xl border border-amber-900/25 bg-amber-50/70 p-3 space-y-2.5 text-xs shadow-2xs">
                 <div className="flex justify-between items-start">
-                  <span className="font-bold text-stone-900 font-serif">
+                  <span className="font-bold text-amber-950 font-serif text-sm">
                     {t.technologies[activeResearch.technologyId as keyof typeof t.technologies]?.name ?? activeResearch.technologyId}
                   </span>
-                  <span className="text-[10px] font-bold text-amber-900 bg-amber-100 px-2 py-0.5 rounded">
+                  <span className="text-[10px] font-bold font-mono text-amber-950 bg-amber-200/80 border border-amber-400/50 px-2 py-0.5 rounded-md">
                     ${activeResearch.allocatedBudget} / мес.
                   </span>
                 </div>
@@ -615,13 +616,13 @@ export default function DashboardPage(): React.JSX.Element {
                 <div className="space-y-1">
                   <div className="flex justify-between text-[11px] text-stone-600 font-mono">
                     <span>Прогресс разработки:</span>
-                    <span>
+                    <span className="font-bold text-amber-950">
                       {Math.ceil(activeResearch.progressMonths / 3)} / {Math.ceil(activeResearch.totalMonths / 3)} кв.
                     </span>
                   </div>
-                  <div className="h-2 w-full rounded-full bg-stone-200 overflow-hidden">
+                  <div className="h-2 w-full rounded-full bg-stone-300/80 overflow-hidden border border-stone-400/30">
                     <div
-                      className="h-full bg-amber-800 transition-all duration-300"
+                      className="h-full bg-linear-to-r from-amber-600 to-amber-900 transition-all duration-300 shadow-2xs"
                       style={{
                         width: `${Math.min(100, Math.round((activeResearch.progressMonths / activeResearch.totalMonths) * 100))}%`,
                       }}
@@ -630,26 +631,27 @@ export default function DashboardPage(): React.JSX.Element {
                 </div>
               </div>
             ) : (
-              <div className="rounded border border-dashed border-stone-300 p-4 text-center text-xs text-stone-500">
+              <div className="rounded-xl border border-dashed border-amber-900/30 bg-amber-50/30 p-4 text-center text-xs text-stone-600 font-serif">
                 <p>Лаборатория свободна. Никаких разработок не ведется.</p>
                 <button
                   type="button"
                   onClick={() => setIsResearchModalOpen(true)}
-                  className="mt-2 rounded bg-amber-900 px-3 py-1 font-bold text-white text-xs"
+                  className="btn-brass mt-2.5 px-3.5 py-1.5 font-bold text-white text-xs shadow-md cursor-pointer inline-flex items-center gap-1"
                 >
-                  Запустить исследование
+                  <span>🔬</span>
+                  <span>Запустить исследование</span>
                 </button>
               </div>
             )}
 
             {/* Unlocked Technologies badges */}
             <div className="pt-1">
-              <span className="text-[10px] uppercase font-bold text-stone-400 block mb-1">
+              <span className="text-[10px] uppercase font-bold text-stone-500 font-serif block mb-1.5">
                 Изученные патенты ({gameState.unlockedTechnologyIds?.length ?? 0}):
               </span>
               <div className="flex flex-wrap gap-1">
                 {(gameState.unlockedTechnologyIds ?? []).map((id) => (
-                  <span key={id} className="text-[10px] rounded bg-stone-100 border border-stone-200 px-1.5 py-0.5 text-stone-700">
+                  <span key={id} className="text-[10px] rounded-md bg-white/80 border border-amber-900/20 px-2 py-0.5 text-amber-950 font-serif shadow-2xs">
                     ✓ {t.technologies[id as keyof typeof t.technologies]?.name ?? id}
                   </span>
                 ))}
@@ -658,93 +660,93 @@ export default function DashboardPage(): React.JSX.Element {
           </section>
 
           {/* 2. Global Markets & Competitors */}
-          <section className="rounded-lg border border-stone-300 bg-[var(--paper)] p-4 shadow-sm space-y-3">
-            <div className="flex items-center justify-between border-b border-stone-200 pb-2">
+          <section className="card-lux p-4 space-y-3">
+            <div className="flex items-center justify-between border-b border-amber-900/20 pb-2">
               <h3 className="font-serif font-bold text-sm text-amber-950 flex items-center gap-1.5">
-                <span>🌍</span>
+                <span className="text-base">🌍</span>
                 <span>Рынки и Конкуренты</span>
               </h3>
               <button
                 type="button"
                 onClick={() => handleTabChange('markets')}
-                className="text-xs font-bold text-amber-900 hover:underline cursor-pointer"
+                className="text-xs font-serif font-bold text-amber-900 hover:text-amber-950 hover:underline cursor-pointer"
               >
                 Подробнее →
               </button>
             </div>
 
             {/* Region presence bars */}
-            <div className="space-y-1.5 text-xs">
-              <div className="flex justify-between items-center text-[11px] text-stone-600">
-                <span>🇺🇸 Северная Америка:</span>
-                <strong className="text-stone-900 font-mono">
+            <div className="space-y-2 text-xs">
+              <div className="flex justify-between items-center text-[11px] text-stone-700">
+                <span className="font-serif">🇺🇸 Северная Америка:</span>
+                <strong className="text-stone-900 font-mono bg-stone-100 px-2 py-0.5 rounded border border-stone-200">
                   {Math.round((company.marketPresence?.['north-america'] ?? 0) * 100)}% охват
                 </strong>
               </div>
-              <div className="flex justify-between items-center text-[11px] text-stone-600">
-                <span>🇪🇺 Европа:</span>
-                <strong className="text-stone-900 font-mono">
+              <div className="flex justify-between items-center text-[11px] text-stone-700">
+                <span className="font-serif">🇪🇺 Европа:</span>
+                <strong className="text-stone-900 font-mono bg-stone-100 px-2 py-0.5 rounded border border-stone-200">
                   {Math.round((company.marketPresence?.europe ?? 0) * 100)}% охват
                 </strong>
               </div>
-              <div className="flex justify-between items-center text-[11px] text-stone-600">
-                <span>🌍 Ближний Восток:</span>
-                <strong className="text-stone-900 font-mono">
+              <div className="flex justify-between items-center text-[11px] text-stone-700">
+                <span className="font-serif">🌍 Ближний Восток:</span>
+                <strong className="text-stone-900 font-mono bg-stone-100 px-2 py-0.5 rounded border border-stone-200">
                   {Math.round((company.marketPresence?.['middle-east'] ?? 0) * 100)}% охват
                 </strong>
               </div>
             </div>
 
             {/* Key Competitors snapshot */}
-            <div className="border-t border-stone-200 pt-2 space-y-1.5 text-xs">
-              <span className="text-[10px] uppercase font-bold text-stone-400 block">Главные соперники эпохи:</span>
-              <div className="grid grid-cols-2 gap-1.5 text-[11px]">
-                <div className="rounded border border-stone-200 bg-stone-50 p-1.5">
-                  <div className="font-bold text-stone-900">🇺🇸 Fort Motor Co.</div>
-                  <span className="text-[10px] text-stone-500">Репутация: 65 ★</span>
+            <div className="border-t border-amber-900/15 pt-2.5 space-y-1.5 text-xs">
+              <span className="text-[10px] uppercase font-bold text-stone-500 font-serif block">Главные соперники эпохи:</span>
+              <div className="grid grid-cols-2 gap-2 text-[11px]">
+                <div className="rounded-lg border border-amber-900/15 bg-white/70 p-2 shadow-2xs">
+                  <div className="font-serif font-bold text-stone-900">🇺🇸 Fort Motor Co.</div>
+                  <span className="text-[10px] text-amber-900 font-mono">Репутация: 65 ★</span>
                 </div>
-                <div className="rounded border border-stone-200 bg-stone-50 p-1.5">
-                  <div className="font-bold text-stone-900">🇩🇪 Mercer-Benz</div>
-                  <span className="text-[10px] text-stone-500">Репутация: 80 ★</span>
+                <div className="rounded-lg border border-amber-900/15 bg-white/70 p-2 shadow-2xs">
+                  <div className="font-serif font-bold text-stone-900">🇩🇪 Mercer-Benz</div>
+                  <span className="text-[10px] text-amber-900 font-mono">Репутация: 80 ★</span>
                 </div>
               </div>
             </div>
           </section>
 
           {/* 3. Bank & Treasury */}
-          <section className="rounded-lg border border-stone-300 bg-[var(--paper)] p-4 shadow-sm space-y-3">
-            <div className="flex items-center justify-between border-b border-stone-200 pb-2">
+          <section className="card-lux p-4 space-y-3">
+            <div className="flex items-center justify-between border-b border-amber-900/20 pb-2">
               <h3 className="font-serif font-bold text-sm text-amber-950 flex items-center gap-1.5">
-                <span>🏦</span>
+                <span className="text-base">🏦</span>
                 <span>Казначейство и Банк</span>
               </h3>
               <button
                 type="button"
                 onClick={() => handleTabChange('bank')}
-                className="text-xs font-bold text-amber-900 hover:underline cursor-pointer"
+                className="text-xs font-serif font-bold text-amber-900 hover:text-amber-950 hover:underline cursor-pointer"
               >
                 Кредитный портфель →
               </button>
             </div>
 
             <div className="grid grid-cols-2 gap-2 text-xs">
-              <div className="rounded border border-stone-200 bg-white p-2">
-                <span className="text-stone-500 text-[10px] block">Свободный капитал:</span>
-                <span className="text-base font-bold text-emerald-800">${company.cash.toLocaleString()}</span>
+              <div className="rounded-xl border border-amber-900/15 bg-white/80 p-2.5 shadow-2xs">
+                <span className="text-stone-500 font-serif text-[10px] block">Свободный капитал:</span>
+                <span className="text-base font-bold font-mono text-emerald-900">${company.cash.toLocaleString()}</span>
               </div>
-              <div className="rounded border border-stone-200 bg-white p-2">
-                <span className="text-stone-500 text-[10px] block">Активные кредиты:</span>
-                <span className="text-base font-bold text-stone-900">{activeLoans.length}</span>
+              <div className="rounded-xl border border-amber-900/15 bg-white/80 p-2.5 shadow-2xs">
+                <span className="text-stone-500 font-serif text-[10px] block">Активные кредиты:</span>
+                <span className="text-base font-bold font-mono text-stone-900">{activeLoans.length}</span>
               </div>
             </div>
 
             {/* Quick loan button */}
-            <div className="flex items-center justify-between text-xs bg-amber-50/70 border border-amber-200 rounded p-2">
+            <div className="flex items-center justify-between text-xs bg-amber-50/80 border border-amber-900/20 rounded-xl p-2.5 shadow-2xs">
               <span className="text-[11px] text-amber-950 font-serif">Требуются оборотные средства?</span>
               <button
                 type="button"
                 onClick={handleQuickLoan}
-                className="rounded bg-amber-900 px-2.5 py-1 text-[11px] font-bold text-white hover:bg-amber-950 shadow-xs"
+                className="btn-brass px-3 py-1 text-[11px] font-bold text-white shadow-md cursor-pointer"
               >
                 + Овердрафт ($3 000)
               </button>

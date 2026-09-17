@@ -1,91 +1,239 @@
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,600&family=Playfair+Display:ital,wght@0,600;0,700;0,900;1,600&family=JetBrains+Mono:wght@500;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  --bg: #f3f1e8;
-  --paper: #fffdf6;
-  --ink: #2a251b;
-  --accent: #8f6c1a;
-  --border-subtle: #d6cebf;
+  --bg: #f5f0e1;
+  --bg-gradient: radial-gradient(ellipse at 50% 0%, #faf6ec 0%, #f0e6ce 55%, #e2d3b3 100%);
+  --paper: #fffef9;
+  --paper-card: #fffcf2;
+  --ink: #2b1f14;
+  --ink-secondary: #5c4b37;
+  --accent: #92400e;
+  --accent-gold: #b45309;
+  --gold-glow: #d97706;
+  --border-subtle: #d8cbb2;
+  --border-brass: #b58d3d;
+  --era-font: 'Cormorant Garamond', 'Playfair Display', Georgia, serif;
+  --era-heading-font: 'Cinzel', 'Playfair Display', Georgia, serif;
 }
 
-/* 1900–1919: Дерево, пергамент, латунь */
+/* 1900–1919: Дерево, пергамент, чеканная латунь */
 [data-era="era-1900"] {
-  --bg: #f3f1e8;
-  --paper: #fffdf6;
-  --ink: #2a251b;
-  --accent: #8f6c1a;
-  --border-subtle: #d6cebf;
-  --era-font: Georgia, 'Times New Roman', serif;
+  --bg: #f5f0e1;
+  --bg-gradient: radial-gradient(ellipse at 50% 0%, #faf5ea 0%, #f0e6ce 50%, #e3d2b0 100%);
+  --paper: #fffef8;
+  --paper-card: #fffbf0;
+  --ink: #291d12;
+  --ink-secondary: #634e3a;
+  --accent: #854d0e;
+  --accent-gold: #b45309;
+  --border-subtle: #d6c6a8;
+  --border-brass: #b88628;
+  --era-font: 'Cormorant Garamond', 'Playfair Display', Georgia, serif;
+  --era-heading-font: 'Cinzel', 'Playfair Display', Georgia, serif;
 }
 
-/* 1920–1939: Ар-деко, хром, черный лак */
+/* 1920–1939: Ревущие двадцатые, ар-деко, хром, черный лак */
 [data-era="era-1920"] {
-  --bg: #0f172a;
-  --paper: #1e293b;
-  --ink: #f1f5f9;
+  --bg: #0b1120;
+  --bg-gradient: radial-gradient(ellipse at 50% 0%, #151f38 0%, #0b1120 70%, #050811 100%);
+  --paper: #162032;
+  --paper-card: #1c283f;
+  --ink: #f8fafc;
+  --ink-secondary: #94a3b8;
   --accent: #f59e0b;
+  --accent-gold: #fbbf24;
   --border-subtle: #334155;
-  --era-font: 'Trebuchet MS', 'Franklin Gothic Medium', sans-serif;
+  --border-brass: #d97706;
+  --era-font: 'Playfair Display', 'Trebuchet MS', sans-serif;
+  --era-heading-font: 'Cinzel', sans-serif;
 }
 
-/* 1940–1959: Бакелит, слоновая кость, пастель */
+/* 1940–1959: Бакелит, слоновая кость, массивный хром */
 [data-era="era-1940"] {
-  --bg: #f0f9ff;
+  --bg: #f0f4f8;
+  --bg-gradient: radial-gradient(ellipse at 50% 0%, #ffffff 0%, #eef3f8 50%, #dde6ef 100%);
   --paper: #ffffff;
+  --paper-card: #f8fafc;
   --ink: #0f172a;
-  --accent: #0284c7;
-  --border-subtle: #bae6fd;
-  --era-font: 'Lucida Sans', 'Lucida Grande', sans-serif;
+  --ink-secondary: #475569;
+  --accent: #0369a1;
+  --accent-gold: #0284c7;
+  --border-subtle: #cbd5e1;
+  --border-brass: #38bdf8;
+  --era-font: system-ui, -apple-system, sans-serif;
+  --era-heading-font: 'Playfair Display', Georgia, serif;
 }
 
-/* 1960–1979: Винил, матовый алюминий, оранжевый */
+/* 1960–1979: Винил, матовый алюминий, оранжевый спидометр */
 [data-era="era-1960"] {
-  --bg: #18181b;
-  --paper: #27272a;
-  --ink: #fafafa;
+  --bg: #121214;
+  --bg-gradient: radial-gradient(ellipse at 50% 0%, #222226 0%, #121214 70%, #09090a 100%);
+  --paper: #1c1c21;
+  --paper-card: #25252b;
+  --ink: #f4f4f5;
+  --ink-secondary: #a1a1aa;
   --accent: #ea580c;
+  --accent-gold: #f97316;
   --border-subtle: #3f3f46;
-  --era-font: 'Impact', 'Arial Black', sans-serif;
+  --border-brass: #f97316;
+  --era-font: system-ui, -apple-system, sans-serif;
+  --era-heading-font: 'Impact', 'Arial Black', sans-serif;
 }
 
 /* 1980–1999: Матовый пластик, люминесцентный зеленый */
 [data-era="era-1980"] {
-  --bg: #09090b;
-  --paper: #18181b;
+  --bg: #050807;
+  --bg-gradient: radial-gradient(ellipse at 50% 0%, #0d1a14 0%, #050807 70%, #020302 100%);
+  --paper: #0c1611;
+  --paper-card: #122019;
   --ink: #34d399;
+  --ink-secondary: #059669;
   --accent: #10b981;
-  --border-subtle: #065f46;
-  --era-font: 'Courier New', Courier, monospace;
+  --accent-gold: #34d399;
+  --border-subtle: #064e3b;
+  --border-brass: #10b981;
+  --era-font: 'JetBrains Mono', 'Courier New', monospace;
+  --era-heading-font: 'JetBrains Mono', monospace;
 }
 
 /* 2000–2019: Анодированный алюминий, стекло */
 [data-era="era-2000"] {
   --bg: #f1f5f9;
+  --bg-gradient: radial-gradient(ellipse at 50% 0%, #ffffff 0%, #f1f5f9 60%, #e2e8f0 100%);
   --paper: #ffffff;
+  --paper-card: #f8fafc;
   --ink: #0f172a;
+  --ink-secondary: #64748b;
   --accent: #2563eb;
+  --accent-gold: #3b82f6;
   --border-subtle: #cbd5e1;
+  --border-brass: #60a5fa;
   --era-font: system-ui, -apple-system, sans-serif;
+  --era-heading-font: system-ui, -apple-system, sans-serif;
 }
 
 /* 2020+: Углеволокно, OLED, неоновый циан */
 [data-era="era-2020"] {
-  --bg: #030712;
-  --paper: #111827;
-  --ink: #f9fafb;
+  --bg: #020617;
+  --bg-gradient: radial-gradient(ellipse at 50% 0%, #08162e 0%, #020617 75%, #000000 100%);
+  --paper: #091224;
+  --paper-card: #0f1c36;
+  --ink: #f1f5f9;
+  --ink-secondary: #94a3b8;
   --accent: #06b6d4;
+  --accent-gold: #22d3ee;
   --border-subtle: #1e293b;
+  --border-brass: #0891b2;
   --era-font: system-ui, -apple-system, sans-serif;
+  --era-heading-font: system-ui, -apple-system, sans-serif;
 }
 
 body {
   margin: 0;
   background-color: var(--bg);
+  background-image: var(--bg-gradient);
+  background-attachment: fixed;
   color: var(--ink);
-  font-family: var(--era-font, Georgia, 'Times New Roman', serif);
+  font-family: var(--era-font, 'Cormorant Garamond', Georgia, serif);
+  font-size: 15px;
+  line-height: 1.55;
   transition: background-color 0.4s ease, color 0.4s ease;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Elegant Typography Utilities */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--era-heading-font, 'Cinzel', Georgia, serif);
+  letter-spacing: 0.02em;
+}
+
+/* Luxury Industrial Card */
+.card-lux {
+  background-color: var(--paper-card);
+  border: 1px solid var(--border-subtle);
+  border-top: 2px solid var(--border-brass);
+  border-radius: 12px;
+  box-shadow: 0 4px 16px -2px rgba(40, 25, 10, 0.06), 0 2px 4px -1px rgba(40, 25, 10, 0.03);
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.card-lux:hover {
+  box-shadow: 0 8px 24px -3px rgba(40, 25, 10, 0.1), 0 3px 6px -1px rgba(40, 25, 10, 0.04);
+}
+
+/* Burnished Brass Button */
+.btn-brass {
+  background: linear-gradient(180deg, #b45309 0%, #78350f 100%);
+  color: #ffffff;
+  border: 1px solid #78350f;
+  box-shadow: 0 2px 4px rgba(69, 26, 3, 0.25), inset 0 1px 0 rgba(251, 191, 36, 0.35);
+  font-family: var(--era-heading-font, serif);
+  letter-spacing: 0.04em;
+  transition: all 0.15s ease;
+}
+
+.btn-brass:hover {
+  background: linear-gradient(180deg, #d97706 0%, #92400e 100%);
+  box-shadow: 0 4px 8px rgba(69, 26, 3, 0.35), inset 0 1px 0 rgba(254, 240, 138, 0.45);
+  transform: translateY(-1px);
+}
+
+.btn-brass:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 2px rgba(69, 26, 3, 0.3);
+}
+
+/* Secondary Antique Gold Border Button */
+.btn-gold-outline {
+  background: var(--paper);
+  color: var(--ink);
+  border: 1.5px solid var(--border-brass);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  font-family: var(--era-heading-font, serif);
+  transition: all 0.15s ease;
+}
+
+.btn-gold-outline:hover {
+  background: rgba(180, 83, 9, 0.08);
+  border-color: var(--accent-gold);
+  color: var(--accent);
+}
+
+/* Embossed Dial Stat Bar */
+.dial-gauge-track {
+  background: rgba(0, 0, 0, 0.08);
+  border-radius: 9999px;
+  overflow: hidden;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.dial-gauge-fill {
+  border-radius: 9999px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 1px 2px rgba(0, 0, 0, 0.15);
+  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Custom Antique Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c2b59b;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #9d8e72;
 }
 
 a {

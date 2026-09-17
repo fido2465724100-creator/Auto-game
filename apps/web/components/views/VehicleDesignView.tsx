@@ -159,17 +159,20 @@ export default function VehicleDesignPage(): React.JSX.Element {
   return (
     <div className="space-y-8">
       {/* HEADER */}
-      <header className="border-b border-stone-300 pb-3">
-        <h2 className="text-2xl font-bold tracking-tight text-amber-950">{t.design.title}</h2>
-        <p className="text-sm text-stone-600">{t.design.subtitle}</p>
+      <header className="border-b-2 border-amber-900/25 pb-4">
+        <h2 className="text-2xl font-bold font-serif tracking-wide text-amber-950 flex items-center gap-2">
+          <span>📐</span>
+          <span>{t.design.title}</span>
+        </h2>
+        <p className="text-xs text-stone-600 font-serif italic mt-0.5">{t.design.subtitle}</p>
       </header>
 
       {statusMessage ? (
         <div
-          className={`rounded border p-3 text-xs font-semibold ${
+          className={`rounded-xl border p-3.5 text-xs font-semibold shadow-2xs ${
             statusMessage.includes('Ошибка') || statusMessage.includes('Error')
-              ? 'border-red-300 bg-red-50 text-red-700'
-              : 'border-emerald-300 bg-emerald-50 text-emerald-800'
+              ? 'border-red-300 bg-red-50 text-red-800'
+              : 'border-emerald-300 bg-emerald-50 text-emerald-900'
           }`}
         >
           {statusMessage}
@@ -181,11 +184,14 @@ export default function VehicleDesignPage(): React.JSX.Element {
         {/* LEFT / CENTER: BUILDER FORM (7 cols) */}
         <form onSubmit={handleSaveModel} className="space-y-6 lg:col-span-7">
           {/* 1. MODEL NAME & SEGMENT */}
-          <div className="rounded border border-stone-300 bg-[var(--paper)] p-5 shadow-sm">
-            <h3 className="mb-4 text-lg font-semibold text-amber-950">{t.design.step1}</h3>
+          <div className="card-lux p-5 space-y-4">
+            <h3 className="text-base font-serif font-bold text-amber-950 flex items-center gap-2">
+              <span className="text-amber-800">1.</span>
+              <span>{t.design.step1}</span>
+            </h3>
             <div className="space-y-4">
               <div>
-                <label htmlFor="model-name" className="block text-xs font-semibold uppercase tracking-wider text-stone-600">
+                <label htmlFor="model-name" className="block text-xs font-serif font-bold uppercase tracking-wider text-stone-700">
                   {t.design.modelName}
                 </label>
                 <input
@@ -193,17 +199,17 @@ export default function VehicleDesignPage(): React.JSX.Element {
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="mt-1 w-full rounded border border-stone-300 bg-white px-3 py-2 text-stone-900 shadow-inner focus:border-amber-700 focus:outline-none"
+                  className="mt-1.5 w-full rounded-lg border border-amber-900/30 bg-white px-3.5 py-2 text-stone-900 font-serif font-bold text-sm shadow-inner focus:border-amber-700 focus:outline-none"
                   placeholder={t.design.modelNamePlaceholder}
                   required
                 />
               </div>
 
               <div>
-                <span className="block text-xs font-semibold uppercase tracking-wider text-stone-600">
+                <span className="block text-xs font-serif font-bold uppercase tracking-wider text-stone-700">
                   {t.design.segment}
                 </span>
-                <div className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-4">
+                <div className="mt-2 grid grid-cols-2 gap-2.5 sm:grid-cols-4">
                   {(Object.keys(SEGMENT_PROFILES) as VehicleSegment[]).map((segKey) => {
                     const profile = SEGMENT_PROFILES[segKey];
                     const isSelected = segment === segKey;
@@ -213,19 +219,19 @@ export default function VehicleDesignPage(): React.JSX.Element {
                         type="button"
                         key={segKey}
                         onClick={() => handleSegmentChange(segKey)}
-                        className={`rounded border p-2.5 text-left transition cursor-pointer ${
+                        className={`rounded-xl border-2 p-3 text-left transition cursor-pointer ${
                           isSelected
-                            ? 'border-amber-800 bg-amber-100/70 font-semibold text-amber-950 ring-1 ring-amber-800'
-                            : 'border-stone-300 bg-white/60 text-stone-700 hover:bg-stone-100'
+                            ? 'border-amber-800 bg-amber-100/90 font-semibold text-amber-950 shadow-md ring-1 ring-amber-800/50'
+                            : 'border-stone-200 bg-white/70 text-stone-700 hover:bg-amber-50/50 hover:border-amber-900/30'
                         }`}
                       >
-                        <div className="text-sm font-bold">{segInfo?.name ?? profile.name}</div>
-                        <div className="text-[11px] text-stone-500">{segInfo?.tag} • ${profile.baseSalePrice}</div>
+                        <div className="text-sm font-serif font-bold text-amber-950">{segInfo?.name ?? profile.name}</div>
+                        <div className="text-[11px] text-stone-600 font-mono mt-0.5">{segInfo?.tag} • ${profile.baseSalePrice}</div>
                       </button>
                     );
                   })}
                 </div>
-                <p className="mt-2 text-xs italic text-stone-600 font-sans">
+                <p className="mt-2 text-xs italic text-stone-600 font-serif">
                   {t.design.segments[segment]?.description ?? SEGMENT_PROFILES[segment].description}
                 </p>
               </div>
@@ -233,8 +239,11 @@ export default function VehicleDesignPage(): React.JSX.Element {
           </div>
 
           {/* 2. COMPONENT SELECTION */}
-          <div className="rounded border border-stone-300 bg-[var(--paper)] p-5 shadow-sm">
-            <h3 className="mb-4 text-lg font-semibold text-amber-950">{t.design.step2}</h3>
+          <div className="card-lux p-5 space-y-4">
+            <h3 className="text-base font-serif font-bold text-amber-950 flex items-center gap-2">
+              <span className="text-amber-800">2.</span>
+              <span>{t.design.step2}</span>
+            </h3>
             <div className="space-y-5">
               {categoriesList.map((cat) => {
                 const rawOptions = componentsByCategory[cat] ?? [];
@@ -292,7 +301,7 @@ export default function VehicleDesignPage(): React.JSX.Element {
                       </div>
                     ) : null}
 
-                    <div className="grid gap-2 sm:grid-cols-2">
+                    <div className="grid gap-2.5 sm:grid-cols-2">
                       {options.map((opt) => {
                         const isSelected = selectedId === opt.id;
                         const isUnlocked = opt.isUnlocked;
@@ -300,12 +309,12 @@ export default function VehicleDesignPage(): React.JSX.Element {
                         return (
                           <label
                             key={opt.id}
-                            className={`relative flex cursor-pointer flex-col justify-between rounded border p-3 text-xs transition ${
+                            className={`relative flex cursor-pointer flex-col justify-between rounded-xl border-2 p-3 text-xs transition ${
                               !isUnlocked
-                                ? 'cursor-not-allowed border-stone-200 bg-stone-100 opacity-60'
+                                ? 'cursor-not-allowed border-stone-200 bg-stone-100/70 opacity-60'
                                 : isSelected
-                                ? 'border-amber-700 bg-amber-50/70 ring-1 ring-amber-700 shadow-xs'
-                                : 'border-stone-300 bg-white hover:border-stone-400'
+                                ? 'border-amber-800 bg-amber-50/90 ring-1 ring-amber-700/50 shadow-sm'
+                                : 'border-stone-200 bg-white/90 hover:border-amber-800/40 hover:bg-amber-50/20'
                             }`}
                           >
                             <div className="flex items-start justify-between gap-2">
@@ -324,11 +333,11 @@ export default function VehicleDesignPage(): React.JSX.Element {
                                   }
                                   className="text-amber-800 focus:ring-amber-700"
                                 />
-                                <span className="font-semibold text-stone-900">
+                                <span className="font-serif font-bold text-stone-900">
                                   {t.components[opt.id] ?? opt.name}
                                 </span>
                               </div>
-                              <span className="shrink-0 font-bold text-amber-900">
+                              <span className="shrink-0 font-mono font-bold text-amber-950">
                                 {opt.costModifier > 0 ? `+$${opt.costModifier}` : '$0'}
                               </span>
                             </div>
@@ -336,7 +345,7 @@ export default function VehicleDesignPage(): React.JSX.Element {
                             {/* Badges for Powertrain & Fuel */}
                             {opt.powertrainType ? (
                               <div className="mt-1.5 flex flex-wrap gap-1">
-                                <span className="px-1.5 py-0.2 rounded text-[10px] font-medium bg-amber-100/70 text-amber-900 border border-amber-800/20">
+                                <span className="px-2 py-0.5 rounded text-[10px] font-serif font-semibold bg-amber-100/80 text-amber-950 border border-amber-800/20 shadow-2xs">
                                   {opt.powertrainType === 'steam'
                                     ? '💨 Паровая тяга'
                                     : opt.powertrainType === 'electric'
@@ -344,7 +353,7 @@ export default function VehicleDesignPage(): React.JSX.Element {
                                     : '⛽ ДВС'}
                                 </span>
                                 {opt.fuelType ? (
-                                  <span className="px-1.5 py-0.2 rounded text-[10px] font-medium bg-stone-100 text-stone-700 border border-stone-200">
+                                  <span className="px-2 py-0.5 rounded text-[10px] font-serif font-semibold bg-stone-100 text-stone-700 border border-stone-200 shadow-2xs">
                                     {opt.fuelType === 'ethanol_blend'
                                       ? '🌾 Спирт / Этанол'
                                       : opt.fuelType === 'gasoline'
@@ -358,15 +367,15 @@ export default function VehicleDesignPage(): React.JSX.Element {
                             ) : null}
 
                             {/* Stat Modifiers */}
-                            <div className="mt-2 flex flex-wrap gap-1">
+                            <div className="mt-2 flex flex-wrap gap-1 font-mono text-[10px]">
                               {Object.entries(opt.statModifiers).map(([statKey, val]) => {
                                 if (val === undefined || val === 0) return null;
                                 const statName = t.design.stats[statKey as keyof typeof t.design.stats] ?? statKey;
                                 return (
                                   <span
                                     key={statKey}
-                                    className={`rounded px-1.5 py-0.5 text-[10px] font-medium ${
-                                      val > 0 ? 'bg-emerald-100 text-emerald-800' : 'bg-red-100 text-red-800'
+                                    className={`rounded px-1.5 py-0.5 font-bold ${
+                                      val > 0 ? 'bg-emerald-50 text-emerald-900 border border-emerald-200' : 'bg-red-50 text-red-900 border border-red-200'
                                     }`}
                                   >
                                     {val > 0 ? `+${val}` : val} {statName.split(' ')[0]}
@@ -376,7 +385,7 @@ export default function VehicleDesignPage(): React.JSX.Element {
                             </div>
 
                             {!isUnlocked && opt.requiredTechnologyId ? (
-                              <div className="mt-2 text-[10px] font-semibold text-amber-900 bg-amber-100/60 rounded px-1.5 py-0.5">
+                              <div className="mt-2 text-[10px] font-serif font-semibold text-amber-950 bg-amber-100/70 border border-amber-300/50 rounded px-2 py-0.5">
                                 🔒 {t.design.requiresTech}: {t.technologies[opt.requiredTechnologyId]?.name ?? opt.requiredTechnologyId}
                               </div>
                             ) : null}
@@ -391,15 +400,15 @@ export default function VehicleDesignPage(): React.JSX.Element {
           </div>
 
           {/* 3. PRODUCTION QUOTA & LAUNCH */}
-          <div className="rounded border border-stone-300 bg-[var(--paper)] p-5 shadow-sm space-y-3">
-            <h3 className="text-base font-bold text-amber-950 flex items-center gap-2">
-              <span>🏭</span> {t.design.step3}
+          <div className="card-lux p-5 space-y-3">
+            <h3 className="text-base font-serif font-bold text-amber-950 flex items-center gap-2">
+              <span>🏭</span> <span>{t.design.step3}</span>
             </h3>
             <div>
-              <label htmlFor="quarterly-quota" className="block text-xs font-semibold uppercase tracking-wider text-stone-700">
+              <label htmlFor="quarterly-quota" className="block text-xs font-serif font-bold uppercase tracking-wider text-stone-700">
                 {t.design.initialQuotaLabel} ({t.topbar.unitsQuarter})
               </label>
-              <p className="text-[11px] text-stone-500 font-sans mt-0.5">
+              <p className="text-[11px] text-stone-600 font-serif mt-0.5">
                 {t.design.initialQuotaHint}
               </p>
               <div className="mt-3 flex items-center gap-3">
@@ -411,10 +420,10 @@ export default function VehicleDesignPage(): React.JSX.Element {
                   step={1}
                   value={quarterlyQuota}
                   onChange={(e) => setQuarterlyQuota(Math.max(0, Number(e.target.value)))}
-                  className="w-24 rounded border border-stone-300 bg-white px-3 py-2 text-stone-900 font-bold text-sm shadow-inner focus:border-amber-700 focus:outline-none"
+                  className="w-24 rounded-lg border border-amber-900/30 bg-white px-3 py-2 text-stone-900 font-mono font-bold text-sm shadow-inner focus:border-amber-700 focus:outline-none"
                 />
-                <span className="text-xs text-stone-600 font-sans">
-                  {t.topbar.unitsQuarter} ({t.design.factoryCapacityHint}: <strong>{factoryCapacity} {t.topbar.unitsQuarter}</strong>)
+                <span className="text-xs text-stone-700 font-serif">
+                  {t.topbar.unitsQuarter} ({t.design.factoryCapacityHint}: <strong className="font-mono text-amber-950">{factoryCapacity} {t.topbar.unitsQuarter}</strong>)
                 </span>
               </div>
             </div>
@@ -424,9 +433,9 @@ export default function VehicleDesignPage(): React.JSX.Element {
           <button
             type="submit"
             disabled={saving}
-            className="w-full rounded bg-[var(--accent)] py-3.5 font-bold text-white shadow hover:bg-amber-900 transition disabled:opacity-60 cursor-pointer text-sm"
+            className="btn-brass w-full py-3.5 font-bold text-white shadow-lg cursor-pointer text-sm tracking-wide"
           >
-            {saving ? t.design.savingBtn : t.design.submitBtn}
+            {saving ? t.design.savingBtn : `⚡ ${t.design.submitBtn}`}
           </button>
         </form>
 
@@ -436,25 +445,28 @@ export default function VehicleDesignPage(): React.JSX.Element {
           <CarBlueprintSilhouette
             segment={segment}
             powertrain={selectedEngine?.powertrainType ?? 'ice'}
-            className="shadow-sm"
+            className="shadow-md w-full"
           />
 
           {/* SPECS PANEL */}
-          <div className="rounded border border-stone-300 bg-[var(--paper)] p-5 shadow-sm">
-            <h3 className="mb-4 text-lg font-semibold text-amber-950">{t.design.specsTitle}</h3>
-            <div className="space-y-3">
+          <div className="card-lux p-5 space-y-3">
+            <h3 className="text-base font-serif font-bold text-amber-950 flex items-center gap-2">
+              <span>📊</span>
+              <span>{t.design.specsTitle}</span>
+            </h3>
+            <div className="space-y-3 pt-1">
               {Object.entries(calculatedSpecs.stats).map(([statKey, value]) => {
                 const label = t.design.stats[statKey as keyof typeof t.design.stats] ?? statKey;
                 const color = STAT_COLORS[statKey] ?? 'bg-amber-700';
                 return (
                   <div key={statKey}>
-                    <div className="flex justify-between text-xs font-semibold text-stone-700">
+                    <div className="flex justify-between text-xs font-serif font-bold text-stone-700">
                       <span>{label}</span>
-                      <span>{value} / 100</span>
+                      <span className="font-mono text-stone-900">{value} / 100</span>
                     </div>
-                    <div className="mt-1 h-2 w-full overflow-hidden rounded bg-stone-200">
+                    <div className="mt-1 h-2 w-full overflow-hidden rounded-full bg-stone-200 border border-stone-300/40">
                       <div
-                        className={`h-full rounded ${color}`}
+                        className={`h-full rounded-full ${color} transition-all duration-300 shadow-2xs`}
                         style={{ width: `${Math.min(100, Math.max(5, value))}%` }}
                       />
                     </div>
@@ -465,18 +477,21 @@ export default function VehicleDesignPage(): React.JSX.Element {
           </div>
 
           {/* FINANCIAL & PRICING PANEL */}
-          <div className="rounded border border-stone-300 bg-[var(--paper)] p-5 shadow-sm">
-            <h3 className="mb-4 text-lg font-semibold text-amber-950">{t.design.financeTitle}</h3>
-            <div className="space-y-3 text-sm">
-              <div className="flex justify-between border-b border-stone-200 pb-2">
-                <span className="text-stone-600">{t.design.productionCost}:</span>
-                <span className="font-bold text-stone-900">
+          <div className="card-lux p-5 space-y-3">
+            <h3 className="text-base font-serif font-bold text-amber-950 flex items-center gap-2">
+              <span>💰</span>
+              <span>{t.design.financeTitle}</span>
+            </h3>
+            <div className="space-y-3 text-sm pt-1">
+              <div className="flex justify-between border-b border-amber-900/15 pb-2">
+                <span className="text-stone-700 font-serif">{t.design.productionCost}:</span>
+                <span className="font-mono font-bold text-stone-900">
                   ${calculatedSpecs.productionCost.toLocaleString()}
                 </span>
               </div>
 
               <div>
-                <label htmlFor="sale-price" className="block text-xs font-semibold uppercase tracking-wider text-stone-600">
+                <label htmlFor="sale-price" className="block text-xs font-serif font-bold uppercase tracking-wider text-stone-700">
                   {t.design.salePrice}
                 </label>
                 <input
@@ -486,16 +501,16 @@ export default function VehicleDesignPage(): React.JSX.Element {
                   step={50}
                   value={salePrice}
                   onChange={(e) => setSalePrice(Number(e.target.value))}
-                  className="mt-1 w-full rounded border border-stone-300 bg-white px-3 py-2 text-stone-900 shadow-inner focus:border-amber-700 focus:outline-none"
+                  className="mt-1 w-full rounded-lg border border-amber-900/30 bg-white px-3 py-2 text-stone-900 font-mono font-bold text-base shadow-inner focus:border-amber-700 focus:outline-none"
                   required
                 />
               </div>
 
-              <div className="flex justify-between border-t border-stone-200 pt-2">
-                <span className="text-stone-600">{t.design.unitProfit}:</span>
+              <div className="flex justify-between border-t border-amber-900/15 pt-2">
+                <span className="text-stone-700 font-serif">{t.design.unitProfit}:</span>
                 <span
-                  className={`font-bold ${
-                    profitPerUnit >= 0 ? 'text-emerald-700' : 'text-red-700'
+                  className={`font-mono font-bold text-sm ${
+                    profitPerUnit >= 0 ? 'text-emerald-900 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-300' : 'text-red-900 bg-red-50 px-2 py-0.5 rounded border border-red-300'
                   }`}
                 >
                   {profitPerUnit >= 0 ? `+$${profitPerUnit.toLocaleString()}` : `-$${Math.abs(profitPerUnit).toLocaleString()}`}{' '}
@@ -506,14 +521,15 @@ export default function VehicleDesignPage(): React.JSX.Element {
           </div>
 
           {/* MATERIAL CONSUMPTION PREVIEW */}
-          <div className="rounded border border-stone-300 bg-[var(--paper)] p-5 shadow-sm">
-            <h3 className="mb-2 text-base font-semibold text-amber-950 flex items-center gap-2">
-              <span>🪵</span> {t.production.materialsRequiredPerUnit}
+          <div className="card-lux p-5 space-y-2.5">
+            <h3 className="text-base font-serif font-bold text-amber-950 flex items-center gap-2">
+              <span>🪵</span>
+              <span>{t.production.materialsRequiredPerUnit}</span>
             </h3>
-            <p className="mb-3 text-[11px] text-stone-600 font-sans">
+            <p className="text-[11px] text-stone-600 font-serif">
               {t.design.materialConsumptionHint}
             </p>
-            <div className="grid grid-cols-2 gap-2 text-xs">
+            <div className="grid grid-cols-2 gap-2 text-xs pt-1">
               {Object.entries(calculatedSpecs.materialsRequired).map(([matKey, amount]) => {
                 if (!amount || amount <= 0) return null;
                 const m = matKey as MaterialType;
@@ -521,11 +537,11 @@ export default function VehicleDesignPage(): React.JSX.Element {
                 const name = t.materials[m] ?? m;
                 const unit = t.materials.units[m] ?? 'ед.';
                 return (
-                  <div key={matKey} className="flex items-center justify-between p-2 rounded bg-stone-50 border border-stone-200">
+                  <div key={matKey} className="flex items-center justify-between p-2 rounded-lg bg-white/80 border border-stone-200 shadow-2xs">
                     <span className="flex items-center gap-1.5 font-medium text-stone-700 text-[11px]">
-                      <span>{icon}</span> {name}:
+                      <span>{icon}</span> <span>{name}:</span>
                     </span>
-                    <strong className="text-amber-950 text-xs">{amount} {unit}</strong>
+                    <strong className="text-amber-950 text-xs font-mono">{amount} {unit}</strong>
                   </div>
                 );
               })}
@@ -533,16 +549,21 @@ export default function VehicleDesignPage(): React.JSX.Element {
           </div>
 
           {/* REGIONAL SUITABILITY */}
-          <div className="rounded border border-stone-300 bg-[var(--paper)] p-5 shadow-sm">
-            <h3 className="mb-2 text-lg font-semibold text-amber-950">{t.design.marketAppeal}</h3>
-            <p className="mb-3 text-xs text-stone-600">{t.design.marketAppealHint}</p>
-            <div className="space-y-2 text-xs">
+          <div className="card-lux p-5 space-y-2.5">
+            <h3 className="text-base font-serif font-bold text-amber-950 flex items-center gap-2">
+              <span>🌍</span>
+              <span>{t.design.marketAppeal}</span>
+            </h3>
+            <p className="text-xs text-stone-600 font-serif">{t.design.marketAppealHint}</p>
+            <div className="space-y-2 text-xs pt-1">
               {Object.entries(calculatedSpecs.regionSuitability).map(([reg, val]) => (
                 <div key={reg} className="flex items-center justify-between">
-                  <span className="text-stone-800 font-medium">
+                  <span className="text-stone-800 font-serif font-semibold">
                     {t.regions[reg as keyof typeof t.regions] ?? reg.replace('-', ' ')}
                   </span>
-                  <span className="font-bold text-stone-900">{Math.round(val * 100)}%</span>
+                  <span className="font-mono font-bold text-amber-950 bg-stone-100 px-2 py-0.5 rounded border border-stone-200">
+                    {Math.round(val * 100)}%
+                  </span>
                 </div>
               ))}
             </div>
@@ -551,56 +572,57 @@ export default function VehicleDesignPage(): React.JSX.Element {
       </div>
 
       {/* EXISTING MODELS SECTION */}
-      <section className="rounded border border-stone-300 bg-[var(--paper)] p-5 shadow-sm">
-        <h3 className="mb-3 text-lg font-semibold text-amber-950">
-          {t.design.existingModels} ({existingModels.length})
+      <section className="card-lux p-5 space-y-4">
+        <h3 className="text-base font-serif font-bold text-amber-950 flex items-center gap-2">
+          <span>🚗</span>
+          <span>{t.design.existingModels} ({existingModels.length})</span>
         </h3>
         {existingModels.length === 0 ? (
-          <p className="text-sm text-stone-600">{t.design.noModels}</p>
+          <p className="text-sm text-stone-600 font-serif">{t.design.noModels}</p>
         ) : (
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {existingModels.map((m) => (
-              <article key={m.id} className="rounded border border-stone-300 bg-white p-4 shadow-sm">
+              <article key={m.id} className="rounded-xl border border-amber-900/20 bg-white/90 p-4 shadow-sm space-y-2.5 hover:border-amber-700/40 transition">
                 <div className="flex items-start justify-between">
-                  <h4 className="font-bold text-stone-900">{m.name}</h4>
-                  <span className="rounded bg-amber-100 px-2 py-0.5 text-xs font-semibold text-amber-900">
+                  <h4 className="font-serif font-bold text-amber-950 text-sm">{m.name}</h4>
+                  <span className="rounded-md bg-amber-100/90 border border-amber-900/20 px-2 py-0.5 text-xs font-serif font-bold text-amber-950">
                     {t.design.segments[m.targetSegment]?.name ?? m.targetSegment}
                   </span>
                 </div>
 
-                <div className="my-3 grid grid-cols-3 gap-1 rounded bg-stone-50 p-2 text-center text-xs">
+                <div className="my-2 grid grid-cols-3 gap-1 rounded-lg bg-amber-50/40 p-2 text-center text-xs border border-amber-900/10 font-mono">
                   <div>
-                    <span className="block text-stone-500">{t.design.stats.reliability.slice(0, 7)}.</span>
-                    <span className="font-bold">{m.stats.reliability}</span>
+                    <span className="block text-stone-500 text-[10px]">{t.design.stats.reliability.slice(0, 7)}.</span>
+                    <span className="font-bold text-stone-900">{m.stats.reliability}</span>
                   </div>
                   <div>
-                    <span className="block text-stone-500">{t.design.stats.comfort.slice(0, 7)}</span>
-                    <span className="font-bold">{m.stats.comfort}</span>
+                    <span className="block text-stone-500 text-[10px]">{t.design.stats.comfort.slice(0, 7)}</span>
+                    <span className="font-bold text-stone-900">{m.stats.comfort}</span>
                   </div>
                   <div>
-                    <span className="block text-stone-500">{t.design.stats.performance.slice(0, 7)}</span>
-                    <span className="font-bold">{m.stats.performance}</span>
+                    <span className="block text-stone-500 text-[10px]">{t.design.stats.performance.slice(0, 7)}</span>
+                    <span className="font-bold text-stone-900">{m.stats.performance}</span>
                   </div>
                 </div>
 
-                <div className="space-y-1 text-xs text-stone-600">
+                <div className="space-y-1 text-xs text-stone-700 font-serif">
                   <div className="flex justify-between">
                     <span>{t.design.productionCost}:</span>
-                    <span className="font-medium text-stone-900">${m.productionCost}</span>
+                    <span className="font-mono font-bold text-stone-900">${m.productionCost}</span>
                   </div>
                   <div className="flex justify-between">
                     <span>{t.design.salePrice}:</span>
-                    <span className="font-medium text-stone-900">${m.salePrice}</span>
+                    <span className="font-mono font-bold text-amber-950">${m.salePrice}</span>
                   </div>
                   <div className="flex justify-between">
                     <span>{t.production.plannedUnits}:</span>
-                    <span className="font-bold text-stone-900">
+                    <span className="font-mono font-bold text-stone-900">
                       {gameState?.productionPlan?.[m.id] ?? 0} {t.design.unitsMonth}
                     </span>
                   </div>
-                  <div className="flex justify-between border-t border-stone-100 pt-1">
+                  <div className="flex justify-between border-t border-amber-900/15 pt-1.5 font-bold">
                     <span>{t.design.unitProfit}:</span>
-                    <span className="font-bold text-emerald-700">
+                    <span className="font-mono text-emerald-900">
                       +${m.salePrice - m.productionCost} ({Math.round(((m.salePrice - m.productionCost) / (m.salePrice || 1)) * 100)}%)
                     </span>
                   </div>

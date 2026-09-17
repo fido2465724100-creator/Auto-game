@@ -75,8 +75,8 @@ export function TopTimelineBar(): React.JSX.Element {
 
           {/* Cash */}
           <div className="flex items-center gap-1.5 pl-1">
-            <span className="text-stone-500">{t.topbar.cash}:</span>
-            <span className="font-bold text-emerald-800 text-sm">
+            <span className="text-[11px] font-serif uppercase tracking-wider text-stone-500">{t.topbar.cash}:</span>
+            <span className="font-mono font-bold text-sm tracking-tight text-emerald-900 bg-emerald-100/80 border border-emerald-300/90 px-2.5 py-0.5 rounded-md shadow-2xs">
               ${cash.toLocaleString()}
             </span>
           </div>
@@ -84,10 +84,12 @@ export function TopTimelineBar(): React.JSX.Element {
           {/* Quarterly Profit */}
           {latestReport ? (
             <div className="hidden sm:flex items-center gap-1.5">
-              <span className="text-stone-500">{t.topbar.lastProfit}:</span>
+              <span className="text-[11px] font-serif uppercase tracking-wider text-stone-500">{t.topbar.lastProfit}:</span>
               <span
-                className={`font-semibold ${
-                  latestReport.profit >= 0 ? 'text-emerald-700' : 'text-red-700'
+                className={`font-mono font-bold text-xs px-2 py-0.5 rounded-md shadow-2xs border ${
+                  latestReport.profit >= 0
+                    ? 'text-emerald-900 bg-emerald-50 border-emerald-300/70'
+                    : 'text-red-900 bg-red-50 border-red-300/70'
                 }`}
               >
                 {latestReport.profit >= 0 ? '+' : ''}${latestReport.profit.toLocaleString()}
@@ -97,8 +99,8 @@ export function TopTimelineBar(): React.JSX.Element {
 
           {/* Reputation */}
           <div className="flex items-center gap-1.5">
-            <span className="text-stone-500">{t.topbar.reputation}:</span>
-            <span className="font-bold text-amber-800">
+            <span className="text-[11px] font-serif uppercase tracking-wider text-stone-500">{t.topbar.reputation}:</span>
+            <span className="font-serif font-bold text-xs text-amber-900 bg-amber-100/80 border border-amber-300/90 px-2.5 py-0.5 rounded-md shadow-2xs">
               ★ {reputation}
             </span>
           </div>
@@ -177,7 +179,7 @@ export function TopTimelineBar(): React.JSX.Element {
             type="button"
             onClick={() => void endTurn()}
             disabled={pendingEndTurn}
-            className="flex items-center gap-2 rounded bg-[var(--accent)] px-4 py-1.5 text-xs font-bold text-white shadow transition hover:bg-amber-900 active:scale-98 disabled:opacity-60 cursor-pointer"
+            className="btn-brass flex items-center gap-2 rounded-lg px-4 py-1.5 text-xs font-bold text-white shadow-md active:scale-98 disabled:opacity-60 cursor-pointer"
           >
             <span>{pendingEndTurn ? '⏳' : '📅'}</span>
             <span>
@@ -235,10 +237,10 @@ export function TopTimelineBar(): React.JSX.Element {
         {/* Horizontal Visual Timeline Bar */}
         <div className="relative mt-1">
           {/* Background Track */}
-          <div className="h-1.5 w-full rounded-full bg-stone-300 overflow-hidden">
+          <div className="h-2 w-full rounded-full bg-stone-300/80 shadow-inner overflow-hidden border border-stone-400/30">
             {/* Progress fill */}
             <div
-              className="h-full rounded-full bg-gradient-to-r from-amber-700 via-amber-800 to-amber-950 transition-all duration-300"
+              className="h-full rounded-full bg-gradient-to-r from-amber-600 via-amber-700 to-amber-950 shadow-xs transition-all duration-300"
               style={{ width: `${progressPercent}%` }}
             />
           </div>
