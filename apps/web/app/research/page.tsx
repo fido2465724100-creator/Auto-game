@@ -1,5 +1,7 @@
-import { redirect } from 'next/navigation';
+'use client';
 
-export default function ResearchRedirect(): never {
-  redirect('/dashboard?tab=research');
+import ResearchView from '../../components/views/ResearchView';
+
+export default function ResearchPage(): React.JSX.Element {
+  return <ResearchView />;
 }

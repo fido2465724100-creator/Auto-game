@@ -1,5 +1,7 @@
-import { redirect } from 'next/navigation';
+'use client';
 
-export default function VehicleDesignRedirect(): never {
-  redirect('/dashboard?tab=design');
+import VehicleDesignView from '../../components/views/VehicleDesignView';
+
+export default function VehicleDesignPage(): React.JSX.Element {
+  return <VehicleDesignView />;
 }

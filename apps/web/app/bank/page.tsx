@@ -1,5 +1,7 @@
-import { redirect } from 'next/navigation';
+'use client';
 
-export default function BankRedirect(): never {
-  redirect('/dashboard?tab=bank');
+import BankView from '../../components/views/BankView';
+
+export default function BankPage(): React.JSX.Element {
+  return <BankView />;
 }

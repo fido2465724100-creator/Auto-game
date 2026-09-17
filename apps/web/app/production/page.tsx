@@ -1,5 +1,7 @@
-import { redirect } from 'next/navigation';
+'use client';
 
-export default function ProductionRedirect(): never {
-  redirect('/dashboard?tab=production');
+import ProductionView from '../../components/views/ProductionView';
+
+export default function ProductionPage(): React.JSX.Element {
+  return <ProductionView />;
 }

@@ -1,5 +1,7 @@
-import { redirect } from 'next/navigation';
+'use client';
 
-export default function MarketsRedirect(): never {
-  redirect('/dashboard?tab=markets');
+import MarketsView from '../../components/views/MarketsView';
+
+export default function MarketsPage(): React.JSX.Element {
+  return <MarketsView />;
 }

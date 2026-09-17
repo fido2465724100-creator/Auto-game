@@ -1,5 +1,7 @@
-import { redirect } from 'next/navigation';
+'use client';
 
-export default function ReportsRedirect(): never {
-  redirect('/dashboard?tab=reports');
+import ReportsView from '../../components/views/ReportsView';
+
+export default function ReportsPage(): React.JSX.Element {
+  return <ReportsView />;
 }
