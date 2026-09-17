@@ -6,10 +6,10 @@ import { useGame } from '../../context/GameContext';
 import { useLanguage } from '../../lib/i18n';
 import { api } from '../../lib/api';
 
-const REGION_FLAGS: Record<string, { flag: string; ru: string; en: string }> = {
-  'north-america': { flag: '🇺🇸', ru: 'Северная Америка', en: 'North America' },
-  europe: { flag: '🇪🇺', ru: 'Европа', en: 'Europe' },
-  'middle-east': { flag: '🌍', ru: 'Ближний Восток', en: 'Middle East' },
+const REGION_FLAGS: Record<string, { flag: string; ru: string; en: string; uk: string; de: string }> = {
+  'north-america': { flag: '🇺🇸', ru: 'Северная Америка', en: 'North America', uk: 'Північна Америка', de: 'Nordamerika' },
+  europe: { flag: '🇪🇺', ru: 'Европа', en: 'Europe', uk: 'Європа', de: 'Europa' },
+  'middle-east': { flag: '🌍', ru: 'Ближний Восток', en: 'Middle East', uk: 'Близький Схід', de: 'Mittlerer Osten' },
 };
 
 const COUNTRY_FLAGS: Record<string, string> = {
@@ -54,8 +54,9 @@ export default function MarketsPage(): React.JSX.Element {
       {/* REGIONAL MARKETS */}
       <div className="grid gap-6 md:grid-cols-3">
         {regions.map((region) => {
-          const meta = REGION_FLAGS[region.id] ?? { flag: '🌐', ru: region.name, en: region.name };
-          const regionName = lang === 'ru' ? meta.ru : meta.en;
+          const meta = REGION_FLAGS[region.id] ?? { flag: '🌐', ru: region.name, en: region.name, uk: region.name, de: region.name };
+          const regionName = t.regions?.[region.id as keyof typeof t.regions]
+            ?? (lang === 'en' ? meta.en : lang === 'uk' ? meta.uk : lang === 'de' ? meta.de : meta.ru);
           const share = Math.round((presence[region.id] ?? 0) * 100);
 
           return (

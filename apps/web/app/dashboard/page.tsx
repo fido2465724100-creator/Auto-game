@@ -4,7 +4,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import type { MaterialType } from '@ait/shared-types';
 import { useGame } from '../../context/GameContext';
 import { useLanguage } from '../../lib/i18n';
-import { getEraTheme } from '../../lib/eraTheme';
+import { getEraTheme, getEraName, getEraMaterial, getAdvisorTitle } from '../../lib/eraTheme';
 import { CarBlueprintSilhouette } from '../../components/CarBlueprintSilhouette';
 import { QuickVehicleDesignModal } from '../../components/QuickVehicleDesignModal';
 import { QuickResearchModal } from '../../components/QuickResearchModal';
@@ -28,15 +28,15 @@ export type WorkspaceTab =
   | 'reports'
   | 'guide';
 
-const DESK_TABS: Array<{ id: WorkspaceTab; labelRu: string; labelEn: string; icon: string }> = [
-  { id: 'overview', labelRu: 'Кабинет управляющего', labelEn: 'Executive Desk', icon: '🏛️' },
-  { id: 'design', labelRu: 'Конструктор моделей', labelEn: 'Vehicle Design', icon: '🚗' },
-  { id: 'production', labelRu: 'Завод и Склады', labelEn: 'Factory & Assembly', icon: '🏭' },
-  { id: 'research', labelRu: 'Лаборатория НИОКР', labelEn: 'R&D Laboratory', icon: '🔬' },
-  { id: 'markets', labelRu: 'Рынки и Конкуренты', labelEn: 'Markets & Sales', icon: '🌐' },
-  { id: 'bank', labelRu: 'Казначейство и Банк', labelEn: 'Treasury & Bank', icon: '🏦' },
-  { id: 'reports', labelRu: 'Финансовая хроника', labelEn: 'Ledgers & Gazette', icon: '📜' },
-  { id: 'guide', labelRu: 'Справочник и Правила', labelEn: 'Guide & Rules', icon: '📖' },
+const DESK_TABS: Array<{ id: WorkspaceTab; labelRu: string; labelEn: string; labelUk: string; labelDe: string; icon: string }> = [
+  { id: 'overview', labelRu: 'Кабинет управляющего', labelEn: 'Executive Desk', labelUk: 'Кабінет керівника', labelDe: 'Direktionsbüro', icon: '🏛️' },
+  { id: 'design', labelRu: 'Конструктор моделей', labelEn: 'Vehicle Design', labelUk: 'Конструктор моделей', labelDe: 'Fahrzeugentwicklung', icon: '🚗' },
+  { id: 'production', labelRu: 'Завод и Склады', labelEn: 'Factory & Assembly', labelUk: 'Завод і склади', labelDe: 'Fabrik & Montage', icon: '🏭' },
+  { id: 'research', labelRu: 'Лаборатория НИОКР', labelEn: 'R&D Laboratory', labelUk: 'Лабораторія НДДКР', labelDe: 'F&E-Labor', icon: '🔬' },
+  { id: 'markets', labelRu: 'Рынки и Конкуренты', labelEn: 'Markets & Sales', labelUk: 'Ринки та конкуренти', labelDe: 'Märkte & Konkurrenz', icon: '🌐' },
+  { id: 'bank', labelRu: 'Казначейство и Банк', labelEn: 'Treasury & Bank', labelUk: 'Казначейство та банк', labelDe: 'Finanzen & Bank', icon: '🏦' },
+  { id: 'reports', labelRu: 'Финансовая хроника', labelEn: 'Ledgers & Gazette', labelUk: 'Фінансова хроніка', labelDe: 'Finanzchronik & Zeitung', icon: '📜' },
+  { id: 'guide', labelRu: 'Справочник и Правила', labelEn: 'Guide & Rules', labelUk: 'Довідник і правила', labelDe: 'Handbuch & Regeln', icon: '📖' },
 ];
 
 const MATERIAL_ICONS: Record<MaterialType, string> = {
@@ -241,13 +241,20 @@ export default function DashboardPage(): React.JSX.Element {
           </span>
           <div>
             <div className="flex items-center gap-2">
-              <h2 className="font-serif font-bold text-base text-amber-950">{eraTheme.nameRu}</h2>
+              <h2 className="font-serif font-bold text-base text-amber-950">{getEraName(eraTheme, lang)}</h2>
               <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-amber-200/80 text-amber-950 font-bold border border-amber-400/50">
-                {currentYear} г. ({currentQuarter}/4 кв.)
+                {currentYear} {lang === 'en' ? `(${currentQuarter}/4 Q)` : lang === 'uk' ? `р. (${currentQuarter}/4 кв.)` : lang === 'de' ? `(${currentQuarter}/4 Q.)` : `г. (${currentQuarter}/4 кв.)`}
               </span>
             </div>
             <p className="text-xs text-stone-600 font-serif italic">
-              Материалы и стиль эпохи: <strong className="text-stone-900">{eraTheme.materialRu}</strong>
+              {lang === 'en'
+                ? 'Era materials & aesthetic: '
+                : lang === 'uk'
+                ? 'Матеріали та стиль епохи: '
+                : lang === 'de'
+                ? 'Materialien & Epochenstil: '
+                : 'Материалы и стиль эпохи: '}
+              <strong className="text-stone-900">{getEraMaterial(eraTheme, lang)}</strong>
             </p>
           </div>
         </div>
@@ -261,7 +268,15 @@ export default function DashboardPage(): React.JSX.Element {
               className="flex-1 md:flex-initial rounded-lg border border-amber-900/30 bg-amber-50/80 px-3 py-1.5 text-xs font-serif font-bold text-amber-950 hover:bg-amber-100 shadow-2xs flex items-center justify-center gap-1.5 transition cursor-pointer"
             >
               <span>📰</span>
-              <span>Свежий выпуск газеты</span>
+              <span>
+                {lang === 'en'
+                  ? 'Latest Gazette'
+                  : lang === 'uk'
+                  ? 'Свіжий випуск газети'
+                  : lang === 'de'
+                  ? 'Aktuelle Zeitung'
+                  : 'Свежий выпуск газеты'}
+              </span>
             </button>
           )}
 
@@ -271,27 +286,67 @@ export default function DashboardPage(): React.JSX.Element {
             className="btn-brass flex-1 md:flex-initial rounded-lg px-3.5 py-1.5 text-xs font-bold text-white shadow-md flex items-center justify-center gap-1.5 cursor-pointer"
           >
             <span>📐</span>
-            <span>+ Спроектировать модель</span>
+            <span>
+              {lang === 'en'
+                ? '+ Design Vehicle'
+                : lang === 'uk'
+                ? '+ Спроєктувати модель'
+                : lang === 'de'
+                ? '+ Modell entwerfen'
+                : '+ Спроектировать модель'}
+            </span>
           </button>
 
           <button
             type="button"
             onClick={() => setHallOfFameOpen(true)}
             className="flex-1 md:flex-initial rounded-lg border border-amber-900/30 bg-amber-50/80 px-3 py-1.5 text-xs font-serif font-bold text-amber-950 hover:bg-amber-100 shadow-2xs flex items-center justify-center gap-1.5 transition cursor-pointer"
-            title="Зал Славы, Ордена и Сохранения"
+            title={
+              lang === 'en'
+                ? 'Hall of Fame, Trophies & Saves'
+                : lang === 'uk'
+                ? 'Зал Слави, Нагороди та Збереження'
+                : lang === 'de'
+                ? 'Ruhmeshalle, Erfolge & Spielstände'
+                : 'Зал Славы, Ордена и Сохранения'
+            }
           >
             <span>🏆</span>
-            <span>{lang === 'en' ? 'Trophies' : 'Зал славы'}</span>
+            <span>
+              {lang === 'en'
+                ? 'Trophies'
+                : lang === 'uk'
+                ? 'Зал слави'
+                : lang === 'de'
+                ? 'Ruhmeshalle'
+                : 'Зал славы'}
+            </span>
           </button>
 
           <button
             type="button"
             onClick={() => handleTabChange('guide')}
             className="flex-1 md:flex-initial rounded-lg border border-amber-900/30 bg-amber-50/80 px-3 py-1.5 text-xs font-serif font-bold text-amber-950 hover:bg-amber-100 shadow-2xs flex items-center justify-center gap-1.5 transition cursor-pointer"
-            title="Руководство промышленника и правила игры"
+            title={
+              lang === 'en'
+                ? 'Industrialist Handbook & Game Guide'
+                : lang === 'uk'
+                ? 'Довідник промисловця та правила гри'
+                : lang === 'de'
+                ? 'Industriellen-Handbuch & Spielregeln'
+                : 'Руководство промышленника и правила игры'
+            }
           >
             <span>📖</span>
-            <span>{lang === 'en' ? 'Handbook' : 'Справочник'}</span>
+            <span>
+              {lang === 'en'
+                ? 'Handbook'
+                : lang === 'uk'
+                ? 'Довідник'
+                : lang === 'de'
+                ? 'Handbuch'
+                : 'Справочник'}
+            </span>
           </button>
         </div>
       </section>
@@ -300,6 +355,15 @@ export default function DashboardPage(): React.JSX.Element {
       <nav className="flex items-center gap-1.5 overflow-x-auto pb-1 border-b-2 border-amber-900/30">
         {DESK_TABS.map((tab) => {
           const isActive = activeTab === tab.id;
+          const tabLabel =
+            lang === 'en'
+              ? tab.labelEn
+              : lang === 'uk'
+              ? tab.labelUk
+              : lang === 'de'
+              ? tab.labelDe
+              : tab.labelRu;
+
           return (
             <button
               key={tab.id}
@@ -312,7 +376,7 @@ export default function DashboardPage(): React.JSX.Element {
               }`}
             >
               <span className="text-base">{tab.icon}</span>
-              <span className="tracking-wide">{lang === 'en' ? tab.labelEn : tab.labelRu}</span>
+              <span className="tracking-wide">{tabLabel}</span>
             </button>
           );
         })}
@@ -327,12 +391,32 @@ export default function DashboardPage(): React.JSX.Element {
             <div className="rounded-xl border border-amber-900/20 bg-linear-to-b from-[var(--paper-card)] to-amber-50/40 p-3 flex items-start gap-2.5 shadow-2xs">
               <span className="text-xl p-1.5 rounded-lg bg-amber-100/80 border border-amber-900/15 shadow-2xs select-none">👨‍🔧</span>
               <div className="leading-snug">
-                <span className="font-serif font-bold text-amber-950 block text-xs tracking-wide">{eraTheme.advisorTitles.engineerRu}:</span>
+                <span className="font-serif font-bold text-amber-950 block text-xs tracking-wide">
+                  {getAdvisorTitle('engineer', eraTheme, lang)}:
+                </span>
                 <span className="text-stone-700 text-[11px] leading-relaxed mt-0.5 block">
                   {hasShortage
-                    ? 'Сэр, запасы сырья на исходе! Часть сборочных постов может встать.'
+                    ? lang === 'en'
+                      ? 'Sir, raw materials are running out! Assembly lines may grind to a halt.'
+                      : lang === 'uk'
+                      ? 'Сер, запаси сировини вичерпуються! Частина складальних ліній може зупинитися.'
+                      : lang === 'de'
+                      ? 'Sir, die Rohstoffe gehen zur Neige! Montagelinien könnten stillstehen.'
+                      : 'Сэр, запасы сырья на исходе! Часть сборочных постов может встать.'
                     : activeResearch
-                    ? `Лаборатория работает над: ${t.technologies[activeResearch.technologyId as keyof typeof t.technologies]?.name ?? activeResearch.technologyId}.`
+                    ? lang === 'en'
+                      ? `Laboratory working on: ${t.technologies[activeResearch.technologyId as keyof typeof t.technologies]?.name ?? activeResearch.technologyId}.`
+                      : lang === 'uk'
+                      ? `Лабораторія працює над: ${t.technologies[activeResearch.technologyId as keyof typeof t.technologies]?.name ?? activeResearch.technologyId}.`
+                      : lang === 'de'
+                      ? `Labor arbeitet an: ${t.technologies[activeResearch.technologyId as keyof typeof t.technologies]?.name ?? activeResearch.technologyId}.`
+                      : `Лаборатория работает над: ${t.technologies[activeResearch.technologyId as keyof typeof t.technologies]?.name ?? activeResearch.technologyId}.`
+                    : lang === 'en'
+                    ? 'Designers are available. Launch a new research project!'
+                    : lang === 'uk'
+                    ? 'Конструктори вільні. Відкрийте новий дослідницький проєкт!'
+                    : lang === 'de'
+                    ? 'Entwickler verfügbar. Starten Sie ein neues Forschungsprojekt!'
                     : 'Конструкторы свободны. Откройте новый исследовательский проект!'}
                 </span>
               </div>
@@ -342,16 +426,48 @@ export default function DashboardPage(): React.JSX.Element {
             <div className="rounded-xl border border-amber-900/20 bg-linear-to-b from-[var(--paper-card)] to-amber-50/40 p-3 flex items-start gap-2.5 shadow-2xs">
               <span className="text-xl p-1.5 rounded-lg bg-amber-100/80 border border-amber-900/15 shadow-2xs select-none">💼</span>
               <div className="leading-snug">
-                <span className="font-serif font-bold text-amber-950 block text-xs tracking-wide">{eraTheme.advisorTitles.financeRu}:</span>
+                <span className="font-serif font-bold text-amber-950 block text-xs tracking-wide">
+                  {getAdvisorTitle('finance', eraTheme, lang)}:
+                </span>
                 <span className="text-stone-700 text-[11px] leading-relaxed mt-0.5 block">
                   {latestReport && latestReport.profit < 0
-                    ? `Убыток в прошлом кв. (-$${Math.abs(latestReport.profit).toLocaleString()})! Проверьте наценку в конструкторе (рекомендуем +40–50% к себестоимости).`
+                    ? lang === 'en'
+                      ? `Loss last quarter (-$${Math.abs(latestReport.profit).toLocaleString()})! Check your price markup in design (recommended +40–50% over unit cost).`
+                      : lang === 'uk'
+                      ? `Збиток за минулий кв. (-$${Math.abs(latestReport.profit).toLocaleString()})! Перевірте націнку в конструкторі (рекомендуємо +40–50% до собівартості).`
+                      : lang === 'de'
+                      ? `Verlust im letzten Quartal (-$${Math.abs(latestReport.profit).toLocaleString()})! Prüfen Sie den Preisaufschlag (empfohlen +40–50% über Selbstkosten).`
+                      : `Убыток в прошлом кв. (-$${Math.abs(latestReport.profit).toLocaleString()})! Проверьте наценку в конструкторе (рекомендуем +40–50% к себестоимости).`
                     : latestReport && latestReport.profit > 0
-                    ? `Отличная маржа! Чистая прибыль за кв. составила +$${latestReport.profit.toLocaleString()}. Казна растет.`
+                    ? lang === 'en'
+                      ? `Great margin! Net profit for the quarter was +$${latestReport.profit.toLocaleString()}. Treasury is growing.`
+                      : lang === 'uk'
+                      ? `Чудова маржа! Чистий прибуток за кв. склав +$${latestReport.profit.toLocaleString()}. Казна зростає.`
+                      : lang === 'de'
+                      ? `Hervorragende Marge! Quartalsüberschuss: +$${latestReport.profit.toLocaleString()}. Kasse wächst.`
+                      : `Отличная маржа! Чистая прибыль за кв. составила +$${latestReport.profit.toLocaleString()}. Казна растет.`
                     : company.cash < 2500
-                    ? 'Оборотный капитал на минимуме! Рекомендуется привлечь банковский заем.'
+                    ? lang === 'en'
+                      ? 'Working capital is critical! Consider taking a bank loan.'
+                      : lang === 'uk'
+                      ? 'Оборотний капітал критично низький! Рекомендуємо залучити банківський кредит.'
+                      : lang === 'de'
+                      ? 'Umlaufvermögen auf Minimum! Ein Bankkredit wird empfohlen.'
+                      : 'Оборотный капитал на минимуме! Рекомендуется привлечь банковский заем.'
                     : activeLoans.length > 0
-                    ? `Обслуживаем ${activeLoans.length} займа (-$${totalQuarterlyLoanPayment.toLocaleString()} / кв.). Казна стабильна.`
+                    ? lang === 'en'
+                      ? `Servicing ${activeLoans.length} active loan(s) (-$${totalQuarterlyLoanPayment.toLocaleString()} / qtr). Treasury stable.`
+                      : lang === 'uk'
+                      ? `Обслуговуємо ${activeLoans.length} кредит(и) (-$${totalQuarterlyLoanPayment.toLocaleString()} / кв.). Казна стабільна.`
+                      : lang === 'de'
+                      ? `Bedienen ${activeLoans.length} Darlehen (-$${totalQuarterlyLoanPayment.toLocaleString()} / Q.). Finanzen stabil.`
+                      : `Обслуживаем ${activeLoans.length} займа (-$${totalQuarterlyLoanPayment.toLocaleString()} / кв.). Казна стабильна.`
+                    : lang === 'en'
+                    ? `Capital $${company.cash.toLocaleString()}. Finances in order.`
+                    : lang === 'uk'
+                    ? `Капітал $${company.cash.toLocaleString()}. Фінанси в повному порядку.`
+                    : lang === 'de'
+                    ? `Kapital $${company.cash.toLocaleString()}. Finanzen in bester Ordnung.`
                     : `Капитал $${company.cash.toLocaleString()}. Финансы в полном порядке.`}
                 </span>
               </div>
@@ -361,10 +477,24 @@ export default function DashboardPage(): React.JSX.Element {
             <div className="rounded-xl border border-amber-900/20 bg-linear-to-b from-[var(--paper-card)] to-amber-50/40 p-3 flex items-start gap-2.5 shadow-2xs">
               <span className="text-xl p-1.5 rounded-lg bg-amber-100/80 border border-amber-900/15 shadow-2xs select-none">🏭</span>
               <div className="leading-snug">
-                <span className="font-serif font-bold text-amber-950 block text-xs tracking-wide">{eraTheme.advisorTitles.plantRu}:</span>
+                <span className="font-serif font-bold text-amber-950 block text-xs tracking-wide">
+                  {getAdvisorTitle('plant', eraTheme, lang)}:
+                </span>
                 <span className="text-stone-700 text-[11px] leading-relaxed mt-0.5 block">
                   {isOverCapacity
-                    ? `Перегруз! Запланировано ${totalPlannedUnits} при лимите цеха ${factory.capacity} авто/кв.`
+                    ? lang === 'en'
+                      ? `Overcapacity! Planned ${totalPlannedUnits} units against factory limit of ${factory.capacity} cars/qtr.`
+                      : lang === 'uk'
+                      ? `Перевантаження! Заплановано ${totalPlannedUnits} при ліміті цеху ${factory.capacity} авто/кв.`
+                      : lang === 'de'
+                      ? `Überlastung! ${totalPlannedUnits} geplant bei Werkskapazität von ${factory.capacity} Autos/Q.`
+                      : `Перегруз! Запланировано ${totalPlannedUnits} при лимите цеха ${factory.capacity} авто/кв.`
+                    : lang === 'en'
+                    ? `Line utilization: ${totalPlannedUnits} / ${factory.capacity} cars/qtr (${Math.round((totalPlannedUnits / factory.capacity) * 100)}%).`
+                    : lang === 'uk'
+                    ? `Завантаження ліній: ${totalPlannedUnits} / ${factory.capacity} авто/кв. (${Math.round((totalPlannedUnits / factory.capacity) * 100)}%).`
+                    : lang === 'de'
+                    ? `Linienauslastung: ${totalPlannedUnits} / ${factory.capacity} Autos/Q. (${Math.round((totalPlannedUnits / factory.capacity) * 100)}%).`
                     : `Загрузка линий: ${totalPlannedUnits} / ${factory.capacity} авто/кв. (${Math.round((totalPlannedUnits / factory.capacity) * 100)}%).`}
                 </span>
               </div>
@@ -381,17 +511,32 @@ export default function DashboardPage(): React.JSX.Element {
                   <div>
                     <h3 className="font-serif font-bold text-base text-amber-950 flex items-center gap-2">
                       <span className="text-lg">🚗</span>
-                      <span>Сборочные посты и производство</span>
+                      <span>
+                        {lang === 'en'
+                          ? 'Assembly Lines & Production'
+                          : lang === 'uk'
+                          ? 'Складальні пости та виробництво'
+                          : lang === 'de'
+                          ? 'Montagelinien & Produktion'
+                          : 'Сборочные посты и производство'}
+                      </span>
                     </h3>
                     <span className="text-xs text-stone-600 font-serif">
-                      {factory.name} • Мощность: <strong className="font-sans text-amber-950">{factory.capacity} авто/кв.</strong> • Содержание: <strong className="font-sans text-stone-800">${factory.monthlyOverhead * 3}/кв.</strong>
+                      {factory.name} • {lang === 'en' ? 'Capacity' : lang === 'uk' ? 'Потужність' : lang === 'de' ? 'Kapazität' : 'Мощность'}:{' '}
+                      <strong className="font-sans text-amber-950">
+                        {factory.capacity} {lang === 'en' ? 'cars/qtr' : lang === 'uk' ? 'авто/кв.' : lang === 'de' ? 'Autos/Q.' : 'авто/кв.'}
+                      </strong>{' '}
+                      • {lang === 'en' ? 'Overhead' : lang === 'uk' ? 'Утримання' : lang === 'de' ? 'Unterhalt' : 'Содержание'}:{' '}
+                      <strong className="font-sans text-stone-800">
+                        ${factory.monthlyOverhead * 3}/{lang === 'en' ? 'qtr' : lang === 'uk' ? 'кв.' : lang === 'de' ? 'Q.' : 'кв.'}
+                      </strong>
                     </span>
                   </div>
 
                   <div className="flex items-center gap-2">
                     {planSavedNotice && (
                       <span className="text-xs font-bold text-emerald-900 bg-emerald-100 border border-emerald-300 px-2.5 py-1 rounded-lg animate-pulse shadow-2xs">
-                        ✓ План сохранен
+                        {lang === 'en' ? '✓ Plan saved' : lang === 'uk' ? '✓ План збережено' : lang === 'de' ? '✓ Plan gespeichert' : '✓ План сохранен'}
                       </span>
                     )}
                     <button
@@ -400,7 +545,9 @@ export default function DashboardPage(): React.JSX.Element {
                       onClick={handleSavePlan}
                       className="btn-brass px-3 py-1.5 text-xs font-bold text-white disabled:opacity-50 shadow-md cursor-pointer"
                     >
-                      {planSaving ? 'Запись...' : 'Сохранить план'}
+                      {planSaving
+                        ? (lang === 'en' ? 'Saving...' : lang === 'uk' ? 'Збереження...' : lang === 'de' ? 'Speichern...' : 'Запись...')
+                        : (lang === 'en' ? 'Save Plan' : lang === 'uk' ? 'Зберегти план' : lang === 'de' ? 'Plan speichern' : 'Сохранить план')}
                     </button>
                   </div>
                 </div>
@@ -408,13 +555,29 @@ export default function DashboardPage(): React.JSX.Element {
                 {/* Models list */}
                 {activeModels.length === 0 ? (
                   <div className="rounded-xl border border-dashed border-amber-900/30 bg-amber-50/30 p-8 text-center text-xs text-stone-600 font-serif">
-                    <p className="text-sm text-stone-700">У компании пока нет спроектированных моделей для выпуска.</p>
+                    <p className="text-sm text-stone-700">
+                      {lang === 'en'
+                        ? 'No vehicle models designed for production yet.'
+                        : lang === 'uk'
+                        ? 'У компанії поки немає спроєктованих моделей для випуску.'
+                        : lang === 'de'
+                        ? 'Das Unternehmen hat noch keine Modelle zur Produktion entworfen.'
+                        : 'У компании пока нет спроектированных моделей для выпуска.'}
+                    </p>
                     <button
                       onClick={() => setIsDesignModalOpen(true)}
                       className="btn-brass mt-3 px-4 py-2 text-white font-bold text-xs cursor-pointer shadow-md inline-flex items-center gap-1.5"
                     >
                       <span>📐</span>
-                      <span>+ Спроектировать первый автомобиль</span>
+                      <span>
+                        {lang === 'en'
+                          ? '+ Design First Vehicle'
+                          : lang === 'uk'
+                          ? '+ Спроєктувати перший автомобіль'
+                          : lang === 'de'
+                          ? '+ Erstes Fahrzeug entwerfen'
+                          : '+ Спроектировать первый автомобиль'}
+                      </span>
                     </button>
                   </div>
                 ) : (
@@ -455,20 +618,34 @@ export default function DashboardPage(): React.JSX.Element {
                               </div>
 
                               <div className="flex flex-wrap gap-2 text-[11px] text-stone-700 font-serif">
-                                <span>Себест: <strong className="font-mono text-stone-900">${model.productionCost}</strong></span>
-                                <span>Цена: <strong className="font-mono text-amber-950">${model.salePrice}</strong></span>
+                                <span>
+                                  {lang === 'en' ? 'Cost' : lang === 'uk' ? 'Собіварт' : lang === 'de' ? 'Selbstkosten' : 'Себест'}:{' '}
+                                  <strong className="font-mono text-stone-900">${model.productionCost}</strong>
+                                </span>
+                                <span>
+                                  {lang === 'en' ? 'Price' : lang === 'uk' ? 'Ціна' : lang === 'de' ? 'Preis' : 'Цена'}:{' '}
+                                  <strong className="font-mono text-amber-950">${model.salePrice}</strong>
+                                </span>
                               </div>
 
                               <div className="flex flex-wrap gap-1 text-[10px] text-stone-600 font-mono">
-                                <span className="bg-emerald-50 text-emerald-900 px-1.5 py-0.2 rounded border border-emerald-200">Над: {model.stats.reliability}%</span>
-                                <span className="bg-amber-50 text-amber-900 px-1.5 py-0.2 rounded border border-amber-200">Комф: {model.stats.comfort}</span>
-                                <span className="bg-purple-50 text-purple-900 px-1.5 py-0.2 rounded border border-purple-200">Прест: {model.stats.prestige}</span>
+                                <span className="bg-emerald-50 text-emerald-900 px-1.5 py-0.2 rounded border border-emerald-200">
+                                  {lang === 'en' ? 'Rel' : lang === 'uk' ? 'Над' : lang === 'de' ? 'Zuverl' : 'Над'}: {model.stats.reliability}%
+                                </span>
+                                <span className="bg-amber-50 text-amber-900 px-1.5 py-0.2 rounded border border-amber-200">
+                                  {lang === 'en' ? 'Comf' : lang === 'uk' ? 'Комф' : lang === 'de' ? 'Komf' : 'Комф'}: {model.stats.comfort}
+                                </span>
+                                <span className="bg-purple-50 text-purple-900 px-1.5 py-0.2 rounded border border-purple-200">
+                                  {lang === 'en' ? 'Prest' : lang === 'uk' ? 'Прест' : lang === 'de' ? 'Prest' : 'Прест'}: {model.stats.prestige}
+                                </span>
                               </div>
                             </div>
 
                             {/* Interactive Quota Controls */}
                             <div className="sm:col-span-3 flex flex-col items-end justify-center bg-amber-50/40 p-2.5 rounded-xl border border-amber-900/15">
-                              <span className="text-[10px] uppercase font-bold text-amber-900 tracking-wider">Квота выпуска</span>
+                              <span className="text-[10px] uppercase font-bold text-amber-900 tracking-wider">
+                                {lang === 'en' ? 'Production Quota' : lang === 'uk' ? 'Квота випуску' : lang === 'de' ? 'Produktionsquote' : 'Квота выпуска'}
+                              </span>
                               <div className="flex items-center gap-1 mt-1">
                                 <button
                                   type="button"
@@ -493,13 +670,17 @@ export default function DashboardPage(): React.JSX.Element {
                                   +
                                 </button>
                               </div>
-                              <span className="text-[10px] text-stone-500 font-mono mt-0.5">авто/кв.</span>
+                              <span className="text-[10px] text-stone-500 font-mono mt-0.5">
+                                {lang === 'en' ? 'cars/qtr' : lang === 'uk' ? 'авто/кв.' : lang === 'de' ? 'Autos/Q.' : 'авто/кв.'}
+                              </span>
                             </div>
                           </div>
 
                           {/* Materials required strip */}
                           <div className="flex flex-wrap gap-2 text-[10px] border-t border-amber-900/10 pt-1.5 text-stone-600">
-                            <span className="text-stone-400 font-serif">Сырье на единицу:</span>
+                            <span className="text-stone-400 font-serif">
+                              {lang === 'en' ? 'Materials per unit:' : lang === 'uk' ? 'Сировина на одиницю:' : lang === 'de' ? 'Material pro Einheit:' : 'Сырье на единицу:'}
+                            </span>
                             {Object.entries(model.materialsRequired ?? {}).map(([mat, amt]) => {
                               if (!amt) return null;
                               return (
@@ -522,11 +703,21 @@ export default function DashboardPage(): React.JSX.Element {
                 <div className="flex items-center justify-between border-b border-amber-900/20 pb-2">
                   <h3 className="font-serif font-bold text-sm text-amber-950 flex items-center gap-1.5">
                     <span className="text-base">📦</span>
-                    <span>Склад сырья и автозакупка</span>
+                    <span>
+                      {lang === 'en'
+                        ? 'Raw Materials & Auto-Procure'
+                        : lang === 'uk'
+                        ? 'Склад сировини та автозакупівля'
+                        : lang === 'de'
+                        ? 'Rohstofflager & Autobeschaffung'
+                        : 'Склад сырья и автозакупка'}
+                    </span>
                   </h3>
 
                   <div className="flex items-center gap-2 text-xs">
-                    <span className="text-stone-600 font-serif">Автозакупка:</span>
+                    <span className="text-stone-600 font-serif">
+                      {lang === 'en' ? 'Auto-procure:' : lang === 'uk' ? 'Автозакупівля:' : lang === 'de' ? 'Autobeschaffung:' : 'Автозакупка:'}
+                    </span>
                     <button
                       type="button"
                       onClick={() => setAutoProcurement(!isAutoProcure)}
@@ -536,7 +727,9 @@ export default function DashboardPage(): React.JSX.Element {
                           : 'bg-stone-300 hover:bg-stone-400 text-stone-800'
                       }`}
                     >
-                      {isAutoProcure ? '✓ ВКЛ' : 'ВЫКЛ'}
+                      {isAutoProcure
+                        ? (lang === 'en' ? '✓ ON' : lang === 'uk' ? '✓ УВІМК' : lang === 'de' ? '✓ EIN' : '✓ ВКЛ')
+                        : (lang === 'en' ? 'OFF' : lang === 'uk' ? 'ВИМК' : lang === 'de' ? 'AUS' : 'ВЫКЛ')}
                     </button>
                   </div>
                 </div>
@@ -565,7 +758,9 @@ export default function DashboardPage(): React.JSX.Element {
                             <span className="text-sm">{icon}</span>
                             <span className="font-serif font-bold text-stone-900">{t.materials[mat] ?? mat}</span>
                           </div>
-                          <span className="text-[10px] text-stone-500 font-mono">Потр: {needed}</span>
+                          <span className="text-[10px] text-stone-500 font-mono">
+                            {lang === 'en' ? 'Req' : lang === 'uk' ? 'Потр' : lang === 'de' ? 'Bedarf' : 'Потр'}: {needed}
+                          </span>
                         </div>
 
                         <div className="mt-1.5 flex items-baseline justify-between">
@@ -576,7 +771,7 @@ export default function DashboardPage(): React.JSX.Element {
                               onClick={() => handleQuickBuy(mat, Math.max(10, needed - inStock))}
                               className="rounded bg-amber-900 hover:bg-amber-950 px-2 py-0.5 text-[9px] font-bold text-white shadow-2xs transition cursor-pointer"
                             >
-                              + Купить
+                              {lang === 'en' ? '+ Buy' : lang === 'uk' ? '+ Купити' : lang === 'de' ? '+ Kaufen' : '+ Купить'}
                             </button>
                           )}
                         </div>
@@ -594,14 +789,24 @@ export default function DashboardPage(): React.JSX.Element {
             <div className="flex items-center justify-between border-b border-amber-900/20 pb-2">
               <h3 className="font-serif font-bold text-sm text-amber-950 flex items-center gap-1.5">
                 <span className="text-base">🔬</span>
-                <span>Инженерное бюро (НИОКР)</span>
+                <span>
+                  {lang === 'en'
+                    ? 'Engineering Bureau (R&D)'
+                    : lang === 'uk'
+                    ? 'Інженерне бюро (НДДКР)'
+                    : lang === 'de'
+                    ? 'Ingenieurbüro (F&E)'
+                    : 'Инженерное бюро (НИОКР)'}
+                </span>
               </h3>
               <button
                 type="button"
                 onClick={() => setIsResearchModalOpen(true)}
                 className="text-xs font-serif font-bold text-amber-900 hover:text-amber-950 hover:underline cursor-pointer"
               >
-                {activeResearch ? 'Сменить проект' : '+ Выбрать технологию'}
+                {activeResearch
+                  ? (lang === 'en' ? 'Change project' : lang === 'uk' ? 'Змінити проєкт' : lang === 'de' ? 'Projekt wechseln' : 'Сменить проект')
+                  : (lang === 'en' ? '+ Select Technology' : lang === 'uk' ? '+ Обрати технологію' : lang === 'de' ? '+ Technologie wählen' : '+ Выбрать технологию')}
               </button>
             </div>
 
@@ -612,16 +817,19 @@ export default function DashboardPage(): React.JSX.Element {
                     {t.technologies[activeResearch.technologyId as keyof typeof t.technologies]?.name ?? activeResearch.technologyId}
                   </span>
                   <span className="text-[10px] font-bold font-mono text-amber-950 bg-amber-200/80 border border-amber-400/50 px-2 py-0.5 rounded-md">
-                    ${activeResearch.allocatedBudget} / мес.
+                    ${activeResearch.allocatedBudget} / {lang === 'en' ? 'mo' : lang === 'uk' ? 'міс.' : lang === 'de' ? 'Monat' : 'мес.'}
                   </span>
                 </div>
 
                 {/* Progress bar */}
                 <div className="space-y-1">
                   <div className="flex justify-between text-[11px] text-stone-600 font-mono">
-                    <span>Прогресс разработки:</span>
+                    <span>
+                      {lang === 'en' ? 'Research progress:' : lang === 'uk' ? 'Прогрес розробки:' : lang === 'de' ? 'Forschungsfortschritt:' : 'Прогресс разработки:'}
+                    </span>
                     <span className="font-bold text-amber-950">
-                      {Math.ceil(activeResearch.progressMonths / 3)} / {Math.ceil(activeResearch.totalMonths / 3)} кв.
+                      {Math.ceil(activeResearch.progressMonths / 3)} / {Math.ceil(activeResearch.totalMonths / 3)}{' '}
+                      {lang === 'en' ? 'qtr' : lang === 'uk' ? 'кв.' : lang === 'de' ? 'Q.' : 'кв.'}
                     </span>
                   </div>
                   <div className="h-2 w-full rounded-full bg-stone-300/80 overflow-hidden border border-stone-400/30">
@@ -636,14 +844,24 @@ export default function DashboardPage(): React.JSX.Element {
               </div>
             ) : (
               <div className="rounded-xl border border-dashed border-amber-900/30 bg-amber-50/30 p-4 text-center text-xs text-stone-600 font-serif">
-                <p>Лаборатория свободна. Никаких разработок не ведется.</p>
+                <p>
+                  {lang === 'en'
+                    ? 'Laboratory is idle. No ongoing research.'
+                    : lang === 'uk'
+                    ? 'Лабораторія вільна. Дослідження не ведуться.'
+                    : lang === 'de'
+                    ? 'Labor ist frei. Keine aktive Forschung.'
+                    : 'Лаборатория свободна. Никаких разработок не ведется.'}
+                </p>
                 <button
                   type="button"
                   onClick={() => setIsResearchModalOpen(true)}
                   className="btn-brass mt-2.5 px-3.5 py-1.5 font-bold text-white text-xs shadow-md cursor-pointer inline-flex items-center gap-1"
                 >
                   <span>🔬</span>
-                  <span>Запустить исследование</span>
+                  <span>
+                    {lang === 'en' ? 'Launch Research' : lang === 'uk' ? 'Запустити дослідження' : lang === 'de' ? 'Forschung starten' : 'Запустить исследование'}
+                  </span>
                 </button>
               </div>
             )}
@@ -651,7 +869,7 @@ export default function DashboardPage(): React.JSX.Element {
             {/* Unlocked Technologies badges */}
             <div className="pt-1">
               <span className="text-[10px] uppercase font-bold text-stone-500 font-serif block mb-1.5">
-                Изученные патенты ({gameState.unlockedTechnologyIds?.length ?? 0}):
+                {lang === 'en' ? 'Unlocked Patents' : lang === 'uk' ? 'Вивчені патенти' : lang === 'de' ? 'Erforschte Patente' : 'Изученные патенты'} ({gameState.unlockedTechnologyIds?.length ?? 0}):
               </span>
               <div className="flex flex-wrap gap-1">
                 {(gameState.unlockedTechnologyIds ?? []).map((id) => (
@@ -668,50 +886,61 @@ export default function DashboardPage(): React.JSX.Element {
             <div className="flex items-center justify-between border-b border-amber-900/20 pb-2">
               <h3 className="font-serif font-bold text-sm text-amber-950 flex items-center gap-1.5">
                 <span className="text-base">🌍</span>
-                <span>Рынки и Конкуренты</span>
+                <span>
+                  {lang === 'en' ? 'Markets & Competitors' : lang === 'uk' ? 'Ринки та Конкуренти' : lang === 'de' ? 'Märkte & Konkurrenten' : 'Рынки и Конкуренты'}
+                </span>
               </h3>
               <button
                 type="button"
                 onClick={() => handleTabChange('markets')}
                 className="text-xs font-serif font-bold text-amber-900 hover:text-amber-950 hover:underline cursor-pointer"
               >
-                Подробнее →
+                {lang === 'en' ? 'Details →' : lang === 'uk' ? 'Детальніше →' : lang === 'de' ? 'Details →' : 'Подробнее →'}
               </button>
             </div>
 
             {/* Region presence bars */}
             <div className="space-y-2 text-xs">
               <div className="flex justify-between items-center text-[11px] text-stone-700">
-                <span className="font-serif">🇺🇸 Северная Америка:</span>
+                <span className="font-serif">🇺🇸 {t.regions?.['north-america'] ?? 'Северная Америка'}:</span>
                 <strong className="text-stone-900 font-mono bg-stone-100 px-2 py-0.5 rounded border border-stone-200">
-                  {Math.round((company.marketPresence?.['north-america'] ?? 0) * 100)}% охват
+                  {Math.round((company.marketPresence?.['north-america'] ?? 0) * 100)}%{' '}
+                  {lang === 'en' ? 'share' : lang === 'uk' ? 'охоплення' : lang === 'de' ? 'Anteil' : 'охват'}
                 </strong>
               </div>
               <div className="flex justify-between items-center text-[11px] text-stone-700">
-                <span className="font-serif">🇪🇺 Европа:</span>
+                <span className="font-serif">🇪🇺 {t.regions?.europe ?? 'Европа'}:</span>
                 <strong className="text-stone-900 font-mono bg-stone-100 px-2 py-0.5 rounded border border-stone-200">
-                  {Math.round((company.marketPresence?.europe ?? 0) * 100)}% охват
+                  {Math.round((company.marketPresence?.europe ?? 0) * 100)}%{' '}
+                  {lang === 'en' ? 'share' : lang === 'uk' ? 'охоплення' : lang === 'de' ? 'Anteil' : 'охват'}
                 </strong>
               </div>
               <div className="flex justify-between items-center text-[11px] text-stone-700">
-                <span className="font-serif">🌍 Ближний Восток:</span>
+                <span className="font-serif">🌍 {t.regions?.['middle-east'] ?? 'Ближний Восток'}:</span>
                 <strong className="text-stone-900 font-mono bg-stone-100 px-2 py-0.5 rounded border border-stone-200">
-                  {Math.round((company.marketPresence?.['middle-east'] ?? 0) * 100)}% охват
+                  {Math.round((company.marketPresence?.['middle-east'] ?? 0) * 100)}%{' '}
+                  {lang === 'en' ? 'share' : lang === 'uk' ? 'охоплення' : lang === 'de' ? 'Anteil' : 'охват'}
                 </strong>
               </div>
             </div>
 
             {/* Key Competitors snapshot */}
             <div className="border-t border-amber-900/15 pt-2.5 space-y-1.5 text-xs">
-              <span className="text-[10px] uppercase font-bold text-stone-500 font-serif block">Главные соперники эпохи:</span>
+              <span className="text-[10px] uppercase font-bold text-stone-500 font-serif block">
+                {lang === 'en' ? 'Key rivals of the era:' : lang === 'uk' ? 'Головні суперники епохи:' : lang === 'de' ? 'Hauptkonkurrenten der Epoche:' : 'Главные соперники эпохи:'}
+              </span>
               <div className="grid grid-cols-2 gap-2 text-[11px]">
                 <div className="rounded-lg border border-amber-900/15 bg-white/70 p-2 shadow-2xs">
                   <div className="font-serif font-bold text-stone-900">🇺🇸 Fort Motor Co.</div>
-                  <span className="text-[10px] text-amber-900 font-mono">Репутация: 65 ★</span>
+                  <span className="text-[10px] text-amber-900 font-mono">
+                    {lang === 'en' ? 'Reputation' : lang === 'uk' ? 'Репутація' : lang === 'de' ? 'Ruf' : 'Репутация'}: 65 ★
+                  </span>
                 </div>
                 <div className="rounded-lg border border-amber-900/15 bg-white/70 p-2 shadow-2xs">
                   <div className="font-serif font-bold text-stone-900">🇩🇪 Mercer-Benz</div>
-                  <span className="text-[10px] text-amber-900 font-mono">Репутация: 80 ★</span>
+                  <span className="text-[10px] text-amber-900 font-mono">
+                    {lang === 'en' ? 'Reputation' : lang === 'uk' ? 'Репутація' : lang === 'de' ? 'Ruf' : 'Репутация'}: 80 ★
+                  </span>
                 </div>
               </div>
             </div>
@@ -722,37 +951,45 @@ export default function DashboardPage(): React.JSX.Element {
             <div className="flex items-center justify-between border-b border-amber-900/20 pb-2">
               <h3 className="font-serif font-bold text-sm text-amber-950 flex items-center gap-1.5">
                 <span className="text-base">🏦</span>
-                <span>Казначейство и Банк</span>
+                <span>
+                  {lang === 'en' ? 'Treasury & Bank' : lang === 'uk' ? 'Казначейство та Банк' : lang === 'de' ? 'Finanzen & Bank' : 'Казначейство и Банк'}
+                </span>
               </h3>
               <button
                 type="button"
                 onClick={() => handleTabChange('bank')}
                 className="text-xs font-serif font-bold text-amber-900 hover:text-amber-950 hover:underline cursor-pointer"
               >
-                Кредитный портфель →
+                {lang === 'en' ? 'Credit Portfolio →' : lang === 'uk' ? 'Кредитний портфель →' : lang === 'de' ? 'Kreditportfolio →' : 'Кредитный портфель →'}
               </button>
             </div>
 
             <div className="grid grid-cols-2 gap-2 text-xs">
               <div className="rounded-xl border border-amber-900/15 bg-white/80 p-2.5 shadow-2xs">
-                <span className="text-stone-500 font-serif text-[10px] block">Свободный капитал:</span>
+                <span className="text-stone-500 font-serif text-[10px] block">
+                  {lang === 'en' ? 'Liquid Capital:' : lang === 'uk' ? 'Вільний капітал:' : lang === 'de' ? 'Freies Kapital:' : 'Свободный капитал:'}
+                </span>
                 <span className="text-base font-bold font-mono text-emerald-900">${company.cash.toLocaleString()}</span>
               </div>
               <div className="rounded-xl border border-amber-900/15 bg-white/80 p-2.5 shadow-2xs">
-                <span className="text-stone-500 font-serif text-[10px] block">Активные кредиты:</span>
+                <span className="text-stone-500 font-serif text-[10px] block">
+                  {lang === 'en' ? 'Active Loans:' : lang === 'uk' ? 'Активні кредити:' : lang === 'de' ? 'Aktive Kredite:' : 'Активные кредиты:'}
+                </span>
                 <span className="text-base font-bold font-mono text-stone-900">{activeLoans.length}</span>
               </div>
             </div>
 
             {/* Quick loan button */}
             <div className="flex items-center justify-between text-xs bg-amber-50/80 border border-amber-900/20 rounded-xl p-2.5 shadow-2xs">
-              <span className="text-[11px] text-amber-950 font-serif">Требуются оборотные средства?</span>
+              <span className="text-[11px] text-amber-950 font-serif">
+                {lang === 'en' ? 'Need working capital?' : lang === 'uk' ? 'Потрібні оборотні кошти?' : lang === 'de' ? 'Betriebskapital benötigt?' : 'Требуются оборотные средства?'}
+              </span>
               <button
                 type="button"
                 onClick={handleQuickLoan}
                 className="btn-brass px-3 py-1 text-[11px] font-bold text-white shadow-md cursor-pointer"
               >
-                + Овердрафт ($3 000)
+                {lang === 'en' ? '+ Overdraft ($3,000)' : lang === 'uk' ? '+ Овердрафт ($3 000)' : lang === 'de' ? '+ Kontokorrent (3.000 $)' : '+ Овердрафт ($3 000)'}
               </button>
             </div>
           </section>

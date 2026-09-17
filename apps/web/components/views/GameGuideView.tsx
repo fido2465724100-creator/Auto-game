@@ -18,18 +18,20 @@ interface GuideChapter {
   icon: string;
   titleRu: string;
   titleEn: string;
+  titleUk: string;
+  titleDe: string;
   badge?: string;
 }
 
 const CHAPTERS: GuideChapter[] = [
-  { id: 'overview', icon: '🎯', titleRu: '1. Цель и основы игры', titleEn: '1. Goals & Basics' },
-  { id: 'design', icon: '🚗', titleRu: '2. Конструктор и Сегменты', titleEn: '2. Design & Segments' },
-  { id: 'production', icon: '🏭', titleRu: '3. Завод и Склад сырья', titleEn: '3. Factory & Warehouse' },
-  { id: 'research', icon: '🔬', titleRu: '4. НИОКР и Технологии', titleEn: '4. R&D & Tech Tree' },
-  { id: 'markets', icon: '🌐', titleRu: '5. Рынки и Конкуренты', titleEn: '5. Markets & Rivals' },
-  { id: 'finance', icon: '🏦', titleRu: '6. Финансы, Прибыль и Займы', titleEn: '6. Finance & Loans' },
-  { id: 'tips', icon: '💡', titleRu: '7. Советы новичку (1900 г.)', titleEn: '7. Beginner Tips' },
-  { id: 'eras', icon: '🎨', titleRu: '8. Эпохи и Стиль (1900–2026)', titleEn: '8. Eras & Materials' },
+  { id: 'overview', icon: '🎯', titleRu: '1. Цель и основы игры', titleEn: '1. Goals & Basics', titleUk: '1. Мета та основи гри', titleDe: '1. Ziele & Grundlagen' },
+  { id: 'design', icon: '🚗', titleRu: '2. Конструктор и Сегменты', titleEn: '2. Design & Segments', titleUk: '2. Конструктор і Сегменти', titleDe: '2. Konstruktion & Segmente' },
+  { id: 'production', icon: '🏭', titleRu: '3. Завод и Склад сырья', titleEn: '3. Factory & Warehouse', titleUk: '3. Завод і Склад сировини', titleDe: '3. Fabrik & Rohstofflager' },
+  { id: 'research', icon: '🔬', titleRu: '4. НИОКР и Технологии', titleEn: '4. R&D & Tech Tree', titleUk: '4. НДДКР і Технології', titleDe: '4. F&E & Technologien' },
+  { id: 'markets', icon: '🌐', titleRu: '5. Рынки и Конкуренты', titleEn: '5. Markets & Rivals', titleUk: '5. Ринки та Конкуренти', titleDe: '5. Märkte & Konkurrenten' },
+  { id: 'finance', icon: '🏦', titleRu: '6. Финансы, Прибыль и Займы', titleEn: '6. Finance & Loans', titleUk: '6. Фінанси, Прибуток і Кредити', titleDe: '6. Finanzen & Kredite' },
+  { id: 'tips', icon: '💡', titleRu: '7. Советы новичку (1900 г.)', titleEn: '7. Beginner Tips', titleUk: '7. Поради новачкові (1900 р.)', titleDe: '7. Einsteigertipps (1900)' },
+  { id: 'eras', icon: '🎨', titleRu: '8. Эпохи и Стиль (1900–2026)', titleEn: '8. Eras & Materials', titleUk: '8. Епохи та Стиль (1900–2026)', titleDe: '8. Epochen & Materialien' },
 ];
 
 interface Props {
@@ -39,6 +41,13 @@ interface Props {
 export default function GameGuideView({ isModal = false }: Props): React.JSX.Element {
   const { lang } = useLanguage();
   const [activeChapter, setActiveChapter] = useState<GuideChapterId>('overview');
+
+  const getChapterTitle = (ch: GuideChapter) => {
+    if (lang === 'en') return ch.titleEn;
+    if (lang === 'uk') return ch.titleUk;
+    if (lang === 'de') return ch.titleDe;
+    return ch.titleRu;
+  };
 
   return (
     <div className="space-y-4">
@@ -50,22 +59,56 @@ export default function GameGuideView({ isModal = false }: Props): React.JSX.Ele
               <div className="flex items-center gap-2">
                 <span className="text-2xl">📖</span>
                 <h2 className="font-serif text-2xl font-bold text-amber-950">
-                  {lang === 'en' ? 'Industrialist Handbook & Game Guide' : 'Справочник промышленника и Руководство по игре'}
+                  {lang === 'en'
+                    ? 'Industrialist Handbook & Game Guide'
+                    : lang === 'uk'
+                    ? 'Довідник промисловця та Посібник з гри'
+                    : lang === 'de'
+                    ? 'Industriellen-Handbuch & Spielanleitung'
+                    : 'Справочник промышленника и Руководство по игре'}
                 </h2>
               </div>
               <p className="text-xs text-stone-600 font-serif">
                 {lang === 'en'
                   ? 'Comprehensive manual for managing an automobile concern from 1900 to 2026'
+                  : lang === 'uk'
+                  ? 'Повний звід правил, формул і механік для керівництва автомобільним концерном (1900–2026 рр.)'
+                  : lang === 'de'
+                  ? 'Umfassendes Handbuch zur Leitung eines Automobilkonzerns (1900–2026)'
                   : 'Полный свод правил, формул и механик для успешного руководства автомобильным концерном (1900–2026 гг.)'}
               </p>
             </div>
 
             <div className="flex items-center gap-2 text-xs font-mono bg-amber-100/70 border border-amber-800/20 px-3 py-1.5 rounded-lg text-amber-900 self-start md:self-auto">
-              <span>⏳ 504 хода</span>
+              <span>
+                {lang === 'en'
+                  ? '⏳ 504 turns'
+                  : lang === 'uk'
+                  ? '⏳ 504 ходи'
+                  : lang === 'de'
+                  ? '⏳ 504 Züge'
+                  : '⏳ 504 хода'}
+              </span>
               <span>•</span>
-              <span>4 кв./год</span>
+              <span>
+                {lang === 'en'
+                  ? '4 qtrs/yr'
+                  : lang === 'uk'
+                  ? '4 кв./рік'
+                  : lang === 'de'
+                  ? '4 Q./Jahr'
+                  : '4 кв./год'}
+              </span>
               <span>•</span>
-              <span>126 лет эпохи</span>
+              <span>
+                {lang === 'en'
+                  ? '126 years era'
+                  : lang === 'uk'
+                  ? '126 років епохи'
+                  : lang === 'de'
+                  ? '126 Jahre Epoche'
+                  : '126 лет эпохи'}
+              </span>
             </div>
           </div>
         </div>
@@ -76,7 +119,13 @@ export default function GameGuideView({ isModal = false }: Props): React.JSX.Ele
         {/* CHAPTERS MENU */}
         <aside className="md:col-span-4 rounded-xl border border-stone-300 bg-[var(--paper)] p-3 shadow-xs space-y-1 md:sticky md:top-2">
           <span className="text-[10px] font-bold uppercase tracking-wider text-stone-500 px-3 py-1.5 block">
-            {lang === 'en' ? 'Chapters' : 'Разделы справочника'}
+            {lang === 'en'
+              ? 'Chapters'
+              : lang === 'uk'
+              ? 'Розділи довідника'
+              : lang === 'de'
+              ? 'Kapitelübersicht'
+              : 'Разделы справочника'}
           </span>
           {CHAPTERS.map((ch) => {
             const isActive = activeChapter === ch.id;
@@ -93,7 +142,7 @@ export default function GameGuideView({ isModal = false }: Props): React.JSX.Ele
               >
                 <div className="flex items-center gap-2.5 truncate">
                   <span className="text-base">{ch.icon}</span>
-                  <span className="truncate">{lang === 'en' ? ch.titleEn : ch.titleRu}</span>
+                  <span className="truncate">{getChapterTitle(ch)}</span>
                 </div>
                 {isActive && <span className="text-amber-200 text-xs font-bold">→</span>}
               </button>

@@ -108,30 +108,27 @@ export function TopTimelineBar(): React.JSX.Element {
 
         {/* Right: Language Switcher & End Turn Button */}
         <div className="flex items-center gap-3">
-          {/* Language Toggle */}
-          <div className="flex rounded border border-stone-300 bg-white/70 p-0.5 text-[11px] font-semibold">
-            <button
-              type="button"
-              onClick={() => setLang('ru')}
-              className={`rounded px-2 py-0.5 transition ${
-                lang === 'ru'
-                  ? 'bg-amber-800 text-white shadow-xs'
-                  : 'text-stone-600 hover:text-stone-900'
-              }`}
-            >
-              RU
-            </button>
-            <button
-              type="button"
-              onClick={() => setLang('en')}
-              className={`rounded px-2 py-0.5 transition ${
-                lang === 'en'
-                  ? 'bg-amber-800 text-white shadow-xs'
-                  : 'text-stone-600 hover:text-stone-900'
-              }`}
-            >
-              EN
-            </button>
+          {/* Language Toggle (RU, UA, DE, EN) */}
+          <div className="flex rounded border border-stone-300 bg-white/70 p-0.5 text-[11px] font-semibold gap-0.5">
+            {[
+              { code: 'ru', label: 'RU' },
+              { code: 'uk', label: 'UA' },
+              { code: 'de', label: 'DE' },
+              { code: 'en', label: 'EN' },
+            ].map(({ code, label }) => (
+              <button
+                key={code}
+                type="button"
+                onClick={() => setLang(code as any)}
+                className={`rounded px-1.5 py-0.5 transition cursor-pointer font-sans text-[10px] font-bold ${
+                  lang === code
+                    ? 'bg-amber-800 text-white shadow-xs'
+                    : 'text-stone-600 hover:text-stone-900 hover:bg-stone-100'
+                }`}
+              >
+                {label}
+              </button>
+            ))}
           </div>
 
           {/* Hall of Fame / Achievements button */}
@@ -139,10 +136,20 @@ export function TopTimelineBar(): React.JSX.Element {
             type="button"
             onClick={() => setHallOfFameOpen(true)}
             className="flex items-center gap-1 rounded border border-amber-900/30 bg-amber-50 px-2.5 py-1 text-xs font-serif font-bold text-amber-950 hover:bg-amber-100 shadow-2xs transition cursor-pointer"
-            title={lang === 'en' ? 'Hall of Fame, Trophies & Save/Load' : 'Зал Славы, Трофеи и Сохранения'}
+            title={
+              lang === 'en'
+                ? 'Hall of Fame, Trophies & Save/Load'
+                : lang === 'uk'
+                ? 'Зал Слави, Трофеї та Збереження'
+                : lang === 'de'
+                ? 'Ruhmeshalle, Trophäen & Spielstand'
+                : 'Зал Славы, Трофеи и Сохранения'
+            }
           >
             <span>🏆</span>
-            <span className="hidden sm:inline">{lang === 'en' ? 'Trophies' : 'Зал славы'}</span>
+            <span className="hidden sm:inline">
+              {lang === 'en' ? 'Trophies' : lang === 'uk' ? 'Зал слави' : lang === 'de' ? 'Ruhmeshalle' : 'Зал славы'}
+            </span>
           </button>
 
           {/* Guide / Manual button */}
@@ -150,28 +157,53 @@ export function TopTimelineBar(): React.JSX.Element {
             type="button"
             onClick={() => setGuideModalOpen(true)}
             className="flex items-center gap-1 rounded border border-amber-900/30 bg-amber-50 px-2.5 py-1 text-xs font-serif font-bold text-amber-950 hover:bg-amber-100 shadow-2xs transition cursor-pointer"
-            title="Руководство по игре и правила"
+            title={
+              lang === 'en'
+                ? 'Handbook & Rules'
+                : lang === 'uk'
+                ? 'Довідник з гри та правила'
+                : lang === 'de'
+                ? 'Spielanleitung & Regeln'
+                : 'Руководство по игре и правила'
+            }
           >
             <span>📖</span>
-            <span className="hidden sm:inline">{lang === 'en' ? 'Guide' : 'Справка'}</span>
+            <span className="hidden sm:inline">
+              {lang === 'en' ? 'Guide' : lang === 'uk' ? 'Довідка' : lang === 'de' ? 'Handbuch' : 'Справка'}
+            </span>
           </button>
 
           {/* Reset / New Game button */}
           <button
             type="button"
             onClick={async () => {
-              const msg = lang === 'en'
-                ? 'Start a new game from 1900 Q1? All current progress will be reset.'
-                : 'Начать новую кампанию заново с 1900 года (I кв.)? Весь текущий прогресс будет сброшен.';
+              const msg =
+                lang === 'en'
+                  ? 'Start a new game from 1900 Q1? All current progress will be reset.'
+                  : lang === 'uk'
+                  ? 'Почати нову кампанію заново з 1900 року (I кв.)? Весь поточний прогрес буде скинуто.'
+                  : lang === 'de'
+                  ? 'Neues Spiel ab 1900 (1. Quartal) starten? Der aktuelle Spielstand wird zurückgesetzt.'
+                  : 'Начать новую кампанию заново с 1900 года (I кв.)? Весь текущий прогресс будет сброшен.';
               if (window.confirm(msg)) {
                 await resetGame();
               }
             }}
             className="flex items-center gap-1 rounded border border-stone-300 bg-white/70 hover:bg-red-50 hover:border-red-300 hover:text-red-800 px-2 py-1 text-xs font-serif text-stone-600 shadow-2xs transition cursor-pointer"
-            title={lang === 'en' ? 'Restart game from 1900' : 'Перезапустить игру заново с 1900 года'}
+            title={
+              lang === 'en'
+                ? 'Restart game from 1900'
+                : lang === 'uk'
+                ? 'Перезапустити гру заново з 1900 року'
+                : lang === 'de'
+                ? 'Spiel ab 1900 neu starten'
+                : 'Перезапустить игру заново с 1900 года'
+            }
           >
             <span>🔄</span>
-            <span className="hidden md:inline">{lang === 'en' ? 'Restart' : 'Новая игра'}</span>
+            <span className="hidden md:inline">
+              {lang === 'en' ? 'Restart' : lang === 'uk' ? 'Нова гра' : lang === 'de' ? 'Neustart' : 'Новая игра'}
+            </span>
           </button>
 
           {/* Big End Quarter Button */}

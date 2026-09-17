@@ -1,3 +1,5 @@
+import type { Language } from './i18n';
+
 export type EraId =
   | 'era-1900' // 1900–1919: Дерево, медь, латунь, пергамент, заклепки
   | 'era-1920' // 1920–1939: Ар-деко, полированный лак, хром, геометрия
@@ -11,8 +13,12 @@ export interface EraThemeConfig {
   id: EraId;
   nameRu: string;
   nameEn: string;
+  nameUk: string;
+  nameDe: string;
   materialRu: string;
   materialEn: string;
+  materialUk: string;
+  materialDe: string;
   icon: string;
   yearStart: number;
   yearEnd: number;
@@ -27,10 +33,16 @@ export interface EraThemeConfig {
   advisorTitles: {
     engineerRu: string;
     engineerEn: string;
+    engineerUk: string;
+    engineerDe: string;
     financeRu: string;
     financeEn: string;
+    financeUk: string;
+    financeDe: string;
     plantRu: string;
     plantEn: string;
+    plantUk: string;
+    plantDe: string;
   };
 }
 
@@ -39,8 +51,12 @@ export const ERA_THEMES: Record<EraId, EraThemeConfig> = {
     id: 'era-1900',
     nameRu: 'Эпоха пара и первопроходцев',
     nameEn: 'Pioneer & Steam Era',
+    nameUk: 'Епоха пари та першопрохідців',
+    nameDe: 'Ära des Dampfes & Pioniere',
     materialRu: 'Мореный дуб, латунь и пергамент',
     materialEn: 'Bog Oak, Brass & Parchment',
+    materialUk: 'Морений дуб, латунь та пергамент',
+    materialDe: 'Mooreiche, Messing & Pergament',
     icon: '🪵',
     yearStart: 1900,
     yearEnd: 1919,
@@ -55,18 +71,28 @@ export const ERA_THEMES: Record<EraId, EraThemeConfig> = {
     advisorTitles: {
       engineerRu: 'Главный механик',
       engineerEn: 'Chief Mechanic',
+      engineerUk: 'Головний механік',
+      engineerDe: 'Chefmechaniker',
       financeRu: 'Управляющий казначейством',
       financeEn: 'Treasury Steward',
+      financeUk: 'Керуючий скарбницею',
+      financeDe: 'Schatzmeister',
       plantRu: 'Смотритель мануфактуры',
       plantEn: 'Workshop Foreman',
+      plantUk: 'Доглядач мануфактури',
+      plantDe: 'Manufakturleiter',
     },
   },
   'era-1920': {
     id: 'era-1920',
     nameRu: 'Ревущие двадцатые и Ар-деко',
     nameEn: 'Roaring Twenties & Art Deco',
+    nameUk: 'Ревучі двадцяті та Ар-деко',
+    nameDe: 'Goldene Zwanziger & Art déco',
     materialRu: 'Полированная сталь, хром и черный лак',
     materialEn: 'Polished Steel, Chrome & Black Lacquer',
+    materialUk: 'Полірована сталь, хром та чорний лак',
+    materialDe: 'Polierter Stahl, Chrom & Schwarzlack',
     icon: '⚙️',
     yearStart: 1920,
     yearEnd: 1939,
@@ -81,18 +107,28 @@ export const ERA_THEMES: Record<EraId, EraThemeConfig> = {
     advisorTitles: {
       engineerRu: 'Инженер-конструктор',
       engineerEn: 'Chief Design Engineer',
+      engineerUk: 'Інженер-конструктор',
+      engineerDe: 'Konstruktionsingenieur',
       financeRu: 'Финансовый директор',
       financeEn: 'Comptroller',
+      financeUk: 'Фінансовий директор',
+      financeDe: 'Finanzdirektor',
       plantRu: 'Начальник конвейера',
       plantEn: 'Assembly Superintendent',
+      plantUk: 'Начальник конвеєра',
+      plantDe: 'Montageleiter',
     },
   },
   'era-1940': {
     id: 'era-1940',
     nameRu: 'Послевоенный бум и Аэростиль',
     nameEn: 'Post-War Boom & Tailfins',
+    nameUk: 'Післявоєнний бум та Аеростиль',
+    nameDe: 'Nachkriegsboom & Stromlinien-Ära',
     materialRu: 'Бакелит, слоновая кость и массивный хром',
     materialEn: 'Bakelite, Ivory & Mirror Chrome',
+    materialUk: 'Бакеліт, слонова кістка та масивний хром',
+    materialDe: 'Bakelit, Elfenbein & Spiegelchrom',
     icon: '🚀',
     yearStart: 1940,
     yearEnd: 1959,
@@ -107,18 +143,28 @@ export const ERA_THEMES: Record<EraId, EraThemeConfig> = {
     advisorTitles: {
       engineerRu: 'Директор по развитию',
       engineerEn: 'VP of Engineering',
+      engineerUk: 'Директор з розвитку',
+      engineerDe: 'Entwicklungschef',
       financeRu: 'Вице-президент по финансам',
       financeEn: 'VP of Finance',
+      financeUk: 'Віцепрезидент з фінансів',
+      financeDe: 'Finanzvorstand (CFO)',
       plantRu: 'Директор завода',
       plantEn: 'Plant Manager',
+      plantUk: 'Директор заводу',
+      plantDe: 'Werksleiter',
     },
   },
   'era-1960': {
     id: 'era-1960',
     nameRu: 'Эра мускул-каров и винила',
     nameEn: 'Muscle Car & Vinyl Era',
+    nameUk: 'Ера маслкарів та вінілу',
+    nameDe: 'Muscle-Car- & Vinyl-Ära',
     materialRu: 'Перфорированный винил и матовый алюминий',
     materialEn: 'Perforated Vinyl & Brushed Aluminum',
+    materialUk: 'Перфорований вініл та матовий алюміній',
+    materialDe: 'Gelochtes Vinyl & Gebürstetes Aluminium',
     icon: '🏎️',
     yearStart: 1960,
     yearEnd: 1979,
@@ -133,18 +179,28 @@ export const ERA_THEMES: Record<EraId, EraThemeConfig> = {
     advisorTitles: {
       engineerRu: 'Главный моторист',
       engineerEn: 'Head of Powertrain',
+      engineerUk: 'Головний моторист',
+      engineerDe: 'Leiter Motorenentwicklung',
       financeRu: 'Финансовый аналитик',
       financeEn: 'Lead Financial Officer',
+      financeUk: 'Фінансовий аналітик',
+      financeDe: 'Leitender Finanzanalyst',
       plantRu: 'Управляющий производством',
       plantEn: 'Operations Director',
+      plantUk: 'Керуючий виробництвом',
+      plantDe: 'Betriebsleiter',
     },
   },
   'era-1980': {
     id: 'era-1980',
     nameRu: 'Цифровой век и полимеры',
     nameEn: 'Digital Revolution & Polymers',
+    nameUk: 'Цифровий вік та полімери',
+    nameDe: 'Digitale Revolution & Polymere',
     materialRu: 'Формованный ABS-пластик и зеленые VFD-дисплеи',
     materialEn: 'Molded ABS Plastic & Green VFDs',
+    materialUk: 'Формований ABS-пластик та зелені VFD-дисплеї',
+    materialDe: 'Gepresster ABS-Kunststoff & Grüne VFDs',
     icon: '📟',
     yearStart: 1980,
     yearEnd: 1999,
@@ -159,18 +215,28 @@ export const ERA_THEMES: Record<EraId, EraThemeConfig> = {
     advisorTitles: {
       engineerRu: 'Руководитель R&D',
       engineerEn: 'Head of R&D Systems',
+      engineerUk: 'Керівник R&D',
+      engineerDe: 'Leiter F&E-Systeme',
       financeRu: 'Главный казначей (CFO)',
       financeEn: 'Chief Financial Officer',
+      financeUk: 'Головний скарбник (CFO)',
+      financeDe: 'Finanzchef (CFO)',
       plantRu: 'Технический директор',
       plantEn: 'Chief Operating Officer',
+      plantUk: 'Технічний директор',
+      plantDe: 'Technischer Direktor (COO)',
     },
   },
   'era-2000': {
     id: 'era-2000',
     nameRu: 'Миллениум и стекломорфизм',
     nameEn: 'Millennium & Aero-Glass',
+    nameUk: 'Міленіум та скломорфізм',
+    nameDe: 'Millennium & Aero-Glas',
     materialRu: 'Шлифованный алюминий, стекло и софт-тач',
     materialEn: 'Brushed Aluminum, Glass & Soft-Touch',
+    materialUk: 'Шліфований алюміній, скло та софт-тач',
+    materialDe: 'Gebürstetes Aluminium, Glas & Soft-Touch',
     icon: '💎',
     yearStart: 2000,
     yearEnd: 2019,
@@ -185,18 +251,28 @@ export const ERA_THEMES: Record<EraId, EraThemeConfig> = {
     advisorTitles: {
       engineerRu: 'Главный инженер платформ',
       engineerEn: 'Platform Chief Architect',
+      engineerUk: 'Головний інженер платформ',
+      engineerDe: 'Plattform-Chefarchitekt',
       financeRu: 'CFO концерна',
       financeEn: 'Group CFO',
+      financeUk: 'CFO концерну',
+      financeDe: 'Konzern-CFO',
       plantRu: 'Директор глобальных цепей',
       plantEn: 'Supply Chain VP',
+      plantUk: 'Директор глобальних ланцюгів',
+      plantDe: 'Leiter Globale Lieferketten',
     },
   },
   'era-2020': {
     id: 'era-2020',
     nameRu: 'Карбон, Неон и Электротяга',
     nameEn: 'Carbon Fiber & Electric Hyper-Age',
+    nameUk: 'Карбон, Неон та Електротяга',
+    nameDe: 'Carbon & Elektro-Hyperzeitalter',
     materialRu: 'Углеволокно, титан и неоновый OLED',
     materialEn: 'Carbon Fiber, Titanium & Neon OLED',
+    materialUk: 'Вуглеволокно, титан та неоновий OLED',
+    materialDe: 'Carbonfaser, Titan & Neon-OLED',
     icon: '⚡',
     yearStart: 2020,
     yearEnd: 2030,
@@ -211,10 +287,16 @@ export const ERA_THEMES: Record<EraId, EraThemeConfig> = {
     advisorTitles: {
       engineerRu: 'Директор AI и EV технологий',
       engineerEn: 'Chief EV & Software Architect',
+      engineerUk: 'Директор AI та EV технологій',
+      engineerDe: 'Chefarchitekt E-Mobilität & KI',
       financeRu: 'Инвестиционный директор',
       financeEn: 'Chief Investment Officer',
+      financeUk: 'Інвестиційний директор',
+      financeDe: 'Investmentdirektor',
       plantRu: 'Управляющий Гигафабрикой',
       plantEn: 'Gigafactory General Manager',
+      plantUk: 'Керуючий Гігафабрикою',
+      plantDe: 'Gigafactory-Leiter',
     },
   },
 };
@@ -227,4 +309,42 @@ export function getEraTheme(year: number): EraThemeConfig {
   if (year < 2000) return ERA_THEMES['era-1980'];
   if (year < 2020) return ERA_THEMES['era-2000'];
   return ERA_THEMES['era-2020'];
+}
+
+export function getEraName(theme: EraThemeConfig, lang: Language): string {
+  if (lang === 'en') return theme.nameEn;
+  if (lang === 'uk') return theme.nameUk;
+  if (lang === 'de') return theme.nameDe;
+  return theme.nameRu;
+}
+
+export function getEraMaterial(theme: EraThemeConfig, lang: Language): string {
+  if (lang === 'en') return theme.materialEn;
+  if (lang === 'uk') return theme.materialUk;
+  if (lang === 'de') return theme.materialDe;
+  return theme.materialRu;
+}
+
+export function getAdvisorTitle(
+  advisor: 'engineer' | 'finance' | 'plant',
+  theme: EraThemeConfig,
+  lang: Language
+): string {
+  const titles = theme.advisorTitles;
+  if (advisor === 'engineer') {
+    if (lang === 'en') return titles.engineerEn;
+    if (lang === 'uk') return titles.engineerUk;
+    if (lang === 'de') return titles.engineerDe;
+    return titles.engineerRu;
+  }
+  if (advisor === 'finance') {
+    if (lang === 'en') return titles.financeEn;
+    if (lang === 'uk') return titles.financeUk;
+    if (lang === 'de') return titles.financeDe;
+    return titles.financeRu;
+  }
+  if (lang === 'en') return titles.plantEn;
+  if (lang === 'uk') return titles.plantUk;
+  if (lang === 'de') return titles.plantDe;
+  return titles.plantRu;
 }

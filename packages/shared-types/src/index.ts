@@ -263,8 +263,12 @@ export interface Achievement {
   id: string;
   titleRu: string;
   titleEn: string;
+  titleUk?: string;
+  titleDe?: string;
   descriptionRu: string;
   descriptionEn: string;
+  descriptionUk?: string;
+  descriptionDe?: string;
   icon: string;
   unlocked: boolean;
   unlockedAtYear?: number;

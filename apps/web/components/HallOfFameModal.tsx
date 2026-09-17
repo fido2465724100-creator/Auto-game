@@ -70,17 +70,47 @@ export function HallOfFameModal(): React.JSX.Element | null {
     try {
       const text = await file.text();
       await importSave(text);
-      setImportMessage(lang === 'en' ? 'Game save successfully restored!' : 'Сохранение успешно загружено!');
+      setImportMessage(
+        lang === 'en'
+          ? 'Game save successfully restored!'
+          : lang === 'uk'
+          ? 'Збереження гри успішно відновлено!'
+          : lang === 'de'
+          ? 'Spielstand erfolgreich wiederhergestellt!'
+          : 'Сохранение успешно загружено!'
+      );
       setTimeout(() => setImportMessage(null), 4000);
     } catch (err) {
       console.error(err);
-      setImportMessage(lang === 'en' ? 'Error: Invalid save file' : 'Ошибка: Неверный формат файла сохранения');
+      setImportMessage(
+        lang === 'en'
+          ? 'Error: Invalid save file'
+          : lang === 'uk'
+          ? 'Помилка: Невірний формат файлу збереження'
+          : lang === 'de'
+          ? 'Fehler: Ungültige Speicherdatei'
+          : 'Ошибка: Неверный формат файла сохранения'
+      );
     } finally {
       setIsImporting(false);
       if (fileInputRef.current) {
         fileInputRef.current.value = '';
       }
     }
+  };
+
+  const getAchievementTitle = (ach: Achievement) => {
+    if (lang === 'en') return ach.titleEn;
+    if (lang === 'uk') return ach.titleUk ?? ach.titleEn;
+    if (lang === 'de') return ach.titleDe ?? ach.titleEn;
+    return ach.titleRu;
+  };
+
+  const getAchievementDesc = (ach: Achievement) => {
+    if (lang === 'en') return ach.descriptionEn;
+    if (lang === 'uk') return ach.descriptionUk ?? ach.descriptionEn;
+    if (lang === 'de') return ach.descriptionDe ?? ach.descriptionEn;
+    return ach.descriptionRu;
   };
 
   const modalContent = (
@@ -106,11 +136,19 @@ export function HallOfFameModal(): React.JSX.Element | null {
               <h3 className="font-serif font-bold text-base text-amber-950 leading-tight">
                 {lang === 'en'
                   ? 'Hall of Fame & Dynasty Achievements'
+                  : lang === 'uk'
+                  ? 'Зал Слави та Досягнення промисловця'
+                  : lang === 'de'
+                  ? 'Ruhmeshalle & Industrie-Erfolge'
                   : 'Зал Славы и Достижения автопромышленника'}
               </h3>
               <p className="text-[11px] text-stone-500 font-serif">
                 {lang === 'en'
                   ? 'Historical milestones, trophy showcase and game save management (1900–2026)'
+                  : lang === 'uk'
+                  ? 'Хроніка епохи, вітрина нагород та управління файлами збережень (1900–2026)'
+                  : lang === 'de'
+                  ? 'Historische Meilensteine, Trophäenschau und Spielstandverwaltung (1900–2026)'
                   : 'Хроника эпохи, витрина наград и управление файлами сохранений'}
               </p>
             </div>
@@ -136,11 +174,19 @@ export function HallOfFameModal(): React.JSX.Element | null {
                   <h4 className="font-serif font-bold text-lg text-amber-950">
                     {lang === 'en'
                       ? 'Century Triumph: 126 Years Completed!'
+                      : lang === 'uk'
+                      ? 'Великий Тріумф: 126 років історії пройдено!'
+                      : lang === 'de'
+                      ? 'Jahrhundert-Triumph: 126 Jahre vollendet!'
                       : 'Великий Триумф: 126 лет истории пройдены!'}
                   </h4>
                   <p className="text-xs text-stone-700 leading-relaxed font-serif">
                     {lang === 'en'
                       ? `Your company ${gameState?.company.name} successfully traversed 504 quarters from a modest 1900 workshop to the modern era of 2026.`
+                      : lang === 'uk'
+                      ? `Ваш автомобільний концерн «${gameState?.company.name}» успішно пройшов усі 504 ходи крізь кризи та війни і зустрів 2026 рік величною індустріальною імперією!`
+                      : lang === 'de'
+                      ? `Ihr Unternehmen ${gameState?.company.name} hat alle 504 Quartale von einer bescheidenen Werkstatt im Jahr 1900 bis zur Moderne von 2026 gemeistert!`
                       : `Ваш автомобильный концерн «${gameState?.company.name}» успешно прошел все 504 хода сквозь войны, Великую депрессию, нефтяной шок и встретил 2026 год великой индустриальной империей!`}
                   </p>
                 </div>
@@ -152,7 +198,13 @@ export function HallOfFameModal(): React.JSX.Element | null {
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             <div className="rounded-xl border border-stone-300 bg-[var(--paper)] p-3 shadow-2xs">
               <span className="text-[10px] uppercase font-bold text-stone-500 block">
-                {lang === 'en' ? 'Liquid Capital' : 'Свободный капитал'}
+                {lang === 'en'
+                  ? 'Liquid Capital'
+                  : lang === 'uk'
+                  ? 'Вільний капітал'
+                  : lang === 'de'
+                  ? 'Freies Kapital'
+                  : 'Свободный капитал'}
               </span>
               <span className="text-base font-mono font-bold text-emerald-800">
                 ${(gameState?.company.cash ?? 0).toLocaleString()}
@@ -160,7 +212,13 @@ export function HallOfFameModal(): React.JSX.Element | null {
             </div>
             <div className="rounded-xl border border-stone-300 bg-[var(--paper)] p-3 shadow-2xs">
               <span className="text-[10px] uppercase font-bold text-stone-500 block">
-                {lang === 'en' ? 'Brand Reputation' : 'Репутация марки'}
+                {lang === 'en'
+                  ? 'Brand Reputation'
+                  : lang === 'uk'
+                  ? 'Репутація марки'
+                  : lang === 'de'
+                  ? 'Markenruf'
+                  : 'Репутация марки'}
               </span>
               <span className="text-base font-serif font-bold text-amber-900">
                 ★ {gameState?.company.reputation ?? 0}
@@ -168,15 +226,27 @@ export function HallOfFameModal(): React.JSX.Element | null {
             </div>
             <div className="rounded-xl border border-stone-300 bg-[var(--paper)] p-3 shadow-2xs">
               <span className="text-[10px] uppercase font-bold text-stone-500 block">
-                {lang === 'en' ? 'Current Era' : 'Эпоха / Год'}
+                {lang === 'en'
+                  ? 'Current Era'
+                  : lang === 'uk'
+                  ? 'Епоха / Рік'
+                  : lang === 'de'
+                  ? 'Epoche / Jahr'
+                  : 'Эпоха / Год'}
               </span>
               <span className="text-base font-serif font-bold text-stone-800">
-                {year} г. (Q{quarter})
+                {year} {lang === 'en' ? `(Q${quarter})` : lang === 'uk' ? `р. (${quarter} кв.)` : lang === 'de' ? `(Q${quarter})` : `г. (${quarter} кв.)`}
               </span>
             </div>
             <div className="rounded-xl border border-stone-300 bg-[var(--paper)] p-3 shadow-2xs">
               <span className="text-[10px] uppercase font-bold text-stone-500 block">
-                {lang === 'en' ? 'Achievements' : 'Трофеи открыты'}
+                {lang === 'en'
+                  ? 'Achievements'
+                  : lang === 'uk'
+                  ? 'Трофеї відкрито'
+                  : lang === 'de'
+                  ? 'Erfolge freigeschaltet'
+                  : 'Трофеи открыты'}
               </span>
               <span className="text-base font-mono font-bold text-amber-950">
                 {unlockedCount} / {totalCount} ({progressPercent}%)
@@ -187,7 +257,15 @@ export function HallOfFameModal(): React.JSX.Element | null {
           {/* PROGRESS BAR */}
           <div className="space-y-1.5">
             <div className="flex justify-between text-xs font-serif font-bold text-stone-700">
-              <span>{lang === 'en' ? 'Dynasty Progression' : 'Индустриальный прогресс наград'}</span>
+              <span>
+                {lang === 'en'
+                  ? 'Dynasty Progression'
+                  : lang === 'uk'
+                  ? 'Індустріальний прогрес нагород'
+                  : lang === 'de'
+                  ? 'Dynastie-Fortschritt'
+                  : 'Индустриальный прогресс наград'}
+              </span>
               <span>{progressPercent}%</span>
             </div>
             <div className="h-2 w-full bg-stone-200 rounded-full overflow-hidden">
@@ -202,7 +280,15 @@ export function HallOfFameModal(): React.JSX.Element | null {
           <div className="space-y-3">
             <h4 className="font-serif font-bold text-sm text-amber-950 flex items-center gap-2 border-b border-stone-300 pb-1.5">
               <span>🎖️</span>
-              <span>{lang === 'en' ? 'Historical Trophies' : 'Ордена и Достижения'}</span>
+              <span>
+                {lang === 'en'
+                  ? 'Historical Trophies'
+                  : lang === 'uk'
+                  ? 'Ордени та Досягнення'
+                  : lang === 'de'
+                  ? 'Historische Trophäen'
+                  : 'Ордена и Достижения'}
+              </span>
             </h4>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -227,7 +313,7 @@ export function HallOfFameModal(): React.JSX.Element | null {
                   <div className="flex-1 min-w-0 space-y-1">
                     <div className="flex items-center justify-between gap-1">
                       <span className="font-serif font-bold text-xs text-amber-950 truncate">
-                        {lang === 'en' ? ach.titleEn : ach.titleRu}
+                        {getAchievementTitle(ach)}
                       </span>
                       {ach.unlocked ? (
                         <span className="text-[10px] font-mono font-bold text-emerald-800 bg-emerald-100/70 border border-emerald-300 px-1.5 py-0.5 rounded">
@@ -238,7 +324,7 @@ export function HallOfFameModal(): React.JSX.Element | null {
                       )}
                     </div>
                     <p className="text-[11px] text-stone-600 leading-snug">
-                      {lang === 'en' ? ach.descriptionEn : ach.descriptionRu}
+                      {getAchievementDesc(ach)}
                     </p>
                   </div>
                 </div>
@@ -252,11 +338,21 @@ export function HallOfFameModal(): React.JSX.Element | null {
               <span className="text-xl">💾</span>
               <div>
                 <h4 className="font-serif font-bold text-sm text-amber-950">
-                  {lang === 'en' ? 'Game Save Management' : 'Экспорт и Загрузка файла сохранения'}
+                  {lang === 'en'
+                    ? 'Game Save Management'
+                    : lang === 'uk'
+                    ? 'Експорт та Завантаження збереження'
+                    : lang === 'de'
+                    ? 'Spielstand-Verwaltung'
+                    : 'Экспорт и Загрузка файла сохранения'}
                 </h4>
                 <p className="text-[11px] text-stone-500 font-serif">
                   {lang === 'en'
                     ? 'Download your progress as a JSON file or restore a previous game at any time.'
+                    : lang === 'uk'
+                    ? 'Збережіть поточну кампанію у файл або завантажте раніше збережену гру в будь-який час.'
+                    : lang === 'de'
+                    ? 'Laden Sie Ihren Fortschritt als JSON-Datei herunter oder stellen Sie jederzeit ein früheres Spiel wieder her.'
                     : 'Сохраните текущую кампанию в файл на диск или загрузите ранее сохраненную игру.'}
                 </p>
               </div>
@@ -275,7 +371,15 @@ export function HallOfFameModal(): React.JSX.Element | null {
                 className="flex items-center gap-2 rounded-lg bg-amber-900 hover:bg-amber-950 text-white px-4 py-2 text-xs font-serif font-bold transition shadow-xs cursor-pointer"
               >
                 <span>💾</span>
-                <span>{lang === 'en' ? 'Export Save File (.json)' : 'Скачать сохранение (.json)'}</span>
+                <span>
+                  {lang === 'en'
+                    ? 'Export Save File (.json)'
+                    : lang === 'uk'
+                    ? 'Завантажити збереження (.json)'
+                    : lang === 'de'
+                    ? 'Spielstand exportieren (.json)'
+                    : 'Скачать сохранение (.json)'}
+                </span>
               </button>
 
               <button
@@ -285,7 +389,11 @@ export function HallOfFameModal(): React.JSX.Element | null {
                 className="flex items-center gap-2 rounded-lg border border-amber-900/40 bg-white hover:bg-amber-50 text-amber-950 px-4 py-2 text-xs font-serif font-bold transition shadow-xs cursor-pointer disabled:opacity-50"
               >
                 <span>📂</span>
-                <span>{isImporting ? 'Загрузка...' : lang === 'en' ? 'Load Save File' : 'Загрузить файл сохранения'}</span>
+                <span>
+                  {isImporting
+                    ? (lang === 'en' ? 'Loading...' : lang === 'uk' ? 'Завантаження...' : lang === 'de' ? 'Wird geladen...' : 'Загрузка...')
+                    : (lang === 'en' ? 'Load Save File' : lang === 'uk' ? 'Завантажити файл гри' : lang === 'de' ? 'Spielstand importieren' : 'Загрузить файл сохранения')}
+                </span>
               </button>
 
               {/* Hidden file input */}
@@ -305,6 +413,10 @@ export function HallOfFameModal(): React.JSX.Element | null {
           <span className="text-xs text-stone-500 font-serif hidden sm:inline">
             {lang === 'en'
               ? 'Trophies are awarded automatically upon completing achievements.'
+              : lang === 'uk'
+              ? 'Досягнення фіксуються автоматично наприкінці кожного кварталу.'
+              : lang === 'de'
+              ? 'Trophäen werden automatisch bei Abschluss von Erfolgen vergeben.'
               : 'Достижения фиксируются автоматически в конце каждого квартала.'}
           </span>
           <button
@@ -312,7 +424,7 @@ export function HallOfFameModal(): React.JSX.Element | null {
             onClick={() => setHallOfFameOpen(false)}
             className="rounded-lg bg-amber-900 px-5 py-2 text-xs font-serif font-bold text-white shadow-xs hover:bg-amber-950 transition cursor-pointer ml-auto"
           >
-            {lang === 'en' ? 'Close' : 'Закрыть'}
+            {lang === 'en' ? 'Close' : lang === 'uk' ? 'Закрити' : lang === 'de' ? 'Schließen' : 'Закрыть'}
           </button>
         </div>
       </div>
