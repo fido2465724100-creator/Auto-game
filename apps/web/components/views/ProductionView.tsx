@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import type { MaterialMarketItem, MaterialType } from '@ait/shared-types';
+import { calculatePremisesRent } from '@ait/game-engine';
 import { useGame } from '../../context/GameContext';
 import { useLanguage } from '../../lib/i18n';
 import { api } from '../../lib/api';
@@ -51,6 +52,7 @@ export default function ProductionPage(): React.JSX.Element {
     monthlyOverhead: 40,
     upgradeCost: 4_000,
   };
+  const premisesRent = calculatePremisesRent(gameState.date.year, factory.level);
 
   const currentCash = gameState.company.cash;
   const isAutoProcure = gameState.company.autoProcurement ?? false;
@@ -271,6 +273,10 @@ export default function ProductionPage(): React.JSX.Element {
             <div className="text-right">
               <span className="text-[10px] text-stone-500 uppercase block font-semibold">{t.production.overheadMonthly}</span>
               <span className="text-xs font-bold text-stone-800">${(factory.monthlyOverhead * 3).toLocaleString()} / кв.</span>
+            </div>
+            <div className="text-right">
+              <span className="text-[10px] text-stone-500 uppercase block font-semibold">{t.production.premisesRent}</span>
+              <span className="text-xs font-bold text-amber-950">${premisesRent.toLocaleString()} / кв.</span>
             </div>
             <button
               onClick={handleExpandFactory}

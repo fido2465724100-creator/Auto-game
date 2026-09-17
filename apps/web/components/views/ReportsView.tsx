@@ -80,10 +80,11 @@ export default function ReportsPage(): React.JSX.Element {
                     {report.profit >= 0 ? '+' : ''}${report.profit.toLocaleString()}
                   </span>
                 </div>
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1 text-stone-700">
+                <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 pt-1 text-stone-700">
                   <div>• Выручка: <strong className="text-emerald-750 font-mono font-bold">+${report.revenue.toLocaleString()}</strong></div>
                   <div>• Сборка (детали): <strong className="text-rose-750 font-mono font-bold">-${(report.productionCost ?? 0).toLocaleString()}</strong></div>
                   <div>• Содержание цеха: <strong className="text-stone-800 font-mono font-bold">-${(report.overheadCost ?? 0).toLocaleString()}</strong></div>
+                  <div>• Аренда площадей: <strong className="text-amber-950 font-mono font-bold">-${(report.rentCost ?? 100).toLocaleString()}</strong></div>
                   <div>• Лаборатория: <strong className="text-stone-800 font-mono font-bold">-${(report.researchCost ?? 0).toLocaleString()}</strong></div>
                 </div>
               </div>

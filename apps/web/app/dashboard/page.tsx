@@ -2,6 +2,7 @@
 
 import React, { useState, useMemo, useEffect } from 'react';
 import type { MaterialType } from '@ait/shared-types';
+import { calculatePremisesRent } from '@ait/game-engine';
 import { useGame } from '../../context/GameContext';
 import { useLanguage } from '../../lib/i18n';
 import { getEraTheme, getEraName, getEraMaterial, getAdvisorTitle } from '../../lib/eraTheme';
@@ -149,8 +150,14 @@ export default function DashboardPage(): React.JSX.Element {
     monthlyOverhead: 40,
     upgradeCost: 4000,
   };
+  const premisesRent = calculatePremisesRent(gameState.date.year, factory.level);
 
   const activeModels = gameState.vehicleModels.filter((m) => m.active);
+  const oldestAgingModel = activeModels.reduce<{ name: string; age: number } | null>((acc, m) => {
+    const age = Math.max(0, gameState.date.year - (m.designYear ?? 1900));
+    if (!acc || age > acc.age) return { name: m.name, age };
+    return acc;
+  }, null);
   const isAutoProcure = company.autoProcurement ?? true;
   const inventory = company.inventoryMaterials ?? { steel: 0, wood: 0, rubber: 0, leather: 0, aluminum: 0, plastic: 0 };
 
@@ -403,6 +410,14 @@ export default function DashboardPage(): React.JSX.Element {
                       : lang === 'de'
                       ? 'Sir, die Rohstoffe gehen zur Neige! Montagelinien könnten stillstehen.'
                       : 'Сэр, запасы сырья на исходе! Часть сборочных постов может встать.'
+                    : oldestAgingModel && oldestAgingModel.age >= 6
+                    ? lang === 'en'
+                      ? `Attention: Model "${oldestAgingModel.name}" is ${oldestAgingModel.age} years old and losing appeal! Design a modern successor in the Vehicle Designer.`
+                      : lang === 'uk'
+                      ? `Увага: Модель "${oldestAgingModel.name}" має вік ${oldestAgingModel.age} р. та застаріває! Спроєктуйте наступника в Конструкторі.`
+                      : lang === 'de'
+                      ? `Achtung: Modell "${oldestAgingModel.name}" ist ${oldestAgingModel.age} Jahre alt und veraltet! Entwerfen Sie ein modernes Folgemodell.`
+                      : `Внимание: Модель «${oldestAgingModel.name}» (возраст: ${oldestAgingModel.age} лет) морально устаревает! Спроектируйте преемника в Конструкторе.`
                     : activeResearch
                     ? lang === 'en'
                       ? `Laboratory working on: ${t.technologies[activeResearch.technologyId as keyof typeof t.technologies]?.name ?? activeResearch.technologyId}.`
@@ -432,12 +447,20 @@ export default function DashboardPage(): React.JSX.Element {
                 <span className="text-stone-700 text-[11px] leading-relaxed mt-0.5 block">
                   {latestReport && latestReport.profit < 0
                     ? lang === 'en'
-                      ? `Loss last quarter (-$${Math.abs(latestReport.profit).toLocaleString()})! Check your price markup in design (recommended +40–50% over unit cost).`
+                      ? `Loss last quarter (-$${Math.abs(latestReport.profit).toLocaleString()})! Check markup and growing plant rent ($${premisesRent.toLocaleString()}/qtr).`
                       : lang === 'uk'
-                      ? `Збиток за минулий кв. (-$${Math.abs(latestReport.profit).toLocaleString()})! Перевірте націнку в конструкторі (рекомендуємо +40–50% до собівартості).`
+                      ? `Збиток за минулий кв. (-$${Math.abs(latestReport.profit).toLocaleString()})! Перевірте націнку та оренду цехів ($${premisesRent.toLocaleString()}/кв.).`
                       : lang === 'de'
-                      ? `Verlust im letzten Quartal (-$${Math.abs(latestReport.profit).toLocaleString()})! Prüfen Sie den Preisaufschlag (empfohlen +40–50% über Selbstkosten).`
-                      : `Убыток в прошлом кв. (-$${Math.abs(latestReport.profit).toLocaleString()})! Проверьте наценку в конструкторе (рекомендуем +40–50% к себестоимости).`
+                      ? `Verlust im letzten Quartal (-$${Math.abs(latestReport.profit).toLocaleString()})! Prüfen Sie den Aufschlag und Werksmiete (${premisesRent.toLocaleString()} $/Q.).`
+                      : `Убыток в прошлом кв. (-$${Math.abs(latestReport.profit).toLocaleString()})! Проверьте наценку и растущую аренду цехов ($${premisesRent.toLocaleString()}/кв.).`
+                    : premisesRent >= 800 && factory.capacity <= 4
+                    ? lang === 'en'
+                      ? `Premises rent has climbed to $${premisesRent.toLocaleString()}/qtr! Small 4-car workshop capacity is becoming unprofitable; expand factory lines.`
+                      : lang === 'uk'
+                      ? `Оренда площ зросла до $${premisesRent.toLocaleString()}/кв.! Кустарна потужність 4 авто/кв. стає збитковою; розширюйте завод.`
+                      : lang === 'de'
+                      ? `Flächenmiete ist auf ${premisesRent.toLocaleString()} $/Q. gestiegen! 4-Fahrzeuge-Werk wird unrentabel; erweitern Sie die Kapazität.`
+                      : `Аренда цехов выросла до $${premisesRent.toLocaleString()}/кв.! Кустарная мощность 4 авто/кв. становится нерентабельной; расширяйте завод.`
                     : latestReport && latestReport.profit > 0
                     ? lang === 'en'
                       ? `Great margin! Net profit for the quarter was +$${latestReport.profit.toLocaleString()}. Treasury is growing.`
@@ -529,6 +552,10 @@ export default function DashboardPage(): React.JSX.Element {
                       • {lang === 'en' ? 'Overhead' : lang === 'uk' ? 'Утримання' : lang === 'de' ? 'Unterhalt' : 'Содержание'}:{' '}
                       <strong className="font-sans text-stone-800">
                         ${factory.monthlyOverhead * 3}/{lang === 'en' ? 'qtr' : lang === 'uk' ? 'кв.' : lang === 'de' ? 'Q.' : 'кв.'}
+                      </strong>{' '}
+                      • {lang === 'en' ? 'Premises Rent' : lang === 'uk' ? 'Оренда площ' : lang === 'de' ? 'Flächenmiete' : 'Аренда цехов'}:{' '}
+                      <strong className="font-sans text-amber-950 font-bold">
+                        ${premisesRent.toLocaleString()}/{lang === 'en' ? 'qtr' : lang === 'uk' ? 'кв.' : lang === 'de' ? 'Q.' : 'кв.'}
                       </strong>
                     </span>
                   </div>
@@ -615,6 +642,26 @@ export default function DashboardPage(): React.JSX.Element {
                                 <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-100/90 text-amber-950 font-bold border border-amber-900/20">
                                   {trSeg}
                                 </span>
+                                {(() => {
+                                  const modelAge = Math.max(0, gameState.date.year - (model.designYear ?? 1900));
+                                  let ageBadgeClass = 'bg-emerald-100 text-emerald-900 border-emerald-300';
+                                  let ageLabel = `${model.designYear ?? 1900} • ${t.production.modelAgeBadge.fresh} (${modelAge} ${lang === 'en' ? (modelAge === 1 ? 'yr' : 'yrs') : lang === 'uk' ? 'р.' : lang === 'de' ? 'J.' : 'г.'})`;
+                                  if (modelAge > 12) {
+                                    ageBadgeClass = 'bg-rose-100 text-rose-900 border-rose-300 animate-pulse';
+                                    ageLabel = `⚠️ ${model.designYear ?? 1900} • ${t.production.modelAgeBadge.obsolete} (${modelAge} ${lang === 'en' ? 'yrs' : lang === 'uk' ? 'р.' : lang === 'de' ? 'J.' : 'л.'})`;
+                                  } else if (modelAge > 7) {
+                                    ageBadgeClass = 'bg-amber-100 text-amber-950 border-amber-300';
+                                    ageLabel = `⚠️ ${model.designYear ?? 1900} • ${t.production.modelAgeBadge.aging} (${modelAge} ${lang === 'en' ? 'yrs' : lang === 'uk' ? 'р.' : lang === 'de' ? 'J.' : 'л.'})`;
+                                  } else if (modelAge > 4) {
+                                    ageBadgeClass = 'bg-yellow-100 text-yellow-950 border-yellow-300';
+                                    ageLabel = `${model.designYear ?? 1900} • ${t.production.modelAgeBadge.mature} (${modelAge} ${lang === 'en' ? 'yrs' : lang === 'uk' ? 'р.' : lang === 'de' ? 'J.' : 'л.'})`;
+                                  }
+                                  return (
+                                    <span className={`text-[10px] px-1.5 py-0.5 rounded font-bold border ${ageBadgeClass}`}>
+                                      {ageLabel}
+                                    </span>
+                                  );
+                                })()}
                               </div>
 
                               <div className="flex flex-wrap gap-2 text-[11px] text-stone-700 font-serif">

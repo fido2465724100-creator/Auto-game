@@ -126,6 +126,7 @@ export function QuickVehicleDesignModal({ isOpen, onClose, onCreated }: Props): 
         productionCost: calculatedSpecs.productionCost,
         salePrice,
         active: true,
+        designYear: currentYear,
         materialsRequired: calculatedSpecs.materialsRequired,
       };
 

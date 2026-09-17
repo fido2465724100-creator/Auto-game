@@ -191,6 +191,7 @@ export interface VehicleModel {
   salePrice: number;
   active: boolean;
   materialsRequired?: Partial<Record<MaterialType, number>>;
+  designYear?: number;
 }
 
 export interface Region {
@@ -255,6 +256,7 @@ export interface MonthlyReport {
   productionCost?: number;
   overheadCost?: number;
   researchCost?: number;
+  rentCost?: number;
 }
 
 export type QuarterlyReport = MonthlyReport;

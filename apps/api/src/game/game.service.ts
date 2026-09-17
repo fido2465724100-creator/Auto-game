@@ -113,6 +113,7 @@ function createInitialGameState(setup?: {
         productionCost: 480,
         salePrice: 900,
         active: true,
+        designYear: 1900,
         materialsRequired: {
           steel: 40,
           wood: 50,
@@ -231,6 +232,7 @@ export class GameService {
     const modelWithMaterials: VehicleModel = {
       ...model,
       materialsRequired,
+      designYear: model.designYear ?? this.gameState.date.year,
     };
 
     if (existingIndex >= 0) {

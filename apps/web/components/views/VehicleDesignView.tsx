@@ -128,6 +128,7 @@ export default function VehicleDesignPage(): React.JSX.Element {
       productionCost: calculatedSpecs.productionCost,
       salePrice,
       active: true,
+      designYear: gameState?.date.year ?? 1900,
       materialsRequired: calculatedSpecs.materialsRequired,
     };
 

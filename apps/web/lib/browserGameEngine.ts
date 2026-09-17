@@ -119,6 +119,7 @@ function createInitialGameState(setup?: {
         productionCost: 480,
         salePrice: 900,
         active: true,
+        designYear: 1900,
         materialsRequired: {
           steel: 40,
           wood: 50,
@@ -248,6 +249,12 @@ class BrowserGameEngineClass {
           if (!parsed.achievements || parsed.achievements.length === 0) {
             parsed.achievements = achievementsSeed.map((a) => ({ ...a }));
           }
+          if (parsed.vehicleModels) {
+            parsed.vehicleModels = parsed.vehicleModels.map((m) => ({
+              ...m,
+              designYear: m.designYear ?? 1900,
+            }));
+          }
           return evaluateAchievements(parsed);
         }
       }
@@ -366,6 +373,7 @@ class BrowserGameEngineClass {
     const modelWithMaterials: VehicleModel = {
       ...model,
       materialsRequired,
+      designYear: model.designYear ?? state.date.year,
     };
 
     if (existingIndex >= 0) {

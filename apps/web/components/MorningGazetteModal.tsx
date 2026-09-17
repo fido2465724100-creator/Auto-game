@@ -81,7 +81,7 @@ export function MorningGazetteModal({ isOpen, onClose, report, companyName }: Pr
             </span>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[11px]">
+          <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 text-[11px]">
             <div className="bg-white/80 p-2 rounded border border-amber-900/10 shadow-2xs">
               <span className="text-stone-500 block">Выручка ({report.unitsSold} авто):</span>
               <strong className="text-emerald-800 font-mono text-xs">+${report.revenue.toLocaleString()}</strong>
@@ -91,8 +91,12 @@ export function MorningGazetteModal({ isOpen, onClose, report, companyName }: Pr
               <strong className="text-rose-850 font-mono text-xs">-${(report.productionCost ?? 0).toLocaleString()}</strong>
             </div>
             <div className="bg-white/80 p-2 rounded border border-amber-900/10 shadow-2xs">
-              <span className="text-stone-500 block">Содержание мастерской:</span>
+              <span className="text-stone-500 block">Содержание цеха:</span>
               <strong className="text-stone-800 font-mono text-xs">-${(report.overheadCost ?? 0).toLocaleString()}</strong>
+            </div>
+            <div className="bg-white/80 p-2 rounded border border-amber-900/10 shadow-2xs">
+              <span className="text-stone-500 block">Аренда площадей:</span>
+              <strong className="text-amber-950 font-mono text-xs">-${(report.rentCost ?? 100).toLocaleString()}</strong>
             </div>
             <div className="bg-white/80 p-2 rounded border border-amber-900/10 shadow-2xs">
               <span className="text-stone-500 block">НИОКР (Лаборатория):</span>
@@ -109,13 +113,17 @@ export function MorningGazetteModal({ isOpen, onClose, report, companyName }: Pr
                   <span>
                     Цена продажи ваших авто близка к себестоимости деталей или ниже нее. Зайдите в <em>Конструктор</em> и увеличьте отпускную цену (здоровая наценка — 35–50% сверху себестоимости).
                   </span>
+                ) : (report.rentCost ?? 0) > report.revenue * 0.4 ? (
+                  <span>
+                    Аренда производственных площадей (-${(report.rentCost ?? 0).toLocaleString()}) отнимает львиную долю выручки! Срочно расширяйте мощности на вкладке <em>Завод</em>, чтобы выпускать больше авто и окупать аренду.
+                  </span>
                 ) : (report.researchCost ?? 0) > report.revenue * 0.4 ? (
                   <span>
-                    Лаборатория забирает значительную долю оборота (${report.researchCost ?? 0}). На старте 1900 г. выбирайте экономный бюджет исследований.
+                    Лаборатория забирает значительную долю оборота (${report.researchCost ?? 0}). На старте выбирайте экономный бюджет исследований.
                   </span>
                 ) : (
                   <span>
-                    Рынку требуется больше машин. Увеличьте план выпуска на вкладке <em>Завод</em> до предела мастерской (4 авто/кв.) или скорректируйте параметры модели.
+                    Рынку требуется больше машин. Увеличьте план выпуска на вкладке <em>Завод</em> до предела мастерской или спроектируйте новую актуальную модель в Конструкторе.
                   </span>
                 )}
               </div>

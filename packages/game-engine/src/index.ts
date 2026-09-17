@@ -356,6 +356,44 @@ function techAppealBonus(unlockedTechIds: string[], technologies: Technology[]):
   return 1 + bonus;
 }
 
+/**
+ * Calculates quarterly rent for production premises and land.
+ * In 1900, base rent is $100/quarter.
+ * By 2020, base rent scales to $100,000/quarter (historical cost escalation).
+ * Expanded factory levels scale rent proportionally with floor space.
+ */
+export function calculatePremisesRent(year: number, factoryLevel: number = 1): number {
+  const yearsPast = Math.max(0, year - 1900);
+  const r = Math.log(1000) / 120; // ln(1000)/120 ≈ 0.057564627
+  const baseRent = 100 * Math.exp(r * yearsPast);
+  const levelMultiplier = 1 + Math.max(0, factoryLevel - 1) * 0.2;
+  return Math.round(baseRent * levelMultiplier);
+}
+
+/**
+ * Returns demand factor based on vehicle model age (years since designYear).
+ * Fresh (0-4 yrs): 1.0
+ * Maturing (5-7 yrs): 0.95 -> 0.85
+ * Outdated (8-12 yrs): 0.77 -> 0.45
+ * Archaic (13-20 yrs): 0.40 -> 0.05
+ * Obsolete (>20 yrs): 0.05
+ */
+export function getModelAgeFactor(modelAge: number): number {
+  if (modelAge <= 4) {
+    return 1.0;
+  }
+  if (modelAge <= 7) {
+    return Math.max(0.7, 1.0 - (modelAge - 4) * 0.05);
+  }
+  if (modelAge <= 12) {
+    return Math.max(0.3, 0.85 - (modelAge - 7) * 0.08);
+  }
+  if (modelAge <= 20) {
+    return Math.max(0.05, 0.45 - (modelAge - 12) * 0.05);
+  }
+  return 0.05;
+}
+
 function simulateRegionDemand(
   model: VehicleModel,
   region: Region,
@@ -384,7 +422,11 @@ function simulateRegionDemand(
   // Era scaling: pioneer automobile market in 1900-1905 is healthy enough to support early workshops
   const eraDemandFactor = Math.min(1.0, 0.18 + Math.max(0, year - 1900) * 0.02);
 
-  const baseDemand = region.marketSize * normalizedStats * priceFactor * reputationFactor * appealBonus * eraDemandFactor;
+  // Model age decay: older designs lose consumer appeal against modern competitors
+  const modelAge = Math.max(0, year - (model.designYear ?? 1900));
+  const ageFactor = getModelAgeFactor(modelAge);
+
+  const baseDemand = region.marketSize * normalizedStats * priceFactor * reputationFactor * appealBonus * eraDemandFactor * ageFactor;
   return Math.max(1, Math.floor(baseDemand * eventMultiplier));
 }
 
@@ -421,9 +463,11 @@ export function runEndTurn(input: EndTurnInput): EndTurnOutput {
   const activeResearch = researchProgress.filter((project) => !project.isCompleted);
 
   // Factory capacity & inventory setup (quarterly capacity)
+  const factoryLevel = currentState.company.factory?.level ?? 1;
   const factoryCapacity = currentState.company.factory?.capacity ?? currentState.company.productionCapacity ?? 4;
   const factoryMonthlyOverhead = currentState.company.factory?.monthlyOverhead ?? 40;
   const quarterlyOverhead = (currentState.company.overheadMonthly + factoryMonthlyOverhead) * 3;
+  const quarterlyRent = calculatePremisesRent(newDate.year, factoryLevel);
 
   const defaultInventory: Record<MaterialType, number> = {
     steel: 500,
@@ -685,8 +729,8 @@ export function runEndTurn(input: EndTurnInput): EndTurnOutput {
   // Quarterly research cost (3 months)
   const researchCost = currentState.activeResearch.reduce((acc, project) => acc + project.allocatedBudget * 3, 0);
   // Production cost already incorporates parts, materials and assembly labor as calculated in the Designer.
-  // Operating expenses: Production (COGS) + Workshop Overhead + Research R&D + Loan Payments.
-  const expenses = productionCost + researchCost + quarterlyOverhead + loanPayments;
+  // Operating expenses: Production (COGS) + Workshop Overhead + Factory Premises Rent + Research R&D + Loan Payments.
+  const expenses = productionCost + researchCost + quarterlyOverhead + quarterlyRent + loanPayments;
   const profit = revenue - expenses;
 
   // Reputation change
@@ -739,6 +783,7 @@ export function runEndTurn(input: EndTurnInput): EndTurnOutput {
     productionCost,
     overheadCost: quarterlyOverhead,
     researchCost,
+    rentCost: quarterlyRent,
     researchProgress: researchProgress.map((project) => ({
       technologyId: project.technologyId,
       progressMonths: project.progressMonths,
