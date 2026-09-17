@@ -3,7 +3,7 @@
 import { useEffect } from 'react';
 import { useGame } from '../../context/GameContext';
 import { useLanguage } from '../../lib/i18n';
-import { getEraTheme } from '../../lib/eraTheme';
+import { getEraTheme, getEraName, getEraMaterial } from '../../lib/eraTheme';
 import { EraEmblem } from '../EraEmblem';
 
 export function TopTimelineBar(): React.JSX.Element {
@@ -15,13 +15,13 @@ export function TopTimelineBar(): React.JSX.Element {
     setGuideModalOpen,
     resetGame,
     setHallOfFameOpen,
+    setGazetteModalOpen,
   } = useGame();
   const { lang, setLang, t } = useLanguage();
 
   const year = gameState?.date.year ?? 1900;
-  const quarter = (gameState?.date.quarter ?? (gameState?.date.month ? Math.ceil(gameState.date.month / 3) : 1)) as 1 | 2 | 3 | 4;
   const cash = gameState?.company.cash ?? 0;
-  const reputation = gameState?.company.reputation ?? 0;
+  const worldRank = gameState?.company.worldRank ?? 5;
   const latestReport = gameState?.reportHistory[0];
 
   const eraTheme = getEraTheme(year);
@@ -33,14 +33,13 @@ export function TopTimelineBar(): React.JSX.Element {
     }
   }, [eraTheme.id]);
 
-  // Full timeline from 1900 to 2026 = 504 quarters
+  // Full timeline from 1900 to 2026 = 127 annual turns
   const minYear = 1900;
   const maxYear = 2026;
-  const totalQuarters = (maxYear - minYear) * 4;
-  const currentQuarterIndex = (year - minYear) * 4 + (quarter - 1);
-  const progressPercent = Math.min(100, Math.max(0, ((currentQuarterIndex + 1) / totalQuarters) * 100));
+  const totalTurns = maxYear - minYear + 1; // 127
+  const currentTurn = Math.min(totalTurns, Math.max(1, year - minYear + 1));
+  const progressPercent = Math.min(100, Math.max(0, ((year - minYear) / (maxYear - minYear)) * 100));
 
-  const quarterLabel = t.topbar.quarters[quarter - 1] ?? `Q${quarter}`;
   const companyBadge = gameState?.company.badge;
   const founderPerk = gameState?.company.founderPerk;
 
@@ -82,7 +81,7 @@ export function TopTimelineBar(): React.JSX.Element {
             </span>
           </div>
 
-          {/* Quarterly Profit */}
+          {/* Annual Profit */}
           {latestReport ? (
             <div className="hidden sm:flex items-center gap-1.5">
               <span className="text-[11px] font-serif uppercase tracking-wider era-label">{t.topbar.lastProfit}:</span>
@@ -98,17 +97,32 @@ export function TopTimelineBar(): React.JSX.Element {
             </div>
           ) : null}
 
-          {/* Reputation */}
-          <div className="flex items-center gap-1.5">
-            <span className="text-[11px] font-serif uppercase tracking-wider era-label">{t.topbar.reputation}:</span>
-            <span className="font-serif font-bold text-xs era-value bg-[var(--tag-bg)] text-[var(--tag-text)] border border-[var(--border-brass)]/40 px-2.5 py-0.5 rounded-md shadow-2xs">
-              ★ {reputation}
+          {/* Global World Sales Rank */}
+          <button
+            type="button"
+            onClick={() => setHallOfFameOpen(true)}
+            className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg border border-[var(--border-brass)] bg-[var(--surface-nested)] hover:bg-[var(--paper)] transition cursor-pointer shadow-2xs group"
+            title={
+              lang === 'en'
+                ? 'Click to view Global Auto Sales Leaderboard'
+                : lang === 'uk'
+                ? 'Натисніть для перегляду світового рейтингу автовиробників'
+                : lang === 'de'
+                ? 'Klicken, um die Weltrangliste der Automobilhersteller anzuzeigen'
+                : 'Нажмите, чтобы открыть Мировой рейтинг автопроизводителей'
+            }
+          >
+            <span className="text-[11px] font-serif uppercase tracking-wider era-label group-hover:text-[var(--ink-heading)]">
+              {t.topbar.worldRankLabel}:
             </span>
-          </div>
+            <span className="font-mono font-bold text-xs text-amber-500 dark:text-amber-400 bg-amber-500/10 border border-amber-500/30 px-2 py-0.5 rounded">
+              #{worldRank}
+            </span>
+          </button>
         </div>
 
-        {/* Right: Language Switcher & End Turn Button */}
-        <div className="flex items-center gap-3">
+        {/* Right: Language Switcher, Actions & End Turn Button */}
+        <div className="flex items-center gap-2.5 flex-wrap">
           {/* Language Toggle (RU, UA, DE, EN) */}
           <div className="flex rounded border border-stone-300 bg-white/70 p-0.5 text-[11px] font-semibold gap-0.5">
             {[
@@ -132,25 +146,28 @@ export function TopTimelineBar(): React.JSX.Element {
             ))}
           </div>
 
-          {/* Hall of Fame / Achievements button */}
+          {/* Newspaper Button */}
+          {latestReport ? (
+            <button
+              type="button"
+              onClick={() => setGazetteModalOpen(true)}
+              className="flex items-center gap-1 rounded border border-amber-900/30 bg-amber-50 px-2.5 py-1 text-xs font-serif font-bold text-amber-950 hover:bg-amber-100 shadow-2xs transition cursor-pointer"
+              title={t.topbar.latestGazette}
+            >
+              <span>📰</span>
+              <span className="hidden md:inline">{t.topbar.latestGazette}</span>
+            </button>
+          ) : null}
+
+          {/* World Ranking Leaderboard button */}
           <button
             type="button"
             onClick={() => setHallOfFameOpen(true)}
             className="flex items-center gap-1 rounded border border-amber-900/30 bg-amber-50 px-2.5 py-1 text-xs font-serif font-bold text-amber-950 hover:bg-amber-100 shadow-2xs transition cursor-pointer"
-            title={
-              lang === 'en'
-                ? 'Hall of Fame, Trophies & Save/Load'
-                : lang === 'uk'
-                ? 'Зал Слави, Трофеї та Збереження'
-                : lang === 'de'
-                ? 'Ruhmeshalle, Trophäen & Spielstand'
-                : 'Зал Славы, Трофеи и Сохранения'
-            }
+            title={t.topbar.worldRank}
           >
-            <span>🏆</span>
-            <span className="hidden sm:inline">
-              {lang === 'en' ? 'Trophies' : lang === 'uk' ? 'Зал слави' : lang === 'de' ? 'Ruhmeshalle' : 'Зал славы'}
-            </span>
+            <span>🌐</span>
+            <span className="hidden sm:inline">{t.topbar.worldRankingBtn}</span>
           </button>
 
           {/* Guide / Manual button */}
@@ -180,12 +197,12 @@ export function TopTimelineBar(): React.JSX.Element {
             onClick={async () => {
               const msg =
                 lang === 'en'
-                  ? 'Start a new game from 1900 Q1? All current progress will be reset.'
+                  ? 'Start a new game from 1900? All current progress will be reset.'
                   : lang === 'uk'
-                  ? 'Почати нову кампанію заново з 1900 року (I кв.)? Весь поточний прогрес буде скинуто.'
+                  ? 'Почати нову кампанію заново з 1900 року? Весь поточний прогрес буде скинуто.'
                   : lang === 'de'
-                  ? 'Neues Spiel ab 1900 (1. Quartal) starten? Der aktuelle Spielstand wird zurückgesetzt.'
-                  : 'Начать новую кампанию заново с 1900 года (I кв.)? Весь текущий прогресс будет сброшен.';
+                  ? 'Neues Spiel ab 1900 starten? Der aktuelle Spielstand wird zurückgesetzt.'
+                  : 'Начать новую кампанию заново с 1900 года? Весь текущий прогресс будет сброшен.';
               if (window.confirm(msg)) {
                 await resetGame();
               }
@@ -202,12 +219,12 @@ export function TopTimelineBar(): React.JSX.Element {
             }
           >
             <span>🔄</span>
-            <span className="hidden md:inline">
+            <span className="hidden lg:inline">
               {lang === 'en' ? 'Restart' : lang === 'uk' ? 'Нова гра' : lang === 'de' ? 'Neustart' : 'Новая игра'}
             </span>
           </button>
 
-          {/* Big End Quarter Button */}
+          {/* Big End Year Button */}
           <button
             type="button"
             onClick={() => void endTurn()}
@@ -216,7 +233,7 @@ export function TopTimelineBar(): React.JSX.Element {
           >
             <span>{pendingEndTurn ? '⏳' : '📅'}</span>
             <span>
-              {pendingEndTurn ? t.topbar.simulating : `${t.topbar.endTurn} (${quarterLabel})`}
+              {pendingEndTurn ? t.topbar.simulating : `${t.topbar.endTurn} (${year} ${t.topbar.year})`}
             </span>
           </button>
         </div>
@@ -224,54 +241,43 @@ export function TopTimelineBar(): React.JSX.Element {
 
       {/* 2. TIMELINE STRIP */}
       <div className="px-4 py-2 bg-[var(--paper-card)] border-t border-[var(--border-subtle)]/40">
-        <div className="flex items-center justify-between gap-2 mb-1.5">
-          {/* Current Date Badge */}
+        <div className="flex items-center justify-between gap-3 mb-1.5 flex-wrap">
+          {/* Left: Current Year Badge */}
           <div className="flex items-center gap-2">
-            <span className="rounded bg-amber-900 px-2 py-0.5 text-xs font-bold text-white shadow-xs font-mono">
+            <span className="rounded-lg bg-amber-900 px-3 py-1 text-xs font-bold text-white shadow-xs font-mono tracking-wide">
               {year} {t.topbar.year}
             </span>
-            <span className="font-semibold era-heading text-xs">
-              {quarterLabel} ({t.topbar.quarter} {quarter}/4)
-            </span>
           </div>
 
-          {/* Era Title & Turn Counter */}
-          <div className="text-[11px] font-medium era-label hidden md:flex items-center gap-2">
-            <span
-              className="flex items-center gap-1.5 font-serif era-heading font-bold bg-[var(--surface-nested)] border border-[var(--border-subtle)] px-2.5 py-0.5 rounded-lg cursor-help shadow-2xs"
-              title={`Стиль и материалы эпохи: ${eraTheme.materialRu}`}
-            >
-              <EraEmblem eraId={eraTheme.id} size={20} />
-              <span>{eraTheme.nameRu}</span>
-            </span>
-            <span className="text-[10px] bg-[var(--surface-nested)] era-label border border-[var(--border-subtle)] px-2 py-0.5 rounded font-mono">
-              {t.topbar.turnProgress.replace('{turn}', String(currentQuarterIndex + 1))}
-            </span>
+          {/* Center: Era Identity with Emblem, Name and Materials */}
+          <div className="flex items-center gap-2.5 px-3 py-1 rounded-lg bg-[var(--surface-nested)] border border-[var(--border-brass)] shadow-2xs">
+            <EraEmblem eraId={eraTheme.id} size={24} className="shrink-0 drop-shadow-xs" />
+            <div className="leading-tight">
+              <div className="flex items-center gap-1.5">
+                <span className="font-serif era-heading font-bold text-xs tracking-wide">
+                  {getEraName(eraTheme, lang)}
+                </span>
+                <span className="text-[10px] font-mono era-label opacity-70">
+                  ({eraTheme.yearStart}–{eraTheme.yearEnd})
+                </span>
+              </div>
+              <p className="text-[10px] font-serif italic text-[var(--ink-secondary)] truncate max-w-[260px] sm:max-w-[420px]">
+                {getEraMaterial(eraTheme, lang)}
+              </p>
+            </div>
           </div>
 
-          {/* Quarter Step Indicators (1..4) */}
-          <div className="flex items-center gap-1.5">
-            {[1, 2, 3, 4].map((q) => (
-              <div
-                key={q}
-                className={`h-2.5 w-2.5 rounded-full transition-all ${
-                  q === quarter
-                    ? 'bg-amber-600 scale-125 ring-2 ring-amber-400'
-                    : q < quarter
-                    ? 'bg-amber-900/70'
-                    : 'bg-[var(--border-subtle)]'
-                }`}
-                title={`${t.topbar.quarter} ${q}`}
-              />
-            ))}
+          {/* Right: Turn Counter (127 years) */}
+          <div className="text-[11px] font-medium era-label flex items-center gap-2">
+            <span className="text-[10px] bg-[var(--surface-nested)] era-label border border-[var(--border-subtle)] px-2.5 py-0.5 rounded font-mono font-bold">
+              {t.topbar.turnProgress.replace('{turn}', String(currentTurn))}
+            </span>
           </div>
         </div>
 
         {/* Horizontal Visual Timeline Bar */}
         <div className="relative mt-1">
-          {/* Background Track */}
           <div className="h-2 w-full rounded-full bg-[var(--surface-nested)] shadow-inner overflow-hidden border border-[var(--border-subtle)]">
-            {/* Progress fill */}
             <div
               className="h-full rounded-full bg-linear-to-r from-amber-600 via-amber-700 to-amber-900 shadow-xs transition-all duration-300"
               style={{ width: `${progressPercent}%` }}

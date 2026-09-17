@@ -9,8 +9,6 @@ import { getEraTheme, getEraName, getEraMaterial, getAdvisorTitle } from '../../
 import { CarBlueprintSilhouette } from '../../components/CarBlueprintSilhouette';
 import { QuickVehicleDesignModal } from '../../components/QuickVehicleDesignModal';
 import { QuickResearchModal } from '../../components/QuickResearchModal';
-import { MorningGazetteModal } from '../../components/MorningGazetteModal';
-import { EraEmblem } from '../../components/EraEmblem';
 
 import VehicleDesignView from '../../components/views/VehicleDesignView';
 import ProductionView from '../../components/views/ProductionView';
@@ -60,13 +58,13 @@ export default function DashboardPage(): React.JSX.Element {
     buyMaterial,
     takeLoan,
     setHallOfFameOpen,
+    setGazetteModalOpen,
   } = useGame();
   const { t, lang } = useLanguage();
 
   // Modals state
   const [isDesignModalOpen, setIsDesignModalOpen] = useState(false);
   const [isResearchModalOpen, setIsResearchModalOpen] = useState(false);
-  const [isGazetteModalOpen, setIsGazetteModalOpen] = useState(false);
 
   // Active Desk Workspace Tab (Single Unified Window)
   const [activeTab, setActiveTab] = useState<WorkspaceTab>('overview');
@@ -116,7 +114,7 @@ export default function DashboardPage(): React.JSX.Element {
   useEffect(() => {
     if (latestReport && latestReport.id !== prevReportIdRef.current) {
       if (prevReportIdRef.current !== null) {
-        setIsGazetteModalOpen(true);
+        setGazetteModalOpen(true);
       }
       prevReportIdRef.current = latestReport.id;
     }
@@ -240,135 +238,7 @@ export default function DashboardPage(): React.JSX.Element {
 
   return (
     <div className="space-y-4">
-      {/* 1. ERA & ADVISOR STATUS BAR - MATERIAL CENTERPIECE */}
-      <section className="material-plaque p-4 md:p-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 transition-all">
-        {/* Left: Era material identity with high-detail SVG crest */}
-        <div className="flex items-center gap-3.5">
-          <EraEmblem eraId={eraTheme.id} size={54} className="drop-shadow-md shrink-0" />
-          <div>
-            <div className="flex items-center gap-2.5 flex-wrap">
-              <h2 className="font-serif font-bold text-base md:text-lg tracking-wide" style={{ color: 'var(--desk-title)' }}>
-                {getEraName(eraTheme, lang)}
-              </h2>
-              <span
-                className="text-[11px] font-mono px-2.5 py-0.5 rounded-full font-bold shadow-2xs border"
-                style={{
-                  backgroundColor: 'rgba(0,0,0,0.3)',
-                  color: 'var(--desk-highlight)',
-                  borderColor: 'var(--desk-highlight)',
-                }}
-              >
-                {currentYear} {lang === 'en' ? `(${currentQuarter}/4 Q)` : lang === 'uk' ? `р. (${currentQuarter}/4 кв.)` : lang === 'de' ? `(${currentQuarter}/4 Q.)` : `г. (${currentQuarter}/4 кв.)`}
-              </span>
-            </div>
-            <p className="text-xs font-serif italic mt-0.5" style={{ color: 'var(--desk-subtext)' }}>
-              {lang === 'en'
-                ? 'Authentic era materials & aesthetics: '
-                : lang === 'uk'
-                ? 'Автентичні матеріали та стиль епохи: '
-                : lang === 'de'
-                ? 'Authentische Epochenmaterialien & Stil: '
-                : 'Аутентичные материалы и стиль эпохи: '}
-              <strong className="font-bold tracking-wide" style={{ color: 'var(--desk-highlight)' }}>
-                {getEraMaterial(eraTheme, lang)}
-              </strong>
-            </p>
-          </div>
-        </div>
-
-        {/* Right: Quick actions (Newspaper & Design Car & Hall of Fame) */}
-        <div className="flex items-center gap-2 self-stretch md:self-auto flex-wrap">
-          {latestReport && (
-            <button
-              type="button"
-              onClick={() => setIsGazetteModalOpen(true)}
-              className="flex-1 md:flex-initial rounded-lg border border-[var(--border-subtle)] bg-[var(--paper)]/85 px-3 py-1.5 text-xs font-serif font-bold era-heading hover:bg-[var(--paper)] shadow-2xs flex items-center justify-center gap-1.5 transition cursor-pointer"
-            >
-              <span>📰</span>
-              <span>
-                {lang === 'en'
-                  ? 'Latest Gazette'
-                  : lang === 'uk'
-                  ? 'Свіжий випуск газети'
-                  : lang === 'de'
-                  ? 'Aktuelle Zeitung'
-                  : 'Свежий выпуск газеты'}
-              </span>
-            </button>
-          )}
-
-          <button
-            type="button"
-            onClick={() => setIsDesignModalOpen(true)}
-            className="btn-brass flex-1 md:flex-initial rounded-lg px-3.5 py-1.5 text-xs font-bold text-white shadow-md flex items-center justify-center gap-1.5 cursor-pointer"
-          >
-            <span>📐</span>
-            <span>
-              {lang === 'en'
-                ? '+ Design Vehicle'
-                : lang === 'uk'
-                ? '+ Спроєктувати модель'
-                : lang === 'de'
-                ? '+ Modell entwerfen'
-                : '+ Спроектировать модель'}
-            </span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setHallOfFameOpen(true)}
-            className="flex-1 md:flex-initial rounded-lg border border-[var(--border-subtle)] bg-[var(--paper)]/85 px-3 py-1.5 text-xs font-serif font-bold era-heading hover:bg-[var(--paper)] shadow-2xs flex items-center justify-center gap-1.5 transition cursor-pointer"
-            title={
-              lang === 'en'
-                ? 'Hall of Fame, Trophies & Saves'
-                : lang === 'uk'
-                ? 'Зал Слави, Нагороди та Збереження'
-                : lang === 'de'
-                ? 'Ruhmeshalle, Erfolge & Spielstände'
-                : 'Зал Славы, Ордена и Сохранения'
-            }
-          >
-            <span>🏆</span>
-            <span>
-              {lang === 'en'
-                ? 'Trophies'
-                : lang === 'uk'
-                ? 'Зал слави'
-                : lang === 'de'
-                ? 'Ruhmeshalle'
-                : 'Зал славы'}
-            </span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => handleTabChange('guide')}
-            className="flex-1 md:flex-initial rounded-lg border border-[var(--border-subtle)] bg-[var(--paper)]/85 px-3 py-1.5 text-xs font-serif font-bold era-heading hover:bg-[var(--paper)] shadow-2xs flex items-center justify-center gap-1.5 transition cursor-pointer"
-            title={
-              lang === 'en'
-                ? 'Industrialist Handbook & Game Guide'
-                : lang === 'uk'
-                ? 'Довідник промисловця та правила гри'
-                : lang === 'de'
-                ? 'Industriellen-Handbuch & Spielregeln'
-                : 'Руководство промышленника и правила игры'
-            }
-          >
-            <span>📖</span>
-            <span>
-              {lang === 'en'
-                ? 'Handbook'
-                : lang === 'uk'
-                ? 'Довідник'
-                : lang === 'de'
-                ? 'Handbuch'
-                : 'Справочник'}
-            </span>
-          </button>
-        </div>
-      </section>
-
-      {/* 2. UNIFIED WORKSPACE DESK DOCK (ЕДИНОЕ ОКНО) */}
+      {/* 1. UNIFIED WORKSPACE DESK DOCK (ЕДИНОЕ ОКНО) */}
       <nav className="flex items-center gap-1.5 overflow-x-auto pb-1 border-b-2 border-[var(--border-brass)]">
         {DESK_TABS.map((tab) => {
           const isActive = activeTab === tab.id;
@@ -1077,13 +947,6 @@ export default function DashboardPage(): React.JSX.Element {
       <QuickResearchModal
         isOpen={isResearchModalOpen}
         onClose={() => setIsResearchModalOpen(false)}
-      />
-
-      <MorningGazetteModal
-        isOpen={isGazetteModalOpen}
-        onClose={() => setIsGazetteModalOpen(false)}
-        report={latestReport}
-        companyName={company.name}
       />
     </div>
   );

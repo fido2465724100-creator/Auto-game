@@ -15,11 +15,16 @@ interface GameContextType {
   setGuideModalOpen: (open: boolean) => void;
   isHallOfFameOpen: boolean;
   setHallOfFameOpen: (open: boolean) => void;
+  isGazetteModalOpen: boolean;
+  setGazetteModalOpen: (open: boolean) => void;
   refreshState: () => Promise<void>;
   endTurn: () => Promise<void>;
   takeLoan: (templateId: string) => Promise<void>;
   repayLoan: (loanId: string) => Promise<void>;
   saveVehicleModel: (model: VehicleModel) => Promise<void>;
+  decommissionVehicleModel: (modelId: string) => Promise<void>;
+  activateVehicleModel: (modelId: string) => Promise<void>;
+  deleteVehicleModel: (modelId: string) => Promise<void>;
   startResearch: (technologyId: string, budget: number) => Promise<void>;
   updateProductionPlan: (plan: Record<string, number>) => Promise<void>;
   buyMaterial: (materialId: MaterialType, amount: number) => Promise<void>;
@@ -42,11 +47,16 @@ const GameContext = createContext<GameContextType>({
   setGuideModalOpen: () => {},
   isHallOfFameOpen: false,
   setHallOfFameOpen: () => {},
+  isGazetteModalOpen: false,
+  setGazetteModalOpen: () => {},
   refreshState: async () => {},
   endTurn: async () => {},
   takeLoan: async () => {},
   repayLoan: async () => {},
   saveVehicleModel: async () => {},
+  decommissionVehicleModel: async () => {},
+  activateVehicleModel: async () => {},
+  deleteVehicleModel: async () => {},
   startResearch: async () => {},
   updateProductionPlan: async () => {},
   buyMaterial: async () => {},
@@ -66,6 +76,7 @@ export function GameProvider({ children }: { children: ReactNode }): React.JSX.E
   const [isSetupModalOpen, setSetupModalOpen] = useState(false);
   const [isGuideModalOpen, setGuideModalOpen] = useState(false);
   const [isHallOfFameOpen, setHallOfFameOpen] = useState(false);
+  const [isGazetteModalOpen, setGazetteModalOpen] = useState(false);
 
   const exportSave = async (): Promise<string> => {
     return api.exportSave();
@@ -104,6 +115,7 @@ export function GameProvider({ children }: { children: ReactNode }): React.JSX.E
       const updated = await api.endTurn();
       setGameState(updated);
       setError(null);
+      setGazetteModalOpen(true);
     } catch (err) {
       setError(String(err));
     } finally {
@@ -123,6 +135,21 @@ export function GameProvider({ children }: { children: ReactNode }): React.JSX.E
 
   const saveVehicleModel = async (model: VehicleModel): Promise<void> => {
     const updated = await api.saveVehicleModel(model);
+    setGameState(updated);
+  };
+
+  const decommissionVehicleModel = async (modelId: string): Promise<void> => {
+    const updated = await api.decommissionVehicleModel(modelId);
+    setGameState(updated);
+  };
+
+  const activateVehicleModel = async (modelId: string): Promise<void> => {
+    const updated = await api.activateVehicleModel(modelId);
+    setGameState(updated);
+  };
+
+  const deleteVehicleModel = async (modelId: string): Promise<void> => {
+    const updated = await api.deleteVehicleModel(modelId);
     setGameState(updated);
   };
 
@@ -184,11 +211,16 @@ export function GameProvider({ children }: { children: ReactNode }): React.JSX.E
         setGuideModalOpen,
         isHallOfFameOpen,
         setHallOfFameOpen,
+        isGazetteModalOpen,
+        setGazetteModalOpen,
         refreshState,
         endTurn,
         takeLoan,
         repayLoan,
         saveVehicleModel,
+        decommissionVehicleModel,
+        activateVehicleModel,
+        deleteVehicleModel,
         startResearch,
         updateProductionPlan,
         buyMaterial,

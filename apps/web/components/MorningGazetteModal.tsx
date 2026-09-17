@@ -2,26 +2,30 @@
 
 import React from 'react';
 import type { MonthlyReport } from '@ait/shared-types';
+import { useGame } from '../context/GameContext';
 import { useLanguage } from '../lib/i18n';
 import { getEraTheme } from '../lib/eraTheme';
 
 interface Props {
-  isOpen: boolean;
-  onClose: () => void;
-  report: MonthlyReport | null;
-  companyName: string;
+  isOpen?: boolean;
+  onClose?: () => void;
+  report?: MonthlyReport | null;
+  companyName?: string;
 }
 
-export function MorningGazetteModal({ isOpen, onClose, report, companyName }: Props): React.JSX.Element | null {
-  const { t } = useLanguage();
+export function MorningGazetteModal(props: Props = {}): React.JSX.Element | null {
+  const { isGazetteModalOpen, setGazetteModalOpen, gameState } = useGame();
+  const { lang, t } = useLanguage();
+
+  const isOpen = props.isOpen ?? isGazetteModalOpen;
+  const onClose = props.onClose ?? (() => setGazetteModalOpen(false));
+  const report = props.report ?? gameState?.reportHistory[0] ?? null;
+  const companyName = props.companyName ?? gameState?.company.name ?? 'Pioneer Motor Works';
 
   if (!isOpen || !report) return null;
 
   const year = report.date.year;
-  const quarter = report.date.quarter ?? 1;
   const eraTheme = getEraTheme(year);
-
-  const qName = t.topbar.quarters[quarter - 1] ?? `Q${quarter}`;
   const isProfit = report.profit >= 0;
 
   return (
@@ -30,16 +34,16 @@ export function MorningGazetteModal({ isOpen, onClose, report, companyName }: Pr
         {/* Newspaper Masthead */}
         <div className="border-b-4 border-double border-stone-900 pb-3 text-center">
           <div className="flex justify-between items-center text-[10px] uppercase tracking-widest text-stone-600 border-b border-stone-400 pb-1 mb-2">
-            <span>Издается с 1900 г.</span>
-            <span>{qName} {year} года • Экстренный выпуск</span>
-            <span>Цена: 2 цента</span>
+            <span>{lang === 'en' ? 'Published since 1900' : lang === 'uk' ? 'Видається з 1900 р.' : lang === 'de' ? 'Herausgegeben seit 1900' : 'Издается с 1900 г.'}</span>
+            <span>{year} {lang === 'en' ? 'Annual Edition' : lang === 'uk' ? 'року • Щорічний випуск' : lang === 'de' ? '• Jahresausgabe' : 'года • Ежегодный выпуск'}</span>
+            <span>{lang === 'en' ? 'Price: 2 cents' : lang === 'uk' ? 'Ціна: 2 центи' : lang === 'de' ? 'Preis: 2 Cents' : 'Цена: 2 цента'}</span>
           </div>
 
           <h1 className="text-3xl sm:text-4xl font-black uppercase tracking-tight text-stone-950 font-serif">
-            Промышленный Вестник
+            {lang === 'en' ? 'The Industrial Gazette' : lang === 'uk' ? 'Промисловий Вісник' : lang === 'de' ? 'Industrie-Zeitung' : 'Промышленный Вестник'}
           </h1>
           <p className="text-[11px] italic text-stone-700 mt-0.5">
-            Ежеквартальное обозрение мирового автомобилестроения, биржи и техники
+            {lang === 'en' ? 'Annual review of world automobile industry, commodity exchange and engineering' : lang === 'uk' ? 'Щорічний огляд світового автомобілебудування, біржі та техніки' : lang === 'de' ? 'Jahresrückblick auf die weltweite Automobilindustrie, Rohstoffbörse und Technik' : 'Ежегодное обозрение мирового автомобилестроения, биржи и техники'}
           </p>
         </div>
 
@@ -52,10 +56,10 @@ export function MorningGazetteModal({ isOpen, onClose, report, companyName }: Pr
           <h2 className="text-xl sm:text-2xl font-bold text-stone-950 leading-tight mt-1">
             {isProfit
               ? `УСПЕХ НА СБОРОЧНЫХ ЛИНИЯХ: ПРИБЫЛЬ СОСТАВИЛА +$${report.profit.toLocaleString()}!`
-              : `СЛОЖНЫЙ ПЕРИОД ДЛЯ МАНУФАКТУРЫ: КВАРТАЛЬНЫЙ УБЫТОК -$${Math.abs(report.profit).toLocaleString()}`}
+              : `СЛОЖНЫЙ ПЕРИОД ДЛЯ МАНУФАКТУРЫ: ГОДОВОЙ УБЫТОК -$${Math.abs(report.profit).toLocaleString()}`}
           </h2>
           <p className="text-xs text-stone-700 mt-2 leading-relaxed">
-            По официальным данным конторы заводы компании завершили {qName} {year} года со следующими результатами: выпущено{' '}
+            По официальным данным конторы заводы компании завершили {year} год со следующими результатами: выпущено{' '}
             <strong>{report.unitsProduced}</strong> самоходных экипажей, реализовано на рынках{' '}
             <strong>{report.unitsSold}</strong> единиц. Совокупная выручка достигла{' '}
             <strong>${report.revenue.toLocaleString()}</strong> при расходах{' '}
@@ -68,7 +72,7 @@ export function MorningGazetteModal({ isOpen, onClose, report, companyName }: Pr
           <div className="font-serif font-bold text-amber-950 flex flex-wrap items-center justify-between border-b border-amber-900/15 pb-1.5 mb-2 gap-2">
             <span className="flex items-center gap-1.5">
               <span>⚖️</span>
-              <span>Бухгалтерский отчет за {qName} {year} г.</span>
+              <span>Бухгалтерский отчет за {year} г.</span>
             </span>
             <span
               className={`font-mono font-bold px-2 py-0.5 rounded text-xs ${

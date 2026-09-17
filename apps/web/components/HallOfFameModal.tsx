@@ -4,7 +4,87 @@ import React, { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useGame } from '../context/GameContext';
 import { useLanguage } from '../lib/i18n';
-import type { Achievement } from '@ait/shared-types';
+import type { Achievement, GameState, GlobalManufacturerRanking, RegionId } from '@ait/shared-types';
+
+const DEFAULT_REGIONS: Array<{ id: RegionId; marketSize: number }> = [
+  { id: 'north-america', marketSize: 400 },
+  { id: 'europe', marketSize: 350 },
+  { id: 'middle-east', marketSize: 100 },
+];
+
+function getCountryDisplay(codeOrName: string, lang: string): { flag: string; name: string } {
+  const c = (codeOrName || '').toLowerCase();
+  if (c.includes('usa') || c.includes('us') || c.includes('сша') || c.includes('америк')) {
+    return { flag: '🇺🇸', name: lang === 'en' ? 'USA' : lang === 'uk' ? 'США' : lang === 'de' ? 'USA' : 'США' };
+  }
+  if (c.includes('germany') || c.includes('de') || c.includes('герм') || c.includes('нім')) {
+    return { flag: '🇩🇪', name: lang === 'en' ? 'Germany' : lang === 'uk' ? 'Німеччина' : lang === 'de' ? 'Deutschland' : 'Германия' };
+  }
+  if (c.includes('france') || c.includes('fr') || c.includes('фран')) {
+    return { flag: '🇫🇷', name: lang === 'en' ? 'France' : lang === 'uk' ? 'Франція' : lang === 'de' ? 'Frankreich' : 'Франция' };
+  }
+  if (c.includes('uk') || c.includes('gb') || c.includes('brit') || c.includes('великоб') || c.includes('брит')) {
+    return { flag: '🇬🇧', name: lang === 'en' ? 'Great Britain' : lang === 'uk' ? 'Велика Британія' : lang === 'de' ? 'Großbritannien' : 'Великобритания' };
+  }
+  if (c.includes('ital') || c.includes('it') || c.includes('итал') || c.includes('італ')) {
+    return { flag: '🇮🇹', name: lang === 'en' ? 'Italy' : lang === 'uk' ? 'Італія' : lang === 'de' ? 'Italien' : 'Италия' };
+  }
+  if (c.includes('japan') || c.includes('jp') || c.includes('япон')) {
+    return { flag: '🇯🇵', name: lang === 'en' ? 'Japan' : lang === 'uk' ? 'Японія' : lang === 'de' ? 'Japan' : 'Япония' };
+  }
+  if (c.includes('ua') || c.includes('ukr') || c.includes('укра')) {
+    return { flag: '🇺🇦', name: lang === 'en' ? 'Ukraine' : lang === 'uk' ? 'Україна' : lang === 'de' ? 'Ukraine' : 'Украина' };
+  }
+  return { flag: '🌐', name: codeOrName || 'Global' };
+}
+
+function getGlobalRankings(gameState: GameState | null): GlobalManufacturerRanking[] {
+  if (!gameState) return [];
+  if (gameState.reportHistory?.length > 0 && gameState.reportHistory[0]?.globalRankings?.length) {
+    return gameState.reportHistory[0].globalRankings;
+  }
+  // Initial starting rankings estimate before turn 1 completes
+  const competitorsList = gameState.competitors ?? [];
+  const compRankings: GlobalManufacturerRanking[] = competitorsList.map((comp) => {
+    let units = 0;
+    for (const r of DEFAULT_REGIONS) {
+      const share = comp.marketShares?.[r.id] ?? 0.05;
+      units += Math.round(r.marketSize * share);
+    }
+    const topModel = comp.activeModels?.[0];
+    const revenue = units * (topModel ? topModel.price : 1000);
+    return {
+      rank: 0,
+      companyId: comp.id,
+      companyName: comp.name,
+      country: comp.country,
+      isPlayer: false,
+      annualUnitsSold: units,
+      annualRevenue: revenue,
+      globalMarketShare: 0,
+      topModelName: topModel?.name ?? 'Standard Runabout',
+    };
+  });
+  const playerRank: GlobalManufacturerRanking = {
+    rank: 0,
+    companyId: gameState.company.id,
+    companyName: gameState.company.name,
+    country: gameState.company.country,
+    isPlayer: true,
+    annualUnitsSold: 0,
+    annualRevenue: 0,
+    globalMarketShare: 0,
+    topModelName: gameState.vehicleModels?.[0]?.name ?? 'Model A Runabout',
+  };
+  const all = [...compRankings, playerRank];
+  const total = all.reduce((acc, c) => acc + c.annualUnitsSold, 0);
+  all.sort((a, b) => b.annualUnitsSold - a.annualUnitsSold || b.annualRevenue - a.annualRevenue);
+  all.forEach((item, idx) => {
+    item.rank = idx + 1;
+    item.globalMarketShare = total > 0 ? Math.round((item.annualUnitsSold / total) * 1000) / 1000 : 0;
+  });
+  return all;
+}
 
 export function HallOfFameModal(): React.JSX.Element | null {
   const { gameState, isHallOfFameOpen, setHallOfFameOpen, exportSave, importSave } = useGame();
@@ -131,25 +211,25 @@ export function HallOfFameModal(): React.JSX.Element | null {
         {/* HEADER */}
         <div className="shrink-0 flex items-center justify-between border-b border-[var(--border-subtle)] bg-[var(--paper-card)] px-5 py-3.5 shadow-xs">
           <div className="flex items-center gap-3">
-            <span className="text-2xl select-none">🏆</span>
+            <span className="text-2xl select-none">🌐</span>
             <div>
               <h3 className="font-bold text-base text-[var(--ink-heading)] era-heading leading-tight">
                 {lang === 'en'
-                  ? 'Hall of Fame & Dynasty Achievements'
+                  ? 'World Automobile Sales Leaderboard'
                   : lang === 'uk'
-                  ? 'Зал Слави та Досягнення промисловця'
+                  ? 'Світовий рейтинг автовиробників року'
                   : lang === 'de'
-                  ? 'Ruhmeshalle & Industrie-Erfolge'
-                  : 'Зал Славы и Достижения автопромышленника'}
+                  ? 'Weltweite Automobil-Verkaufsrangliste'
+                  : 'Мировой рейтинг автопроизводителей года'}
               </h3>
               <p className="text-[11px] text-[var(--ink-secondary)]">
                 {lang === 'en'
-                  ? 'Historical milestones, trophy showcase and game save management (1900–2026)'
+                  ? `Annual sales volumes, global market share and revenue (${year})`
                   : lang === 'uk'
-                  ? 'Хроніка епохи, вітрина нагород та управління файлами збережень (1900–2026)'
+                  ? `Рейтинг продажів за ${year} рік, виручка та частка світового ринку`
                   : lang === 'de'
-                  ? 'Historische Meilensteine, Trophäenschau und Spielstandverwaltung (1900–2026)'
-                  : 'Хроника эпохи, витрина наград и управление файлами сохранений'}
+                  ? `Jahresabsatz, Umsatz und Weltmarktanteil (${year})`
+                  : `Рейтинг продаж за ${year} год, выручка и доля мирового рынка`}
               </p>
             </div>
           </div>
@@ -182,114 +262,202 @@ export function HallOfFameModal(): React.JSX.Element | null {
                   </h4>
                   <p className="text-xs text-[var(--ink-secondary)] leading-relaxed">
                     {lang === 'en'
-                      ? `Your company ${gameState?.company.name} successfully traversed 504 quarters from a modest 1900 workshop to the modern era of 2026.`
+                      ? `Your company ${gameState?.company.name} successfully traversed 126 years from a modest 1900 workshop to the modern automotive era of 2026!`
                       : lang === 'uk'
-                      ? `Ваш автомобільний концерн «${gameState?.company.name}» успішно пройшов усі 504 ходи крізь кризи та війни і зустрів 2026 рік величною індустріальною імперією!`
+                      ? `Ваш автомобільний концерн «${gameState?.company.name}» успішно пройшов усі 126 років крізь кризи та війни і зустрів 2026 рік світовим лідером автопрому!`
                       : lang === 'de'
-                      ? `Ihr Unternehmen ${gameState?.company.name} hat alle 504 Quartale von einer bescheidenen Werkstatt im Jahr 1900 bis zur Moderne von 2026 gemeistert!`
-                      : `Ваш автомобильный концерн «${gameState?.company.name}» успешно прошел все 504 хода сквозь войны, Великую депрессию, нефтяной шок и встретил 2026 год великой индустриальной империей!`}
+                      ? `Ihr Unternehmen ${gameState?.company.name} hat alle 126 Jahre von einer bescheidenen Werkstatt im Jahr 1900 bis zur Moderne von 2026 gemeistert!`
+                      : `Ваш автомобильный концерн «${gameState?.company.name}» успешно прошел все 126 лет сквозь войны, Великую депрессию, кризисы и встретил 2026 год глобальным автогигантом!`}
                   </p>
                 </div>
               </div>
             </div>
           )}
 
-          {/* QUICK DYNASTY METRICS */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-nested)] p-3 shadow-2xs">
-              <span className="text-[10px] uppercase font-bold text-[var(--ink-secondary)] block">
-                {lang === 'en'
-                  ? 'Liquid Capital'
-                  : lang === 'uk'
-                  ? 'Вільний капітал'
-                  : lang === 'de'
-                  ? 'Freies Kapital'
-                  : 'Свободный капитал'}
-              </span>
-              <span className="text-base font-mono font-bold text-emerald-400">
-                ${(gameState?.company.cash ?? 0).toLocaleString()}
+          {/* PLAYER RANK STATUS CARD */}
+          {(() => {
+            const rankings = getGlobalRankings(gameState);
+            const playerEntry = rankings.find((r) => r.isPlayer);
+            const pRank = playerEntry?.rank ?? 5;
+            const medal = pRank === 1 ? '🥇' : pRank === 2 ? '🥈' : pRank === 3 ? '🥉' : '🌐';
+
+            return (
+              <div className="rounded-xl border-2 border-[var(--border-brass)] bg-[var(--surface-nested)] p-4 shadow-sm">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                  <div className="flex items-center gap-3">
+                    <span className="text-3xl select-none">{medal}</span>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs uppercase font-bold tracking-wider text-[var(--accent-gold)]">
+                          {lang === 'en'
+                            ? 'Your Current Global Position'
+                            : lang === 'uk'
+                            ? 'Ваше поточне місце у світі'
+                            : lang === 'de'
+                            ? 'Ihre aktuelle globale Position'
+                            : 'Ваша текущая позиция в мире'}
+                        </span>
+                        <span className="font-mono font-black text-sm px-2 py-0.5 rounded bg-[var(--paper)] border border-[var(--border-brass)] text-[var(--ink-heading)]">
+                          #{pRank} {lang === 'en' ? 'of' : lang === 'uk' ? 'з' : lang === 'de' ? 'von' : 'из'} {rankings.length}
+                        </span>
+                      </div>
+                      <h4 className="font-bold text-lg text-[var(--ink-heading)] era-heading mt-0.5">
+                        {gameState?.company.name ?? 'Pioneer'}
+                      </h4>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-3 sm:gap-6 font-mono text-xs">
+                    <div className="text-right">
+                      <span className="text-[10px] uppercase block font-sans text-[var(--ink-secondary)] font-bold">
+                        {lang === 'en' ? 'Annual Sales' : lang === 'uk' ? 'Продажі за рік' : lang === 'de' ? 'Jahresabsatz' : 'Продажи за год'}
+                      </span>
+                      <strong className="text-sm font-bold text-[var(--ink-value)]">
+                        {(playerEntry?.annualUnitsSold ?? 0).toLocaleString()} {lang === 'en' ? 'cars' : lang === 'uk' ? 'авто' : lang === 'de' ? 'Fz.' : 'авто'}
+                      </strong>
+                    </div>
+                    <div className="text-right">
+                      <span className="text-[10px] uppercase block font-sans text-[var(--ink-secondary)] font-bold">
+                        {lang === 'en' ? 'Market Share' : lang === 'uk' ? 'Частка ринку' : lang === 'de' ? 'Marktanteil' : 'Доля рынка'}
+                      </span>
+                      <strong className="text-sm font-bold text-[var(--accent-gold)]">
+                        {((playerEntry?.globalMarketShare ?? 0) * 100).toFixed(1)}%
+                      </strong>
+                    </div>
+                    <div className="text-right">
+                      <span className="text-[10px] uppercase block font-sans text-[var(--ink-secondary)] font-bold">
+                        {lang === 'en' ? 'Annual Revenue' : lang === 'uk' ? 'Річна виручка' : lang === 'de' ? 'Jahresumsatz' : 'Годовая выручка'}
+                      </span>
+                      <strong className="text-sm font-bold text-emerald-400">
+                        ${(playerEntry?.annualRevenue ?? 0).toLocaleString()}
+                      </strong>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            );
+          })()}
+
+          {/* LEADERBOARD TABLE */}
+          <div className="era-card p-4 sm:p-5 space-y-3">
+            <div className="flex items-center justify-between border-b border-[var(--border-subtle)] pb-2.5">
+              <h4 className="font-bold text-sm text-[var(--ink-heading)] era-heading flex items-center gap-2">
+                <span>📊</span>
+                <span>
+                  {lang === 'en'
+                    ? `World Automaker Rankings — ${year}`
+                    : lang === 'uk'
+                    ? `Рейтинг світових продавців авто — ${year} рік`
+                    : lang === 'de'
+                    ? `Rangliste der Weltautohersteller — ${year}`
+                    : `Рейтинг продавцов года в мире — ${year} год`}
+                </span>
+              </h4>
+              <span className="text-[11px] text-[var(--ink-secondary)] italic">
+                {lang === 'en' ? 'Updated at the end of each year' : lang === 'uk' ? 'Оновлюється наприкінці кожного року' : lang === 'de' ? 'Wird zum Jahresende aktualisiert' : 'Обновляется по итогам каждого года'}
               </span>
             </div>
-            <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-nested)] p-3 shadow-2xs">
-              <span className="text-[10px] uppercase font-bold text-[var(--ink-secondary)] block">
-                {lang === 'en'
-                  ? 'Brand Reputation'
-                  : lang === 'uk'
-                  ? 'Репутація марки'
-                  : lang === 'de'
-                  ? 'Markenruf'
-                  : 'Репутация марки'}
-              </span>
-              <span className="text-base font-bold text-[var(--accent-gold)]">
-                ★ {gameState?.company.reputation ?? 0}
-              </span>
+
+            <div className="overflow-x-auto">
+              <table className="w-full text-left border-collapse text-xs">
+                <thead>
+                  <tr className="border-b border-[var(--border-subtle)] text-[10px] uppercase tracking-wider text-[var(--ink-secondary)] font-bold">
+                    <th className="py-2.5 px-3">{lang === 'en' ? 'Rank' : lang === 'uk' ? 'Місце' : lang === 'de' ? 'Platz' : 'Место'}</th>
+                    <th className="py-2.5 px-3">{lang === 'en' ? 'Company' : lang === 'uk' ? 'Концерн' : lang === 'de' ? 'Konzern' : 'Компания'}</th>
+                    <th className="py-2.5 px-3">{lang === 'en' ? 'Country' : lang === 'uk' ? 'Країна' : lang === 'de' ? 'Land' : 'Страна'}</th>
+                    <th className="py-2.5 px-3 text-right">{lang === 'en' ? 'Sales / Year' : lang === 'uk' ? 'Продажі / рік' : lang === 'de' ? 'Absatz / Jahr' : 'Продажи / год'}</th>
+                    <th className="py-2.5 px-3 text-right">{lang === 'en' ? 'World Share' : lang === 'uk' ? 'Частка ринку' : lang === 'de' ? 'Weltanteil' : 'Доля рынка'}</th>
+                    <th className="py-2.5 px-3 text-right">{lang === 'en' ? 'Revenue' : lang === 'uk' ? 'Виручка' : lang === 'de' ? 'Umsatz' : 'Выручка'}</th>
+                    <th className="py-2.5 px-3">{lang === 'en' ? 'Top Model' : lang === 'uk' ? 'Флагман' : lang === 'de' ? 'Spitzenmodell' : 'Флагман'}</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-[var(--border-subtle)]">
+                  {getGlobalRankings(gameState).map((entry) => {
+                    const countryDisplay = getCountryDisplay(entry.country ?? '', lang);
+                    const rankMedal = entry.rank === 1 ? '🥇' : entry.rank === 2 ? '🥈' : entry.rank === 3 ? '🥉' : `#${entry.rank}`;
+                    const sharePct = (entry.globalMarketShare * 100).toFixed(1);
+
+                    return (
+                      <tr
+                        key={entry.companyId}
+                        className={`transition-colors ${
+                          entry.isPlayer
+                            ? 'bg-[var(--surface-nested)] border-l-4 border-l-amber-500 font-bold shadow-2xs'
+                            : 'hover:bg-[var(--surface-nested)]/50'
+                        }`}
+                      >
+                        <td className="py-3 px-3 whitespace-nowrap">
+                          <span className="font-mono font-bold text-sm flex items-center gap-1">
+                            <span>{rankMedal}</span>
+                          </span>
+                        </td>
+                        <td className="py-3 px-3 whitespace-nowrap">
+                          <div className="flex items-center gap-2">
+                            <span className="font-bold text-[var(--ink-heading)]">
+                              {entry.companyName}
+                            </span>
+                            {entry.isPlayer && (
+                              <span className="px-1.5 py-0.5 rounded text-[10px] font-bold era-badge-accent">
+                                {lang === 'en' ? 'YOU' : lang === 'uk' ? 'ВИ' : lang === 'de' ? 'SIE' : 'ВЫ'}
+                              </span>
+                            )}
+                          </div>
+                        </td>
+                        <td className="py-3 px-3 whitespace-nowrap text-[var(--ink-secondary)]">
+                          <span className="inline-flex items-center gap-1.5">
+                            <span>{countryDisplay.flag}</span>
+                            <span>{countryDisplay.name}</span>
+                          </span>
+                        </td>
+                        <td className="py-3 px-3 text-right whitespace-nowrap font-mono font-bold text-[var(--ink-value)]">
+                          {entry.annualUnitsSold.toLocaleString()} {lang === 'en' ? 'cars' : lang === 'uk' ? 'авто' : lang === 'de' ? 'Fz.' : 'авто'}
+                        </td>
+                        <td className="py-3 px-3 text-right whitespace-nowrap font-mono">
+                          <div className="inline-flex flex-col items-end">
+                            <span className="font-bold text-[var(--ink-heading)]">{sharePct}%</span>
+                            <div className="w-16 h-1 bg-[var(--surface-nested)] border border-[var(--border-subtle)] rounded-full overflow-hidden mt-0.5">
+                              <div
+                                className="h-full bg-amber-500"
+                                style={{ width: `${Math.min(100, Math.max(4, Number(sharePct)))}%` }}
+                              />
+                            </div>
+                          </div>
+                        </td>
+                        <td className="py-3 px-3 text-right whitespace-nowrap font-mono font-bold text-emerald-400">
+                          ${entry.annualRevenue.toLocaleString()}
+                        </td>
+                        <td className="py-3 px-3 whitespace-nowrap text-[var(--ink-secondary)]">
+                          <span className="italic">
+                            {entry.topModelName || '—'}
+                          </span>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
             </div>
-            <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-nested)] p-3 shadow-2xs">
-              <span className="text-[10px] uppercase font-bold text-[var(--ink-secondary)] block">
-                {lang === 'en'
-                  ? 'Current Era'
-                  : lang === 'uk'
-                  ? 'Епоха / Рік'
-                  : lang === 'de'
-                  ? 'Epoche / Jahr'
-                  : 'Эпоха / Год'}
-              </span>
-              <span className="text-base font-bold text-[var(--ink-heading)]">
-                {year} {lang === 'en' ? `(Q${quarter})` : lang === 'uk' ? `р. (${quarter} кв.)` : lang === 'de' ? `(Q${quarter})` : `г. (${quarter} кв.)`}
-              </span>
-            </div>
-            <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-nested)] p-3 shadow-2xs">
-              <span className="text-[10px] uppercase font-bold text-[var(--ink-secondary)] block">
-                {lang === 'en'
-                  ? 'Achievements'
-                  : lang === 'uk'
-                  ? 'Трофеї відкрито'
-                  : lang === 'de'
-                  ? 'Erfolge freigeschaltet'
-                  : 'Трофеи открыты'}
-              </span>
-              <span className="text-base font-mono font-bold text-[var(--ink-value)]">
+          </div>
+
+          {/* HISTORICAL TROPHIES & ACHIEVEMENTS SECTION */}
+          <div className="space-y-3">
+            <div className="flex items-center justify-between border-b border-[var(--border-subtle)] pb-1.5">
+              <h4 className="font-bold text-sm text-[var(--ink-heading)] era-heading flex items-center gap-2">
+                <span>🎖️</span>
+                <span>
+                  {lang === 'en'
+                    ? 'Historical Trophies & Industry Milestones'
+                    : lang === 'uk'
+                    ? 'Ордени та Досягнення промисловця'
+                    : lang === 'de'
+                    ? 'Historische Trophäen & Industrie-Erfolge'
+                    : 'Ордена и Достижения автопромышленника'}
+                </span>
+              </h4>
+              <span className="font-mono text-xs font-bold text-[var(--ink-secondary)]">
                 {unlockedCount} / {totalCount} ({progressPercent}%)
               </span>
             </div>
-          </div>
-
-          {/* PROGRESS BAR */}
-          <div className="space-y-1.5">
-            <div className="flex justify-between text-xs font-bold text-[var(--ink-secondary)]">
-              <span>
-                {lang === 'en'
-                  ? 'Dynasty Progression'
-                  : lang === 'uk'
-                  ? 'Індустріальний прогрес нагород'
-                  : lang === 'de'
-                  ? 'Dynastie-Fortschritt'
-                  : 'Индустриальный прогресс наград'}
-              </span>
-              <span>{progressPercent}%</span>
-            </div>
-            <div className="h-2 w-full bg-[var(--surface-nested)] border border-[var(--border-subtle)] rounded-full overflow-hidden">
-              <div
-                className="h-full bg-gradient-to-r from-amber-600 via-amber-500 to-amber-400 transition-all duration-300"
-                style={{ width: `${progressPercent}%` }}
-              />
-            </div>
-          </div>
-
-          {/* ACHIEVEMENTS GRID */}
-          <div className="space-y-3">
-            <h4 className="font-bold text-sm text-[var(--ink-heading)] era-heading flex items-center gap-2 border-b border-[var(--border-subtle)] pb-1.5">
-              <span>🎖️</span>
-              <span>
-                {lang === 'en'
-                  ? 'Historical Trophies'
-                  : lang === 'uk'
-                  ? 'Ордени та Досягнення'
-                  : lang === 'de'
-                  ? 'Historische Trophäen'
-                  : 'Ордена и Достижения'}
-              </span>
-            </h4>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {achievements.map((ach) => (
@@ -317,7 +485,7 @@ export function HallOfFameModal(): React.JSX.Element | null {
                       </span>
                       {ach.unlocked ? (
                         <span className="text-[10px] font-mono font-bold text-emerald-300 bg-emerald-950/40 border border-emerald-600/50 px-1.5 py-0.5 rounded">
-                          {ach.unlockedAtYear ? `${ach.unlockedAtYear} Q${ach.unlockedAtQuarter ?? 1}` : '✓'}
+                          {ach.unlockedAtYear ? `${ach.unlockedAtYear} г.` : '✓'}
                         </span>
                       ) : (
                         <span className="text-[10px] font-mono text-[var(--ink-secondary)]">🔒</span>

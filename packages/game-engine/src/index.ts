@@ -20,6 +20,7 @@ import type {
   FounderPerk,
   Competitor,
   CompetitorMilestone,
+  GlobalManufacturerRanking,
 } from '@ait/shared-types';
 
 export const MATERIALS_CATALOG: MaterialMarketItem[] = [
@@ -313,6 +314,10 @@ export function calculateVehicleSpecs(
   };
 }
 
+export function nextYear(date: GameDate): GameDate {
+  return { year: date.year + 1, quarter: 1, month: 1 };
+}
+
 export function nextQuarter(date: GameDate): GameDate {
   const currentQ = date.quarter ?? (date.month ? (Math.ceil(date.month / 3) as 1 | 2 | 3 | 4) : 1);
   if (currentQ === 4) {
@@ -331,11 +336,7 @@ export function nextMonth(date: GameDate): GameDate {
 }
 
 function isEventActive(event: HistoricalEvent, date: GameDate): boolean {
-  const currentMonth = date.month ?? ((date.quarter ?? 1) - 1) * 3 + 1;
-  const current = date.year * 12 + currentMonth;
-  const start = event.startYear * 12 + event.startMonth;
-  const end = event.endYear * 12 + event.endMonth;
-  return current >= start && current <= end;
+  return date.year >= event.startYear && date.year <= event.endYear;
 }
 
 function getActiveEventMultiplier(events: HistoricalEvent[], regionId: RegionId, date: GameDate): number {
@@ -432,19 +433,19 @@ function simulateRegionDemand(
 
 export function runEndTurn(input: EndTurnInput): EndTurnOutput {
   const currentState = input.gameState;
-  const newDate = nextQuarter(currentState.date);
+  const newDate = nextYear(currentState.date);
 
-  // Advance research by 3 months (quarterly step).
-  // Mechanic perk: +1 extra month for engine and chassis technologies.
+  // Advance research by 12 months (annual step).
+  // Mechanic perk: +3 extra months for engine and chassis technologies.
   const researchProgress = currentState.activeResearch.map((project) => {
     const tech = input.technologies.find((t) => t.id === project.technologyId);
-    let monthsToAdd = 3;
+    let monthsToAdd = 12;
     if (
       currentState.company.founderPerk === 'mechanic' &&
       tech &&
       (tech.category === 'engine' || tech.category === 'chassis')
     ) {
-      monthsToAdd = 4;
+      monthsToAdd = 15;
     }
     const nextProgress = Math.min(project.totalMonths, project.progressMonths + monthsToAdd);
     return {
@@ -462,19 +463,19 @@ export function runEndTurn(input: EndTurnInput): EndTurnOutput {
   const unlockedTechnologyIds = [...currentState.unlockedTechnologyIds, ...completedTechIds];
   const activeResearch = researchProgress.filter((project) => !project.isCompleted);
 
-  // Factory capacity & inventory setup (quarterly capacity)
+  // Factory capacity & inventory setup (annual capacity)
   const factoryLevel = currentState.company.factory?.level ?? 1;
-  const factoryCapacity = currentState.company.factory?.capacity ?? currentState.company.productionCapacity ?? 4;
+  const factoryCapacity = currentState.company.factory?.capacity ?? currentState.company.productionCapacity ?? 16;
   const factoryMonthlyOverhead = currentState.company.factory?.monthlyOverhead ?? 40;
-  const quarterlyOverhead = (currentState.company.overheadMonthly + factoryMonthlyOverhead) * 3;
-  const quarterlyRent = calculatePremisesRent(newDate.year, factoryLevel);
+  const annualOverhead = (currentState.company.overheadMonthly + factoryMonthlyOverhead) * 12;
+  const annualRent = calculatePremisesRent(newDate.year, factoryLevel);
 
   const defaultInventory: Record<MaterialType, number> = {
-    steel: 500,
-    wood: 600,
-    rubber: 150,
-    leather: 80,
-    aluminum: 20,
+    steel: 2000,
+    wood: 2400,
+    rubber: 600,
+    leather: 320,
+    aluminum: 80,
     plastic: 0,
   };
 
@@ -566,8 +567,6 @@ export function runEndTurn(input: EndTurnInput): EndTurnOutput {
           materialProcurementCost += info.cost;
         }
       } else {
-        // Balanced procurement: allocate available cash proportionally across all missing materials
-        // so that no critical material is left at 0
         const budgetRatio = Math.max(0, (currentCash * 0.95) / totalShortageCost);
         for (const [mat, info] of Object.entries(shortages) as Array<[MaterialType, { amount: number; cost: number; unitPrice: number }]>) {
           const buyCount = Math.min(info.amount, Math.max(1, Math.floor(info.amount * budgetRatio)));
@@ -595,7 +594,6 @@ export function runEndTurn(input: EndTurnInput): EndTurnOutput {
   let totalProduced = 0;
   const producedByModel: Record<string, number> = {};
 
-  // Sort models: produce simpler/high-priority models first so assembly never stalls completely
   const modelsInPlan = plannedModels.slice();
   let capacityRemaining = targetProductionUnits;
   let canProduceMore = true;
@@ -616,7 +614,6 @@ export function runEndTurn(input: EndTurnInput): EndTurnOutput {
           currentState.company.founderPerk
         );
 
-      // Check if all materials for 1 car are available in inventory
       let canBuild = true;
       for (const [mat, amount] of Object.entries(req)) {
         if ((amount ?? 0) > (inventory[mat as MaterialType] ?? 0)) {
@@ -626,7 +623,6 @@ export function runEndTurn(input: EndTurnInput): EndTurnOutput {
       }
 
       if (canBuild) {
-        // Deduct materials for 1 unit
         for (const [mat, amount] of Object.entries(req)) {
           const m = mat as MaterialType;
           inventory[m] = Math.max(0, (inventory[m] ?? 0) - (amount ?? 0));
@@ -658,7 +654,6 @@ export function runEndTurn(input: EndTurnInput): EndTurnOutput {
   let unitsSold = 0;
   let revenue = 0;
 
-  // Sell units model-by-model using each model's actual produced stock and true sale price
   for (const model of currentState.vehicleModels.filter((item) => item.active)) {
     let modelStock = producedByModel[model.id] ?? 0;
     if (modelStock <= 0) continue;
@@ -694,7 +689,7 @@ export function runEndTurn(input: EndTurnInput): EndTurnOutput {
     revenue = Math.round(revenue * 1.1);
   }
 
-  // Quarterly loan amortization (3 months)
+  // Annual loan amortization (up to 12 months)
   const currentLoans = currentState.company.loans ?? [];
   let loanPayments = 0;
   const updatedLoans: BankLoan[] = [];
@@ -702,7 +697,7 @@ export function runEndTurn(input: EndTurnInput): EndTurnOutput {
   for (const loan of currentLoans) {
     let principal = loan.remainingPrincipal;
     let monthsLeft = loan.remainingMonths;
-    const monthsToProcess = Math.min(3, monthsLeft);
+    const monthsToProcess = Math.min(12, monthsLeft);
 
     for (let m = 0; m < monthsToProcess; m++) {
       loanPayments += loan.monthlyPayment;
@@ -726,22 +721,70 @@ export function runEndTurn(input: EndTurnInput): EndTurnOutput {
     return acc + built * model.productionCost;
   }, 0);
 
-  // Quarterly research cost (3 months)
-  const researchCost = currentState.activeResearch.reduce((acc, project) => acc + project.allocatedBudget * 3, 0);
-  // Production cost already incorporates parts, materials and assembly labor as calculated in the Designer.
-  // Operating expenses: Production (COGS) + Workshop Overhead + Factory Premises Rent + Research R&D + Loan Payments.
-  const expenses = productionCost + researchCost + quarterlyOverhead + quarterlyRent + loanPayments;
+  // Annual research cost (12 months)
+  const researchCost = currentState.activeResearch.reduce((acc, project) => acc + project.allocatedBudget * 12, 0);
+  const expenses = productionCost + researchCost + annualOverhead + annualRent + loanPayments;
   const profit = revenue - expenses;
 
-  // Reputation change
-  const reputationChange = unitsSold > 0 ? Math.max(1, Math.min(4, Math.floor(unitsSold / 50) + 1)) : -1;
+  // Calculate Global Auto Manufacturer Rankings for the year
+  const competitorsList = input.competitors ?? currentState.competitors ?? [];
+  const competitorRankings: GlobalManufacturerRanking[] = competitorsList.map((comp) => {
+    let compUnits = 0;
+    for (const region of input.regions) {
+      const share = comp.marketShares[region.id] ?? 0.05;
+      compUnits += Math.round(region.marketSize * share);
+    }
+    const availableModels = comp.activeModels.filter((m) => m.releaseYear <= newDate.year);
+    const topModel = availableModels[availableModels.length - 1] ?? comp.activeModels[0];
+    const avgPrice = topModel ? topModel.price : 1000;
+    const compRevenue = compUnits * avgPrice;
+
+    return {
+      rank: 0,
+      companyId: comp.id,
+      companyName: comp.name,
+      country: comp.country,
+      isPlayer: false,
+      annualUnitsSold: compUnits,
+      annualRevenue: compRevenue,
+      globalMarketShare: 0,
+      topModelName: topModel?.name,
+    };
+  });
+
+  const playerRanking: GlobalManufacturerRanking = {
+    rank: 0,
+    companyId: currentState.company.id,
+    companyName: currentState.company.name,
+    country: currentState.company.country,
+    isPlayer: true,
+    annualUnitsSold: unitsSold,
+    annualRevenue: revenue,
+    globalMarketShare: 0,
+    topModelName: activeModels[0]?.name ?? 'Model A Runabout',
+  };
+
+  const allRankings = [...competitorRankings, playerRanking];
+  const totalWorldSales = allRankings.reduce((sum, r) => sum + r.annualUnitsSold, 0);
+
+  allRankings.sort((a, b) => b.annualUnitsSold - a.annualUnitsSold || b.annualRevenue - a.annualRevenue);
+
+  allRankings.forEach((item, index) => {
+    item.rank = index + 1;
+    item.globalMarketShare = totalWorldSales > 0 ? Math.round((item.annualUnitsSold / totalWorldSales) * 1000) / 1000 : 0;
+  });
+
+  const playerRank = allRankings.find((r) => r.isPlayer)?.rank ?? allRankings.length;
+
+  // Reputation change based on rank and sales
+  const reputationChange = playerRank === 1 ? 4 : playerRank <= 3 ? 2 : unitsSold > 0 ? 1 : -1;
   const nextReputation = Math.max(0, Math.min(100, currentState.company.reputation + reputationChange));
 
-  // Check competitor milestones for this quarter
+  // Check competitor milestones for this year
   const competitorNews: string[] = [];
   const allMilestones = input.competitorMilestones ?? currentState.competitorMilestones ?? [];
   for (const milestone of allMilestones) {
-    if (milestone.year === newDate.year && milestone.quarter === newDate.quarter) {
+    if (milestone.year === newDate.year) {
       competitorNews.push(`${milestone.title}: ${milestone.description}`);
     }
   }
@@ -752,11 +795,10 @@ export function runEndTurn(input: EndTurnInput): EndTurnOutput {
 
   if (finalCash < 0) {
     const deficit = -finalCash;
-    // Issue emergency bank overdraft to cover deficit + provide $1,000 working cushion
     const overdraftAmount = Math.ceil((deficit + 1000) / 1000) * 1000;
     const overdraftLoan: BankLoan = {
-      id: `overdraft-${newDate.year}-Q${newDate.quarter}-${Date.now().toString().slice(-4)}`,
-      name: `Банковский заем на покрытие дефицита (${newDate.year} Q${newDate.quarter})`,
+      id: `overdraft-${newDate.year}-${Date.now().toString().slice(-4)}`,
+      name: `Банковский заем на покрытие дефицита (${newDate.year} г.)`,
       principal: overdraftAmount,
       remainingPrincipal: overdraftAmount,
       interestRate: 0.02,
@@ -773,7 +815,7 @@ export function runEndTurn(input: EndTurnInput): EndTurnOutput {
 
   const activeEvents = input.events.filter((event) => isEventActive(event, newDate));
   const report: MonthlyReport = {
-    id: `${currentState.id}-${newDate.year}-Q${newDate.quarter}`,
+    id: `${currentState.id}-${newDate.year}`,
     date: newDate,
     unitsProduced: producedUnits,
     unitsSold,
@@ -781,9 +823,11 @@ export function runEndTurn(input: EndTurnInput): EndTurnOutput {
     expenses,
     profit,
     productionCost,
-    overheadCost: quarterlyOverhead,
+    overheadCost: annualOverhead,
     researchCost,
-    rentCost: quarterlyRent,
+    rentCost: annualRent,
+    globalRank: playerRank,
+    globalRankings: allRankings,
     researchProgress: researchProgress.map((project) => ({
       technologyId: project.technologyId,
       progressMonths: project.progressMonths,
@@ -791,7 +835,11 @@ export function runEndTurn(input: EndTurnInput): EndTurnOutput {
     })),
     reputationChange,
     loanPayments,
-    eventNotes: [...activeEvents.map((event) => event.name), ...overdraftNotes],
+    eventNotes: [
+      `🌐 Мировой рейтинг: #${playerRank} место (${unitsSold.toLocaleString()} авто)`,
+      ...activeEvents.map((event) => event.name),
+      ...overdraftNotes,
+    ],
     competitorNews,
     salesByRegion,
     materialsConsumed,
@@ -810,6 +858,7 @@ export function runEndTurn(input: EndTurnInput): EndTurnOutput {
         ...currentState.company,
         cash: finalCash,
         reputation: nextReputation,
+        worldRank: playerRank,
         loans: updatedLoans,
         inventoryMaterials: inventory,
       },

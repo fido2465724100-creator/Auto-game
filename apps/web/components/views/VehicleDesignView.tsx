@@ -34,7 +34,14 @@ const STAT_COLORS: Record<string, string> = {
 };
 
 export default function VehicleDesignPage(): React.JSX.Element {
-  const { gameState, saveVehicleModel, updateProductionPlan } = useGame();
+  const {
+    gameState,
+    saveVehicleModel,
+    updateProductionPlan,
+    decommissionVehicleModel,
+    activateVehicleModel,
+    deleteVehicleModel,
+  } = useGame();
   const { t, lang } = useLanguage();
 
   const [availableComponents, setAvailableComponents] = useState<VehicleComponentWithStatus[]>([]);
@@ -45,7 +52,7 @@ export default function VehicleDesignPage(): React.JSX.Element {
   // Form State
   const [name, setName] = useState('Model 1900-B');
   const [segment, setSegment] = useState<VehicleSegment>('economy');
-  const [quarterlyQuota, setQuarterlyQuota] = useState<number>(3);
+  const [annualQuota, setAnnualQuota] = useState<number>(12);
   const [powertrainFilter, setPowertrainFilter] = useState<'all' | 'ice' | 'steam' | 'electric'>('all');
   const [selectedComponents, setSelectedComponents] = useState<VehicleComponents>({
     chassis: 'ladder-frame',
@@ -134,14 +141,14 @@ export default function VehicleDesignPage(): React.JSX.Element {
 
     try {
       await saveVehicleModel(newModel);
-      if (quarterlyQuota > 0) {
+      if (annualQuota > 0) {
         const currentPlan = gameState?.productionPlan ?? {};
         await updateProductionPlan({
           ...currentPlan,
-          [newModel.id]: quarterlyQuota,
+          [newModel.id]: annualQuota,
         });
       }
-      setStatusMessage(`${t.design.successMsg} (${newModel.name}, квота: ${quarterlyQuota} ${t.topbar.unitsQuarter})`);
+      setStatusMessage(`${t.design.successMsg} (${newModel.name}, квота: ${annualQuota} ${t.topbar.unitsQuarter})`);
       setName(`Model ${gameState?.date.year ?? 1900}-${String.fromCharCode(66 + (gameState?.vehicleModels.length ?? 0))}`);
     } catch (err) {
       setStatusMessage(`Ошибка: ${String(err)}`);
@@ -414,13 +421,13 @@ export default function VehicleDesignPage(): React.JSX.Element {
               </p>
               <div className="mt-3 flex items-center gap-3">
                 <input
-                  id="quarterly-quota"
+                  id="annual-quota"
                   type="number"
                   min={0}
                   max={factoryCapacity}
                   step={1}
-                  value={quarterlyQuota}
-                  onChange={(e) => setQuarterlyQuota(Math.max(0, Number(e.target.value)))}
+                  value={annualQuota}
+                  onChange={(e) => setAnnualQuota(Math.max(0, Number(e.target.value)))}
                   className="w-24 rounded-lg era-input px-3 py-2 text-[var(--ink)] font-mono font-bold text-sm shadow-inner"
                 />
                 <span className="text-xs text-[var(--ink-secondary)]">
@@ -572,67 +579,232 @@ export default function VehicleDesignPage(): React.JSX.Element {
         </div>
       </div>
 
-      {/* EXISTING MODELS SECTION */}
-      <section className="era-card p-5 space-y-4">
-        <h3 className="text-base font-bold text-[var(--ink-heading)] era-heading flex items-center gap-2">
-          <span>🚗</span>
-          <span>{t.design.existingModels} ({existingModels.length})</span>
-        </h3>
-        {existingModels.length === 0 ? (
-          <p className="text-sm text-[var(--ink-secondary)]">{t.design.noModels}</p>
-        ) : (
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {existingModels.map((m) => (
-              <article key={m.id} className="rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-nested)] p-4 shadow-sm space-y-2.5 hover:border-[var(--border-brass)] transition">
-                <div className="flex items-start justify-between">
-                  <h4 className="font-bold text-[var(--ink-heading)] era-heading text-sm">{m.name}</h4>
-                  <span className="rounded-md era-badge-accent px-2 py-0.5 text-xs font-bold">
-                    {t.design.segments[m.targetSegment]?.name ?? m.targetSegment}
+      {/* ACTIVE PRODUCTION MODELS SECTION */}
+      {(() => {
+        const activeModelsList = existingModels.filter((m) => m.active !== false);
+        const decommissionedModelsList = existingModels.filter((m) => m.active === false);
+
+        return (
+          <>
+            <section className="era-card p-5 space-y-4">
+              <div className="flex items-center justify-between border-b border-[var(--border-subtle)] pb-2.5">
+                <h3 className="text-base font-bold text-[var(--ink-heading)] era-heading flex items-center gap-2">
+                  <span>🚗</span>
+                  <span>{t.design.existingModels} ({activeModelsList.length})</span>
+                </h3>
+                <span className="text-xs text-[var(--ink-secondary)]">
+                  {lang === 'en' ? 'Active vehicles on production line' : lang === 'uk' ? 'Активні моделі у виробництві' : lang === 'de' ? 'Aktive Modelle in Produktion' : 'Активные модели на сборочной линии'}
+                </span>
+              </div>
+
+              {activeModelsList.length === 0 ? (
+                <p className="text-sm text-[var(--ink-secondary)] italic">{t.design.noModels}</p>
+              ) : (
+                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                  {activeModelsList.map((m) => (
+                    <article key={m.id} className="rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-nested)] p-4 shadow-sm space-y-2.5 hover:border-[var(--border-brass)] transition">
+                      <div className="flex items-start justify-between">
+                        <h4 className="font-bold text-[var(--ink-heading)] era-heading text-sm">{m.name}</h4>
+                        <span className="rounded-md era-badge-accent px-2 py-0.5 text-xs font-bold">
+                          {t.design.segments[m.targetSegment]?.name ?? m.targetSegment}
+                        </span>
+                      </div>
+
+                      <div className="my-2 grid grid-cols-3 gap-1 rounded-lg bg-[var(--paper)] p-2 text-center text-xs border border-[var(--border-subtle)] font-mono">
+                        <div>
+                          <span className="block text-[var(--ink-secondary)] text-[10px]">{t.design.stats.reliability.slice(0, 7)}.</span>
+                          <span className="font-bold text-[var(--ink)]">{m.stats.reliability}</span>
+                        </div>
+                        <div>
+                          <span className="block text-[var(--ink-secondary)] text-[10px]">{t.design.stats.comfort.slice(0, 7)}</span>
+                          <span className="font-bold text-[var(--ink)]">{m.stats.comfort}</span>
+                        </div>
+                        <div>
+                          <span className="block text-[var(--ink-secondary)] text-[10px]">{t.design.stats.performance.slice(0, 7)}</span>
+                          <span className="font-bold text-[var(--ink)]">{m.stats.performance}</span>
+                        </div>
+                      </div>
+
+                      <div className="space-y-1 text-xs text-[var(--ink-secondary)]">
+                        <div className="flex justify-between">
+                          <span>{t.design.productionCost}:</span>
+                          <span className="font-mono font-bold text-[var(--ink)]">${m.productionCost}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>{t.design.salePrice}:</span>
+                          <span className="font-mono font-bold text-[var(--ink-value)]">${m.salePrice}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>{t.production.plannedUnits}:</span>
+                          <span className="font-mono font-bold text-[var(--ink)]">
+                            {gameState?.productionPlan?.[m.id] ?? 0} {t.topbar.unitsQuarter}
+                          </span>
+                        </div>
+                        <div className="flex justify-between border-t border-[var(--border-subtle)] pt-1.5 font-bold">
+                          <span>{t.design.unitProfit}:</span>
+                          <span className="font-mono text-emerald-400">
+                            +${m.salePrice - m.productionCost} ({Math.round(((m.salePrice - m.productionCost) / (m.salePrice || 1)) * 100)}%)
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* DECOMMISSION / DISCONTINUE BUTTON */}
+                      <button
+                        type="button"
+                        onClick={async () => {
+                          try {
+                            await decommissionVehicleModel(m.id);
+                            setStatusMessage(
+                              lang === 'en'
+                                ? `Model "${m.name}" has been decommissioned from production`
+                                : lang === 'uk'
+                                ? `Модель «${m.name}» знята з виробництва`
+                                : lang === 'de'
+                                ? `Modell „${m.name}“ wurde aus der Produktion genommen`
+                                : `Модель «${m.name}» успешно снята с производства`
+                            );
+                          } catch (err) {
+                            setStatusMessage(`Ошибка: ${String(err)}`);
+                          }
+                        }}
+                        className="w-full mt-2.5 py-1.5 px-3 rounded-lg border border-amber-600/50 bg-[var(--paper)] hover:bg-amber-950/20 text-amber-200 text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
+                      >
+                        <span>🛑</span>
+                        <span>
+                          {lang === 'en'
+                            ? 'Discontinue Production'
+                            : lang === 'uk'
+                            ? 'Зняти з виробництва'
+                            : lang === 'de'
+                            ? 'Produktion einstellen'
+                            : 'Снять с производства'}
+                        </span>
+                      </button>
+                    </article>
+                  ))}
+                </div>
+              )}
+            </section>
+
+            {/* DISCONTINUED / ARCHIVED MODELS SECTION */}
+            {decommissionedModelsList.length > 0 && (
+              <section className="era-card p-5 space-y-4">
+                <div className="flex items-center justify-between border-b border-[var(--border-subtle)] pb-2.5">
+                  <h3 className="text-base font-bold text-[var(--ink-heading)] era-heading flex items-center gap-2">
+                    <span>📦</span>
+                    <span>
+                      {lang === 'en'
+                        ? `Discontinued Models (${decommissionedModelsList.length})`
+                        : lang === 'uk'
+                        ? `Сняті з виробництва моделі (${decommissionedModelsList.length})`
+                        : lang === 'de'
+                        ? `Eingestellte Modelle (${decommissionedModelsList.length})`
+                        : `Снятые с производства модели (${decommissionedModelsList.length})`}
+                    </span>
+                  </h3>
+                  <span className="text-xs text-[var(--ink-secondary)]">
+                    {lang === 'en'
+                      ? 'Archived blueprints can be resumed or deleted'
+                      : lang === 'uk'
+                      ? 'Архівні креслення можна відновити або видалити'
+                      : lang === 'de'
+                      ? 'Archivierte Baupläne können reaktiviert werden'
+                      : 'Чертежи в архиве можно вернуть на линию или удалить'}
                   </span>
                 </div>
 
-                <div className="my-2 grid grid-cols-3 gap-1 rounded-lg bg-[var(--paper)] p-2 text-center text-xs border border-[var(--border-subtle)] font-mono">
-                  <div>
-                    <span className="block text-[var(--ink-secondary)] text-[10px]">{t.design.stats.reliability.slice(0, 7)}.</span>
-                    <span className="font-bold text-[var(--ink)]">{m.stats.reliability}</span>
-                  </div>
-                  <div>
-                    <span className="block text-[var(--ink-secondary)] text-[10px]">{t.design.stats.comfort.slice(0, 7)}</span>
-                    <span className="font-bold text-[var(--ink)]">{m.stats.comfort}</span>
-                  </div>
-                  <div>
-                    <span className="block text-[var(--ink-secondary)] text-[10px]">{t.design.stats.performance.slice(0, 7)}</span>
-                    <span className="font-bold text-[var(--ink)]">{m.stats.performance}</span>
-                  </div>
-                </div>
+                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                  {decommissionedModelsList.map((m) => (
+                    <article key={m.id} className="rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-nested)]/60 p-4 shadow-xs space-y-2.5 opacity-80 hover:opacity-100 transition">
+                      <div className="flex items-start justify-between">
+                        <h4 className="font-bold text-[var(--ink-heading)] era-heading text-sm line-through decoration-amber-500/60">
+                          {m.name}
+                        </h4>
+                        <span className="rounded-md border border-[var(--border-subtle)] bg-[var(--paper)] text-[var(--ink-secondary)] px-2 py-0.5 text-[10px] font-bold">
+                          {lang === 'en' ? 'Archived' : lang === 'uk' ? 'В архіві' : lang === 'de' ? 'Archiviert' : 'В архиве'}
+                        </span>
+                      </div>
 
-                <div className="space-y-1 text-xs text-[var(--ink-secondary)]">
-                  <div className="flex justify-between">
-                    <span>{t.design.productionCost}:</span>
-                    <span className="font-mono font-bold text-[var(--ink)]">${m.productionCost}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>{t.design.salePrice}:</span>
-                    <span className="font-mono font-bold text-[var(--ink-value)]">${m.salePrice}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>{t.production.plannedUnits}:</span>
-                    <span className="font-mono font-bold text-[var(--ink)]">
-                      {gameState?.productionPlan?.[m.id] ?? 0} {t.design.unitsMonth}
-                    </span>
-                  </div>
-                  <div className="flex justify-between border-t border-[var(--border-subtle)] pt-1.5 font-bold">
-                    <span>{t.design.unitProfit}:</span>
-                    <span className="font-mono text-emerald-400">
-                      +${m.salePrice - m.productionCost} ({Math.round(((m.salePrice - m.productionCost) / (m.salePrice || 1)) * 100)}%)
-                    </span>
-                  </div>
+                      <div className="space-y-1 text-xs text-[var(--ink-secondary)]">
+                        <div className="flex justify-between">
+                          <span>{t.design.productionCost}:</span>
+                          <span className="font-mono text-[var(--ink)]">${m.productionCost}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>{t.design.salePrice}:</span>
+                          <span className="font-mono text-[var(--ink-value)]">${m.salePrice}</span>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-2 pt-2 border-t border-[var(--border-subtle)]">
+                        <button
+                          type="button"
+                          onClick={async () => {
+                            try {
+                              await activateVehicleModel(m.id);
+                              setStatusMessage(
+                                lang === 'en'
+                                  ? `Model "${m.name}" returned to production`
+                                  : lang === 'uk'
+                                  ? `Модель «${m.name}» повернуто до виробництва`
+                                  : lang === 'de'
+                                  ? `Modell „${m.name}“ reaktiviert`
+                                  : `Модель «${m.name}» возвращена в производство`
+                              );
+                            } catch (err) {
+                              setStatusMessage(`Ошибка: ${String(err)}`);
+                            }
+                          }}
+                          className="flex-1 py-1 px-2.5 rounded-lg btn-brass text-white text-xs font-bold transition flex items-center justify-center gap-1 cursor-pointer shadow-xs"
+                        >
+                          <span>🔄</span>
+                          <span>
+                            {lang === 'en' ? 'Resume' : lang === 'uk' ? 'Відновити' : lang === 'de' ? 'Reaktivieren' : 'Возобновить'}
+                          </span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={async () => {
+                            const confirmed = confirm(
+                              lang === 'en'
+                                ? `Permanently delete blueprint "${m.name}"?`
+                                : lang === 'uk'
+                                ? `Остаточно видалити креслення «${m.name}»?`
+                                : lang === 'de'
+                                ? `Bauplan „${m.name}“ endgültig löschen?`
+                                : `Безвозвратно удалить чертеж «${m.name}»?`
+                            );
+                            if (confirmed) {
+                              try {
+                                await deleteVehicleModel(m.id);
+                                setStatusMessage(
+                                  lang === 'en'
+                                    ? `Blueprint "${m.name}" deleted`
+                                    : lang === 'uk'
+                                    ? `Креслення «${m.name}» видалено`
+                                    : lang === 'de'
+                                    ? `Bauplan „${m.name}“ gelöscht`
+                                    : `Чертеж «${m.name}» удален`
+                                );
+                              } catch (err) {
+                                setStatusMessage(`Ошибка: ${String(err)}`);
+                              }
+                            }
+                          }}
+                          className="py-1 px-2.5 rounded-lg border border-rose-600/40 bg-[var(--paper)] hover:bg-rose-950/20 text-rose-300 text-xs font-bold transition flex items-center justify-center gap-1 cursor-pointer"
+                          title={lang === 'en' ? 'Delete blueprint' : lang === 'uk' ? 'Видалити креслення' : lang === 'de' ? 'Bauplan löschen' : 'Удалить чертеж'}
+                        >
+                          <span>🗑️</span>
+                        </button>
+                      </div>
+                    </article>
+                  ))}
                 </div>
-              </article>
-            ))}
-          </div>
-        )}
-      </section>
+              </section>
+            )}
+          </>
+        );
+      })()}
     </div>
   );
 }

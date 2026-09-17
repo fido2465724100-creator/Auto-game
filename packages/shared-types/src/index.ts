@@ -124,6 +124,7 @@ export interface Company {
   inventoryMaterials?: Record<MaterialType, number>;
   autoProcurement?: boolean;
   factory?: FactoryInfo;
+  worldRank?: number;
 }
 
 export interface GameDate {
@@ -257,6 +258,20 @@ export interface MonthlyReport {
   overheadCost?: number;
   researchCost?: number;
   rentCost?: number;
+  globalRank?: number;
+  globalRankings?: GlobalManufacturerRanking[];
+}
+
+export interface GlobalManufacturerRanking {
+  rank: number;
+  companyId: string;
+  companyName: string;
+  country?: CountryId | undefined;
+  isPlayer: boolean;
+  annualUnitsSold: number;
+  annualRevenue: number;
+  globalMarketShare: number;
+  topModelName?: string | undefined;
 }
 
 export type QuarterlyReport = MonthlyReport;

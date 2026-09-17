@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
 import type { VehicleModel, MaterialType } from '@ait/shared-types';
 import { GameService } from './game.service';
 import { StartResearchDto, UpdateProductionDto, VehicleModelDto, SetupCompanyDto } from './dto';
@@ -50,6 +50,21 @@ export class GameController {
   @Post('vehicles')
   saveVehicleModel(@Body() dto: VehicleModelDto) {
     return this.gameService.saveVehicleModel(dto as VehicleModel);
+  }
+
+  @Post('vehicles/:id/decommission')
+  decommissionVehicle(@Param('id') id: string) {
+    return this.gameService.decommissionVehicleModel(id);
+  }
+
+  @Post('vehicles/:id/activate')
+  activateVehicle(@Param('id') id: string) {
+    return this.gameService.activateVehicleModel(id);
+  }
+
+  @Delete('vehicles/:id')
+  deleteVehicle(@Param('id') id: string) {
+    return this.gameService.deleteVehicleModel(id);
   }
 
   @Patch('production')

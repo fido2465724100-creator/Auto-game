@@ -63,22 +63,23 @@ function createInitialGameState(setup?: {
       badge,
       cash: 15_000,
       reputation: 30,
-      productionCapacity: 4,
+      productionCapacity: 16,
       overheadMonthly: 50,
+      worldRank: 5,
       marketPresence,
       inventoryMaterials: {
-        steel: 500,
-        wood: 600,
-        rubber: 150,
-        leather: 80,
-        aluminum: 20,
+        steel: 2000,
+        wood: 2400,
+        rubber: 600,
+        leather: 320,
+        aluminum: 80,
         plastic: 0,
       },
       autoProcurement: true,
       factory: {
         name: factoryNames[country] ?? 'Кустарная мануфактура №1',
         level: 1,
-        capacity: 4,
+        capacity: 16,
         monthlyOverhead: 40,
         upgradeCost: 4_000,
       },
@@ -125,7 +126,7 @@ function createInitialGameState(setup?: {
       },
     ],
     productionPlan: {
-      'model-a': 3,
+      'model-a': 12,
     },
     reportHistory: [],
     competitors: competitorsSeed,
@@ -259,6 +260,44 @@ export class GameService {
       productionPlan,
     };
 
+    return this.gameState;
+  }
+
+  decommissionVehicleModel(modelId: string): GameState {
+    const productionPlan = { ...this.gameState.productionPlan };
+    delete productionPlan[modelId];
+    this.gameState = {
+      ...this.gameState,
+      vehicleModels: this.gameState.vehicleModels.map((m) =>
+        m.id === modelId ? { ...m, active: false } : m
+      ),
+      productionPlan,
+    };
+    return this.gameState;
+  }
+
+  activateVehicleModel(modelId: string): GameState {
+    this.gameState = {
+      ...this.gameState,
+      vehicleModels: this.gameState.vehicleModels.map((m) =>
+        m.id === modelId ? { ...m, active: true } : m
+      ),
+      productionPlan: {
+        ...this.gameState.productionPlan,
+        [modelId]: this.gameState.productionPlan[modelId] ?? 0,
+      },
+    };
+    return this.gameState;
+  }
+
+  deleteVehicleModel(modelId: string): GameState {
+    const productionPlan = { ...this.gameState.productionPlan };
+    delete productionPlan[modelId];
+    this.gameState = {
+      ...this.gameState,
+      vehicleModels: this.gameState.vehicleModels.filter((m) => m.id !== modelId),
+      productionPlan,
+    };
     return this.gameState;
   }
 
@@ -397,7 +436,7 @@ export class GameService {
     }
 
     const newLevel = factory.level + 1;
-    const newCapacity = factory.capacity + 4; // handcrafted expansion (+4 cars/quarter)
+    const newCapacity = factory.capacity + 16; // expansion (+16 cars/year)
     const newOverhead = factory.monthlyOverhead + 50;
     const nextUpgradeCost = Math.round(factory.upgradeCost * 1.5);
 

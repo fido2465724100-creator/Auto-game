@@ -17,8 +17,15 @@ const MATERIAL_ICONS: Record<MaterialType, string> = {
 };
 
 export default function ProductionPage(): React.JSX.Element {
-  const { gameState, updateProductionPlan, buyMaterial, setAutoProcurement, expandFactory } = useGame();
-  const { t } = useLanguage();
+  const {
+    gameState,
+    updateProductionPlan,
+    buyMaterial,
+    setAutoProcurement,
+    expandFactory,
+    decommissionVehicleModel,
+  } = useGame();
+  const { t, lang } = useLanguage();
 
   const [marketMaterials, setMarketMaterials] = useState<MaterialMarketItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -272,11 +279,11 @@ export default function ProductionPage(): React.JSX.Element {
           <div className="flex items-center gap-3">
             <div className="text-right">
               <span className="text-[10px] text-[var(--ink-secondary)] uppercase block font-semibold">{t.production.overheadMonthly}</span>
-              <span className="text-xs font-bold text-[var(--ink)]">${(factory.monthlyOverhead * 3).toLocaleString()} / кв.</span>
+              <span className="text-xs font-bold text-[var(--ink)]">${(factory.monthlyOverhead * 12).toLocaleString()} / {lang === 'en' ? 'yr' : lang === 'uk' ? 'рік' : lang === 'de' ? 'Jahr' : 'год'}</span>
             </div>
             <div className="text-right">
               <span className="text-[10px] text-[var(--ink-secondary)] uppercase block font-semibold">{t?.production?.premisesRent ?? 'Аренда производственных площадей'}</span>
-              <span className="text-xs font-bold text-[var(--ink-value)]">${premisesRent.toLocaleString()} / кв.</span>
+              <span className="text-xs font-bold text-[var(--ink-value)]">${premisesRent.toLocaleString()} / {lang === 'en' ? 'yr' : lang === 'uk' ? 'рік' : lang === 'de' ? 'Jahr' : 'год'}</span>
             </div>
             <button
               onClick={handleExpandFactory}
@@ -366,11 +373,11 @@ export default function ProductionPage(): React.JSX.Element {
                         <span>•</span>
                         <span>{t.design.salePrice}: <strong className="text-[var(--ink-value)]">${model.salePrice.toLocaleString()}</strong></span>
                         <span>•</span>
-                        <span>{t.production.totalCost}: <strong className="text-[var(--ink)]">${totalCost.toLocaleString()}</strong> / кв.</span>
+                        <span>{t.production.totalCost}: <strong className="text-[var(--ink)]">${totalCost.toLocaleString()}</strong> / {lang === 'en' ? 'yr' : lang === 'uk' ? 'рік' : lang === 'de' ? 'Jahr' : 'год'}</span>
                       </div>
                     </div>
 
-                    {/* QUOTA INPUT */}
+                    {/* QUOTA INPUT & DECOMMISSION BUTTON */}
                     <div className="flex items-center gap-3">
                       <div className="text-right">
                         <label htmlFor={`quota-${model.id}`} className="block text-[10px] text-[var(--ink-secondary)] uppercase font-semibold">
@@ -390,6 +397,31 @@ export default function ProductionPage(): React.JSX.Element {
                           <span className="text-xs text-[var(--ink-secondary)]">{t.production.unitsShort}</span>
                         </div>
                       </div>
+
+                      <button
+                        type="button"
+                        onClick={async () => {
+                          try {
+                            await decommissionVehicleModel(model.id);
+                            setStatusMsg(
+                              lang === 'en'
+                                ? `Model "${model.name}" has been removed from production line`
+                                : lang === 'uk'
+                                ? `Модель «${model.name}» знята з виробничої лінії`
+                                : lang === 'de'
+                                ? `Modell „${model.name}“ von der Linie genommen`
+                                : `Модель «${model.name}» снята со сборочной линии`
+                            );
+                          } catch (err) {
+                            setStatusMsg(`Ошибка: ${String(err)}`);
+                          }
+                        }}
+                        className="self-end mb-0.5 py-1 px-2 rounded-lg border border-amber-600/40 bg-[var(--paper)] hover:bg-amber-950/20 text-amber-200 text-xs font-bold transition flex items-center gap-1 cursor-pointer shadow-xs"
+                        title={lang === 'en' ? 'Discontinue from production' : lang === 'uk' ? 'Зняти з виробництва' : lang === 'de' ? 'Produktion einstellen' : 'Снять с производства'}
+                      >
+                        <span>🛑</span>
+                        <span className="hidden sm:inline">{lang === 'en' ? 'Discontinue' : lang === 'uk' ? 'Зняти' : lang === 'de' ? 'Einstellen' : 'Снять'}</span>
+                      </button>
                     </div>
                   </div>
 

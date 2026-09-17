@@ -114,6 +114,33 @@ export const api = {
     }
   },
 
+  decommissionVehicleModel: async (modelId: string): Promise<GameState> => {
+    if (isBrowserOnlyMode()) return browserGameEngine.decommissionVehicleModel(modelId);
+    try {
+      return await request<GameState>(`/game/vehicles/${modelId}/decommission`, { method: 'POST' });
+    } catch {
+      return browserGameEngine.decommissionVehicleModel(modelId);
+    }
+  },
+
+  activateVehicleModel: async (modelId: string): Promise<GameState> => {
+    if (isBrowserOnlyMode()) return browserGameEngine.activateVehicleModel(modelId);
+    try {
+      return await request<GameState>(`/game/vehicles/${modelId}/activate`, { method: 'POST' });
+    } catch {
+      return browserGameEngine.activateVehicleModel(modelId);
+    }
+  },
+
+  deleteVehicleModel: async (modelId: string): Promise<GameState> => {
+    if (isBrowserOnlyMode()) return browserGameEngine.deleteVehicleModel(modelId);
+    try {
+      return await request<GameState>(`/game/vehicles/${modelId}`, { method: 'DELETE' });
+    } catch {
+      return browserGameEngine.deleteVehicleModel(modelId);
+    }
+  },
+
   getRegions: async (): Promise<Region[]> => {
     if (isBrowserOnlyMode()) return browserGameEngine.getRegions();
     try {

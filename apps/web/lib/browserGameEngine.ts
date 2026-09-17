@@ -69,22 +69,23 @@ function createInitialGameState(setup?: {
       badge,
       cash: 15_000,
       reputation: 30,
-      productionCapacity: 4,
+      productionCapacity: 16,
       overheadMonthly: 50,
+      worldRank: 5,
       marketPresence,
       inventoryMaterials: {
-        steel: 500,
-        wood: 600,
-        rubber: 150,
-        leather: 80,
-        aluminum: 20,
+        steel: 2000,
+        wood: 2400,
+        rubber: 600,
+        leather: 320,
+        aluminum: 80,
         plastic: 0,
       },
       autoProcurement: true,
       factory: {
         name: factoryNames[country] ?? 'Кустарная мануфактура №1',
         level: 1,
-        capacity: 4,
+        capacity: 16,
         monthlyOverhead: 40,
         upgradeCost: 4_000,
       },
@@ -131,7 +132,7 @@ function createInitialGameState(setup?: {
       },
     ],
     productionPlan: {
-      'model-a': 3,
+      'model-a': 12,
     },
     reportHistory: [],
     competitors: competitorsSeed,
@@ -399,6 +400,45 @@ class BrowserGameEngineClass {
     }));
   }
 
+  decommissionVehicleModel(modelId: string): GameState {
+    return this.updateState((s) => {
+      const productionPlan = { ...s.productionPlan };
+      delete productionPlan[modelId];
+      return {
+        ...s,
+        vehicleModels: s.vehicleModels.map((m) =>
+          m.id === modelId ? { ...m, active: false } : m
+        ),
+        productionPlan,
+      };
+    });
+  }
+
+  activateVehicleModel(modelId: string): GameState {
+    return this.updateState((s) => ({
+      ...s,
+      vehicleModels: s.vehicleModels.map((m) =>
+        m.id === modelId ? { ...m, active: true } : m
+      ),
+      productionPlan: {
+        ...s.productionPlan,
+        [modelId]: s.productionPlan[modelId] ?? 0,
+      },
+    }));
+  }
+
+  deleteVehicleModel(modelId: string): GameState {
+    return this.updateState((s) => {
+      const productionPlan = { ...s.productionPlan };
+      delete productionPlan[modelId];
+      return {
+        ...s,
+        vehicleModels: s.vehicleModels.filter((m) => m.id !== modelId),
+        productionPlan,
+      };
+    });
+  }
+
   getRegions(): Region[] {
     return this.regions;
   }
@@ -519,7 +559,7 @@ class BrowserGameEngineClass {
     if (state.company.cash < factory.upgradeCost) return state;
 
     const newLevel = factory.level + 1;
-    const newCapacity = factory.capacity + 4;
+    const newCapacity = factory.capacity + 16;
     const newOverhead = factory.monthlyOverhead + 50;
     const nextUpgradeCost = Math.round(factory.upgradeCost * 1.5);
 
