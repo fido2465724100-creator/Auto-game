@@ -420,7 +420,7 @@ function simulateRegionDemand(
   const reputationFactor = 0.7 + reputation / 200;
 
   // Era scaling: pioneer automobile market in 1900-1905 is healthy enough to support early workshops
-  const eraDemandFactor = Math.min(1.0, 0.18 + Math.max(0, year - 1900) * 0.02);
+  const eraDemandFactor = Math.min(1.0, 0.35 + Math.max(0, year - 1900) * 0.02);
 
   // Model age decay: older designs lose consumer appeal against modern competitors
   const modelAge = Math.max(0, year - (model.designYear ?? 1900));

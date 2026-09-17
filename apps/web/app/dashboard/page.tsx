@@ -643,18 +643,24 @@ export default function DashboardPage(): React.JSX.Element {
                                   {trSeg}
                                 </span>
                                 {(() => {
-                                  const modelAge = Math.max(0, gameState.date.year - (model.designYear ?? 1900));
+                                  const modelAge = Math.max(0, (gameState?.date?.year ?? 1900) - (model.designYear ?? 1900));
+                                  const badges = t?.production?.modelAgeBadge;
+                                  const freshLabel = badges?.fresh ?? 'Актуальная';
+                                  const matureLabel = badges?.mature ?? 'Зрелая';
+                                  const agingLabel = badges?.aging ?? 'Устаревает';
+                                  const obsoleteLabel = badges?.obsolete ?? 'Устарела';
+
                                   let ageBadgeClass = 'bg-emerald-100 text-emerald-900 border-emerald-300';
-                                  let ageLabel = `${model.designYear ?? 1900} • ${t.production.modelAgeBadge.fresh} (${modelAge} ${lang === 'en' ? (modelAge === 1 ? 'yr' : 'yrs') : lang === 'uk' ? 'р.' : lang === 'de' ? 'J.' : 'г.'})`;
+                                  let ageLabel = `${model.designYear ?? 1900} • ${freshLabel} (${modelAge} ${lang === 'en' ? (modelAge === 1 ? 'yr' : 'yrs') : lang === 'uk' ? 'р.' : lang === 'de' ? 'J.' : 'г.'})`;
                                   if (modelAge > 12) {
                                     ageBadgeClass = 'bg-rose-100 text-rose-900 border-rose-300 animate-pulse';
-                                    ageLabel = `⚠️ ${model.designYear ?? 1900} • ${t.production.modelAgeBadge.obsolete} (${modelAge} ${lang === 'en' ? 'yrs' : lang === 'uk' ? 'р.' : lang === 'de' ? 'J.' : 'л.'})`;
+                                    ageLabel = `⚠️ ${model.designYear ?? 1900} • ${obsoleteLabel} (${modelAge} ${lang === 'en' ? 'yrs' : lang === 'uk' ? 'р.' : lang === 'de' ? 'J.' : 'л.'})`;
                                   } else if (modelAge > 7) {
                                     ageBadgeClass = 'bg-amber-100 text-amber-950 border-amber-300';
-                                    ageLabel = `⚠️ ${model.designYear ?? 1900} • ${t.production.modelAgeBadge.aging} (${modelAge} ${lang === 'en' ? 'yrs' : lang === 'uk' ? 'р.' : lang === 'de' ? 'J.' : 'л.'})`;
+                                    ageLabel = `⚠️ ${model.designYear ?? 1900} • ${agingLabel} (${modelAge} ${lang === 'en' ? 'yrs' : lang === 'uk' ? 'р.' : lang === 'de' ? 'J.' : 'л.'})`;
                                   } else if (modelAge > 4) {
                                     ageBadgeClass = 'bg-yellow-100 text-yellow-950 border-yellow-300';
-                                    ageLabel = `${model.designYear ?? 1900} • ${t.production.modelAgeBadge.mature} (${modelAge} ${lang === 'en' ? 'yrs' : lang === 'uk' ? 'р.' : lang === 'de' ? 'J.' : 'л.'})`;
+                                    ageLabel = `${model.designYear ?? 1900} • ${matureLabel} (${modelAge} ${lang === 'en' ? 'yrs' : lang === 'uk' ? 'р.' : lang === 'de' ? 'J.' : 'л.'})`;
                                   }
                                   return (
                                     <span className={`text-[10px] px-1.5 py-0.5 rounded font-bold border ${ageBadgeClass}`}>

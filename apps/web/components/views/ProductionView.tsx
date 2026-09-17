@@ -275,7 +275,7 @@ export default function ProductionPage(): React.JSX.Element {
               <span className="text-xs font-bold text-stone-800">${(factory.monthlyOverhead * 3).toLocaleString()} / кв.</span>
             </div>
             <div className="text-right">
-              <span className="text-[10px] text-stone-500 uppercase block font-semibold">{t.production.premisesRent}</span>
+              <span className="text-[10px] text-stone-500 uppercase block font-semibold">{t?.production?.premisesRent ?? 'Аренда производственных площадей'}</span>
               <span className="text-xs font-bold text-amber-950">${premisesRent.toLocaleString()} / кв.</span>
             </div>
             <button
