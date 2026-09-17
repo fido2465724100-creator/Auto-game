@@ -44,20 +44,20 @@ export function GameGuideModal({ isOpen: propIsOpen, onClose: propOnClose }: Pro
       }}
     >
       <div
-        className="relative flex flex-col w-full max-w-5xl h-[88vh] max-h-[88vh] rounded-2xl border-2 border-amber-900/50 bg-[var(--bg)] shadow-2xl overflow-hidden"
+        className="relative flex flex-col w-full max-w-5xl h-[88vh] max-h-[88vh] rounded-2xl border-2 border-[var(--border-brass)] bg-[var(--paper)] text-[var(--ink)] shadow-2xl overflow-hidden"
         role="dialog"
         aria-modal="true"
         onClick={(e) => e.stopPropagation()}
       >
         {/* MODAL HEADER (PINNED AT TOP) */}
-        <div className="shrink-0 flex items-center justify-between border-b border-stone-300 bg-[var(--paper)] px-5 py-3.5 shadow-xs">
+        <div className="shrink-0 flex items-center justify-between border-b border-[var(--border-subtle)] bg-[var(--paper-card)] px-5 py-3.5 shadow-xs">
           <div className="flex items-center gap-3">
             <span className="text-2xl select-none">📖</span>
             <div>
-              <h3 className="font-serif font-bold text-base text-amber-950 leading-tight">
+              <h3 className="font-bold text-base text-[var(--ink-heading)] era-heading leading-tight">
                 Руководство промышленника • Автомобильная империя (1900–2026)
               </h3>
-              <p className="text-[11px] text-stone-500 font-serif">
+              <p className="text-[11px] text-[var(--ink-secondary)]">
                 Полный свод правил, формул и механик игры • 504 хода (126 лет)
               </p>
             </div>
@@ -65,7 +65,7 @@ export function GameGuideModal({ isOpen: propIsOpen, onClose: propOnClose }: Pro
           <button
             type="button"
             onClick={handleClose}
-            className="w-8 h-8 rounded-full flex items-center justify-center text-stone-500 hover:text-stone-900 hover:bg-stone-200 transition cursor-pointer text-lg font-bold leading-none"
+            className="w-8 h-8 rounded-full flex items-center justify-center text-[var(--ink-secondary)] hover:text-[var(--ink)] hover:bg-[var(--surface-nested)] transition cursor-pointer text-lg font-bold leading-none"
             title="Закрыть (Esc)"
           >
             ✕
@@ -78,14 +78,14 @@ export function GameGuideModal({ isOpen: propIsOpen, onClose: propOnClose }: Pro
         </div>
 
         {/* MODAL FOOTER (PINNED AT BOTTOM) */}
-        <div className="shrink-0 border-t border-stone-300 bg-[var(--paper)] px-5 py-3 flex items-center justify-between">
-          <span className="text-xs text-stone-500 font-serif hidden sm:inline">
+        <div className="shrink-0 border-t border-[var(--border-subtle)] bg-[var(--paper-card)] px-5 py-3 flex items-center justify-between">
+          <span className="text-xs text-[var(--ink-secondary)] hidden sm:inline">
             Нажмите ✕ или кнопку справа для возврата в кабинет
           </span>
           <button
             type="button"
             onClick={handleClose}
-            className="rounded-lg bg-amber-900 px-5 py-2 text-xs font-serif font-bold text-white shadow-xs hover:bg-amber-950 transition cursor-pointer ml-auto"
+            className="rounded-lg btn-brass px-5 py-2 text-xs font-bold text-white shadow-xs transition cursor-pointer ml-auto"
           >
             Вернуться за рабочий стол
           </button>

@@ -33,12 +33,12 @@ export default function ResearchPage(): React.JSX.Element {
   return (
     <div className="space-y-6">
       {/* HEADER */}
-      <header className="border-b border-stone-300 pb-3">
-        <h2 className="text-2xl font-bold tracking-tight text-amber-950">{t.research.title}</h2>
-        <p className="text-sm text-stone-600">{t.research.subtitle}</p>
+      <header className="border-b border-[var(--border-subtle)] pb-3">
+        <h2 className="text-2xl font-bold tracking-tight text-[var(--ink-heading)] era-heading">{t.research.title}</h2>
+        <p className="text-sm text-[var(--ink-secondary)]">{t.research.subtitle}</p>
       </header>
 
-      {error ? <div className="rounded border border-red-300 bg-red-50 p-4 text-red-700">{error}</div> : null}
+      {error ? <div className="rounded-lg border border-rose-500/60 bg-rose-950/20 p-4 text-rose-300">{error}</div> : null}
 
       <div className="grid gap-4 md:grid-cols-2">
         {techs.map((tech) => {
@@ -47,23 +47,23 @@ export default function ResearchPage(): React.JSX.Element {
 
           const badgeColor =
             status === 'completed'
-              ? 'bg-emerald-100 text-emerald-800 border-emerald-300'
+              ? 'bg-emerald-950/40 text-emerald-300 border-emerald-600/50'
               : status === 'researching'
-              ? 'bg-amber-100 text-amber-850 border-amber-300 animate-pulse'
+              ? 'bg-amber-950/40 text-amber-300 border-amber-500/60 animate-pulse'
               : status === 'available'
-              ? 'bg-blue-100 text-blue-800 border-blue-300'
-              : 'bg-stone-200 text-stone-600 border-stone-300';
+              ? 'era-badge-accent'
+              : 'bg-[var(--surface-nested)] text-[var(--ink-secondary)] border-[var(--border-subtle)]';
 
           return (
             <article
               key={tech.id}
-              className={`rounded border border-stone-300 bg-[var(--paper)] p-5 shadow-sm flex flex-col justify-between space-y-3 transition ${
-                status === 'completed' ? 'opacity-90' : status === 'locked' ? 'opacity-60' : ''
+              className={`era-card p-5 shadow-sm flex flex-col justify-between space-y-3 transition ${
+                status === 'completed' ? 'opacity-90' : status === 'locked' ? 'opacity-50' : ''
               }`}
             >
               <div>
                 <div className="flex items-start justify-between gap-2">
-                  <h3 className="font-bold text-amber-950 text-base">
+                  <h3 className="font-bold text-[var(--ink-heading)] era-heading text-base">
                     {t.technologies[tech.id]?.name ?? tech.name}
                   </h3>
                   <span className={`rounded border px-2 py-0.5 text-[11px] font-bold ${badgeColor}`}>
@@ -71,13 +71,13 @@ export default function ResearchPage(): React.JSX.Element {
                   </span>
                 </div>
 
-                <div className="flex items-center gap-3 text-xs text-stone-500 mt-1">
-                  <span>{t.research.year}: <strong className="text-stone-700">{tech.yearAvailable}</strong></span>
+                <div className="flex items-center gap-3 text-xs text-[var(--ink-secondary)] mt-1 font-sans">
+                  <span>{t.research.year}: <strong className="text-[var(--ink)]">{tech.yearAvailable}</strong></span>
                   <span>•</span>
-                  <span>{t.research.budgetMonth}: <strong className="text-stone-700">$100</strong> <span className="text-[10px] text-stone-500">($300 / кв.)</span></span>
+                  <span>{t.research.budgetMonth}: <strong className="text-[var(--ink-value)]">$100</strong> <span className="text-[10px] opacity-70">($300 / кв.)</span></span>
                 </div>
 
-                <p className="my-3 text-xs text-stone-700 leading-relaxed">
+                <p className="my-3 text-xs text-[var(--ink-secondary)] leading-relaxed">
                   {t.technologies[tech.id]?.description ?? tech.description}
                 </p>
               </div>
@@ -87,7 +87,7 @@ export default function ResearchPage(): React.JSX.Element {
                   type="button"
                   disabled={pendingId === tech.id}
                   onClick={() => void handleStartResearch(tech.id)}
-                  className="w-full rounded bg-[var(--accent)] py-2 text-xs font-bold text-white shadow hover:bg-amber-900 transition disabled:opacity-60 cursor-pointer"
+                  className="w-full rounded-lg btn-brass py-2 text-xs font-bold text-white shadow transition disabled:opacity-50 cursor-pointer"
                 >
                   {pendingId === tech.id ? t.research.starting : t.research.startBtn}
                 </button>

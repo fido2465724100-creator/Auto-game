@@ -13,13 +13,13 @@ export default function ReportsPage(): React.JSX.Element {
 
   return (
     <div className="space-y-6">
-      <header className="border-b border-stone-300 pb-3">
-        <h2 className="text-2xl font-bold tracking-tight text-amber-950">{t.reports.title}</h2>
-        <p className="text-sm text-stone-600">{t.reports.subtitle}</p>
+      <header className="border-b border-[var(--border-subtle)] pb-3">
+        <h2 className="text-2xl font-bold tracking-tight text-[var(--ink-heading)] era-heading">{t.reports.title}</h2>
+        <p className="text-sm text-[var(--ink-secondary)]">{t.reports.subtitle}</p>
       </header>
 
       {reports.length === 0 ? (
-        <div className="rounded border border-stone-300 bg-[var(--paper)] p-8 text-center text-stone-600 text-sm">
+        <div className="era-card p-8 text-center text-[var(--ink-secondary)] text-sm">
           {t.reports.noReports}
         </div>
       ) : null}
@@ -36,65 +36,65 @@ export default function ReportsPage(): React.JSX.Element {
           return (
             <article
               key={report.id}
-              className="rounded border border-stone-300 bg-[var(--paper)] p-5 shadow-sm space-y-3"
+              className="era-card p-5 shadow-sm space-y-3"
             >
-              <div className="flex justify-between items-center border-b border-stone-200 pb-2">
-                <h3 className="font-bold text-amber-950 text-base">
+              <div className="flex justify-between items-center border-b border-[var(--border-subtle)] pb-2">
+                <h3 className="font-bold text-[var(--ink-heading)] era-heading text-base">
                   {quarterName} {report.date.year} г.
                 </h3>
                 <span
-                  className={`font-bold text-sm px-2 py-0.5 rounded ${
+                  className={`font-bold text-sm px-2.5 py-0.5 rounded font-mono ${
                     report.profit >= 0
-                      ? 'bg-emerald-100 text-emerald-800'
-                      : 'bg-red-100 text-red-800'
+                      ? 'bg-emerald-950/40 text-emerald-300 border border-emerald-600/50'
+                      : 'bg-rose-950/40 text-rose-300 border border-rose-600/50'
                   }`}
                 >
                   {report.profit >= 0 ? '+' : ''}${report.profit.toLocaleString()}
                 </span>
               </div>
 
-              <div className="grid gap-4 sm:grid-cols-4 text-xs">
+              <div className="grid gap-4 sm:grid-cols-4 text-xs font-sans">
                 <div>
-                  <span className="text-stone-500 block">{t.reports.revenue}:</span>
-                  <span className="font-bold text-stone-900">${report.revenue.toLocaleString()}</span>
+                  <span className="text-[var(--ink-secondary)] block">{t.reports.revenue}:</span>
+                  <span className="font-bold text-emerald-400 font-mono text-sm">+${report.revenue.toLocaleString()}</span>
                 </div>
                 <div>
-                  <span className="text-stone-500 block">{t.reports.expenses}:</span>
-                  <span className="font-semibold text-stone-800">${report.expenses.toLocaleString()}</span>
+                  <span className="text-[var(--ink-secondary)] block">{t.reports.expenses}:</span>
+                  <span className="font-semibold text-[var(--ink)] font-mono text-sm">${report.expenses.toLocaleString()}</span>
                 </div>
                 <div>
-                  <span className="text-stone-500 block">{t.reports.produced}:</span>
-                  <span className="font-semibold text-stone-800">{report.unitsProduced} {t.markets.units}</span>
+                  <span className="text-[var(--ink-secondary)] block">{t.reports.produced}:</span>
+                  <span className="font-semibold text-[var(--ink)]">{report.unitsProduced} {t.markets.units}</span>
                 </div>
                 <div>
-                  <span className="text-stone-500 block">{t.reports.sold}:</span>
-                  <span className="font-bold text-amber-950">{report.unitsSold} {t.markets.units}</span>
+                  <span className="text-[var(--ink-secondary)] block">{t.reports.sold}:</span>
+                  <span className="font-bold text-[var(--ink-value)]">{report.unitsSold} {t.markets.units}</span>
                 </div>
               </div>
 
               {/* Detailed Cost Breakdown */}
-              <div className="rounded bg-amber-50/60 p-2.5 border border-amber-200/80 text-[11px] space-y-1">
-                <div className="font-bold text-amber-950 flex justify-between border-b border-amber-200/60 pb-1">
+              <div className="rounded-lg bg-[var(--surface-nested)] p-3 border border-[var(--border-subtle)] text-[11px] space-y-1.5 font-sans">
+                <div className="font-bold text-[var(--ink-heading)] flex justify-between border-b border-[var(--border-subtle)] pb-1.5">
                   <span>Статьи расходов и выручка:</span>
-                  <span className={report.profit >= 0 ? 'text-emerald-700 font-mono font-bold' : 'text-rose-700 font-mono font-bold'}>
+                  <span className={report.profit >= 0 ? 'text-emerald-400 font-mono font-bold' : 'text-rose-400 font-mono font-bold'}>
                     {report.profit >= 0 ? '+' : ''}${report.profit.toLocaleString()}
                   </span>
                 </div>
-                <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 pt-1 text-stone-700">
-                  <div>• Выручка: <strong className="text-emerald-750 font-mono font-bold">+${report.revenue.toLocaleString()}</strong></div>
-                  <div>• Сборка (детали): <strong className="text-rose-750 font-mono font-bold">-${(report.productionCost ?? 0).toLocaleString()}</strong></div>
-                  <div>• Содержание цеха: <strong className="text-stone-800 font-mono font-bold">-${(report.overheadCost ?? 0).toLocaleString()}</strong></div>
-                  <div>• Аренда площадей: <strong className="text-amber-950 font-mono font-bold">-${(report.rentCost ?? 100).toLocaleString()}</strong></div>
-                  <div>• Лаборатория: <strong className="text-stone-800 font-mono font-bold">-${(report.researchCost ?? 0).toLocaleString()}</strong></div>
+                <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 pt-1 text-[var(--ink)]">
+                  <div>• Выручка: <strong className="text-emerald-400 font-mono">+${report.revenue.toLocaleString()}</strong></div>
+                  <div>• Сборка (детали): <strong className="text-rose-400 font-mono">-${(report.productionCost ?? 0).toLocaleString()}</strong></div>
+                  <div>• Содержание цеха: <strong className="font-mono">-${(report.overheadCost ?? 0).toLocaleString()}</strong></div>
+                  <div>• Аренда площадей: <strong className="text-[var(--ink-value)] font-mono">-${(report.rentCost ?? 100).toLocaleString()}</strong></div>
+                  <div>• Лаборатория: <strong className="font-mono">-${(report.researchCost ?? 0).toLocaleString()}</strong></div>
                 </div>
               </div>
 
               {/* Event Notes & Bank Overdraft alerts */}
               {report.eventNotes && report.eventNotes.length > 0 ? (
-                <div className="text-[12px] bg-amber-50 border border-amber-200 rounded p-2.5 text-amber-900 space-y-1">
+                <div className="text-[12px] bg-[var(--surface-nested)] border border-[var(--border-subtle)] rounded-lg p-2.5 text-[var(--ink)] space-y-1 font-sans">
                   {report.eventNotes.map((note, i) => (
                     <div key={i} className="flex items-start gap-1.5">
-                      <span className="font-bold text-amber-700">📜</span>
+                      <span className="font-bold text-[var(--accent-gold)]">📜</span>
                       <span>{note}</span>
                     </div>
                   ))}
@@ -103,13 +103,13 @@ export default function ReportsPage(): React.JSX.Element {
 
               {/* Competitor News */}
               {report.competitorNews && report.competitorNews.length > 0 ? (
-                <div className="text-[12px] bg-stone-100 border border-stone-200 rounded p-2.5 text-stone-800 space-y-1">
-                  <div className="text-[11px] font-bold text-stone-500 uppercase tracking-wide">
+                <div className="text-[12px] bg-[var(--surface-nested)] border border-[var(--border-subtle)] rounded-lg p-2.5 text-[var(--ink)] space-y-1 font-sans">
+                  <div className="text-[11px] font-bold text-[var(--ink-secondary)] uppercase tracking-wide">
                     {t.reports.competitorNews}
                   </div>
                   {report.competitorNews.map((news, i) => (
                     <div key={i} className="flex items-start gap-1.5">
-                      <span className="text-amber-800 font-bold">🏭</span>
+                      <span className="text-[var(--accent)] font-bold">🏭</span>
                       <span>{news}</span>
                     </div>
                   ))}
@@ -118,19 +118,19 @@ export default function ReportsPage(): React.JSX.Element {
 
               {/* Extra info: Loans paid */}
               {report.loanPayments && report.loanPayments > 0 ? (
-                <div className="text-[11px] text-stone-500 border-t border-stone-100 pt-2">
+                <div className="text-[11px] text-[var(--ink-secondary)] border-t border-[var(--border-subtle)] pt-2 font-sans">
                   <span>{t.reports.loansPaid}: </span>
-                  <strong className="text-stone-700">${report.loanPayments.toLocaleString()}</strong>
+                  <strong className="text-[var(--ink)] font-mono">${report.loanPayments.toLocaleString()}</strong>
                 </div>
               ) : null}
 
               {/* Sales by Region */}
               {report.salesByRegion ? (
-                <div className="text-[11px] text-stone-500 border-t border-stone-100 pt-2 flex flex-wrap gap-4">
+                <div className="text-[11px] text-[var(--ink-secondary)] border-t border-[var(--border-subtle)] pt-2 flex flex-wrap gap-4 font-sans">
                   <span>{t.reports.salesByRegion}</span>
                   {Object.entries(report.salesByRegion).map(([reg, units]) => (
                     <span key={reg}>
-                      {t.regions[reg as keyof typeof t.regions] ?? reg.replace('-', ' ')}: <strong className="text-stone-800">{units} {t.production.unitsShort}</strong>
+                      {t.regions[reg as keyof typeof t.regions] ?? reg.replace('-', ' ')}: <strong className="text-[var(--ink)] font-mono">{units} {t.production.unitsShort}</strong>
                     </span>
                   ))}
                 </div>

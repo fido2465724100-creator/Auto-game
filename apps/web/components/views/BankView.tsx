@@ -62,17 +62,17 @@ export default function BankPage(): React.JSX.Element {
   return (
     <div className="space-y-8">
       {/* HEADER */}
-      <header className="border-b border-stone-300 pb-3">
-        <h2 className="text-2xl font-bold tracking-tight text-amber-950">{t.bank.title}</h2>
-        <p className="text-sm text-stone-600">{t.bank.subtitle}</p>
+      <header className="border-b border-[var(--border-subtle)] pb-3">
+        <h2 className="text-2xl font-bold tracking-tight text-[var(--ink-heading)] era-heading">{t.bank.title}</h2>
+        <p className="text-sm text-[var(--ink-secondary)]">{t.bank.subtitle}</p>
       </header>
 
       {statusMsg ? (
         <div
-          className={`rounded border p-3 text-xs font-medium ${
+          className={`rounded-lg border p-3 text-xs font-medium ${
             statusMsg.includes('Ошибка') || statusMsg.includes('Недостаточно') || statusMsg.includes('Insufficient')
-              ? 'border-red-300 bg-red-50 text-red-700'
-              : 'border-emerald-300 bg-emerald-50 text-emerald-800'
+              ? 'border-rose-500/60 bg-rose-950/20 text-rose-300'
+              : 'border-emerald-500/60 bg-emerald-950/20 text-emerald-300'
           }`}
         >
           {statusMsg}
@@ -80,44 +80,44 @@ export default function BankPage(): React.JSX.Element {
       ) : null}
 
       {/* NOTICE */}
-      <div className="rounded border border-amber-300 bg-amber-50/70 p-3 text-xs text-amber-900 flex items-start gap-2">
+      <div className="rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-nested)] p-3 text-xs text-[var(--ink)] flex items-start gap-2">
         <span className="text-base">ℹ️</span>
         <p>{t.bank.warning}</p>
       </div>
 
       {/* 1. CURRENT LOANS */}
       <section className="space-y-3">
-        <h3 className="text-lg font-bold text-amber-950 flex items-center gap-2">
+        <h3 className="text-lg font-bold text-[var(--ink-heading)] era-heading flex items-center gap-2">
           <span>📋</span> {t.bank.activeTitle} ({activeLoans.length})
         </h3>
 
         {activeLoans.length === 0 ? (
-          <div className="rounded border border-stone-300 bg-[var(--paper)] p-6 text-center text-xs text-stone-600">
+          <div className="era-card p-6 text-center text-xs text-[var(--ink-secondary)]">
             {t.bank.noLoans}
           </div>
         ) : (
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {activeLoans.map((loan) => (
-              <article key={loan.id} className="rounded border border-stone-300 bg-white p-4 shadow-xs space-y-3">
-                <div className="flex justify-between items-start border-b border-stone-100 pb-2">
-                  <h4 className="font-bold text-stone-900 text-sm">{loan.name}</h4>
-                  <span className="text-[10px] font-semibold bg-amber-100 text-amber-900 px-1.5 py-0.5 rounded">
+              <article key={loan.id} className="era-card p-4 shadow-xs space-y-3">
+                <div className="flex justify-between items-start border-b border-[var(--border-subtle)] pb-2">
+                  <h4 className="font-bold text-[var(--ink-heading)] text-sm">{loan.name}</h4>
+                  <span className="text-[10px] font-semibold era-badge-accent px-1.5 py-0.5 rounded">
                     {Math.round(loan.interestRate * 100 * 10) / 10}% / мес.
                   </span>
                 </div>
 
                 <div className="space-y-1.5 text-xs">
                   <div className="flex justify-between">
-                    <span className="text-stone-500">{t.bank.remaining}:</span>
-                    <span className="font-bold text-red-800">${loan.remainingPrincipal.toLocaleString()}</span>
+                    <span className="text-[var(--ink-secondary)]">{t.bank.remaining}:</span>
+                    <span className="font-bold text-rose-500">${loan.remainingPrincipal.toLocaleString()}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-stone-500">{t.bank.monthlyPayment}:</span>
-                    <span className="font-semibold text-stone-800">${loan.monthlyPayment.toLocaleString()}</span>
+                    <span className="text-[var(--ink-secondary)]">{t.bank.monthlyPayment}:</span>
+                    <span className="font-semibold text-[var(--ink)]">${loan.monthlyPayment.toLocaleString()}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-stone-500">{t.bank.remainingMonths}:</span>
-                    <span className="font-semibold text-stone-800">
+                    <span className="text-[var(--ink-secondary)]">{t.bank.remainingMonths}:</span>
+                    <span className="font-semibold text-[var(--ink)]">
                       {loan.remainingMonths} / {loan.totalMonths} {t.bank.months}
                     </span>
                   </div>
@@ -127,7 +127,7 @@ export default function BankPage(): React.JSX.Element {
                   type="button"
                   disabled={actionPending || currentCash < loan.remainingPrincipal}
                   onClick={() => void handleRepay(loan.id, loan.remainingPrincipal)}
-                  className="w-full mt-2 rounded border border-emerald-700 bg-emerald-50 px-3 py-1.5 text-xs font-bold text-emerald-800 hover:bg-emerald-100 transition disabled:opacity-50 cursor-pointer"
+                  className="w-full mt-2 rounded-lg border border-emerald-600 bg-emerald-600/20 px-3 py-1.5 text-xs font-bold text-emerald-300 hover:bg-emerald-600/30 transition disabled:opacity-40 cursor-pointer"
                 >
                   {t.bank.repayLoan} (${loan.remainingPrincipal.toLocaleString()})
                 </button>
@@ -139,36 +139,36 @@ export default function BankPage(): React.JSX.Element {
 
       {/* 2. AVAILABLE OFFERS */}
       <section className="space-y-3">
-        <h3 className="text-lg font-bold text-amber-950 flex items-center gap-2">
+        <h3 className="text-lg font-bold text-[var(--ink-heading)] era-heading flex items-center gap-2">
           <span>💼</span> {t.bank.offersTitle}
         </h3>
 
         <div className="grid gap-4 md:grid-cols-3">
           {templates.map((tpl) => (
-            <article key={tpl.id} className="rounded border border-stone-300 bg-[var(--paper)] p-5 shadow-sm flex flex-col justify-between space-y-4">
+            <article key={tpl.id} className="era-card p-5 shadow-sm flex flex-col justify-between space-y-4">
               <div>
-                <h4 className="font-bold text-amber-950 text-base">
+                <h4 className="font-bold text-[var(--ink-heading)] era-heading text-base">
                   {t.loans[tpl.id]?.name ?? tpl.name}
                 </h4>
-                <p className="text-xs text-stone-600 mt-1 min-h-[36px]">
+                <p className="text-xs text-[var(--ink-secondary)] mt-1 min-h-[36px]">
                   {t.loans[tpl.id]?.description ?? tpl.description}
                 </p>
-                <div className="my-3 border-t border-stone-200 pt-3 space-y-2 text-xs">
+                <div className="my-3 border-t border-[var(--border-subtle)] pt-3 space-y-2 text-xs">
                   <div className="flex justify-between">
-                    <span className="text-stone-500">{t.bank.amount}:</span>
-                    <span className="font-bold text-emerald-800 text-sm">+${tpl.amount.toLocaleString()}</span>
+                    <span className="text-[var(--ink-secondary)]">{t.bank.amount}:</span>
+                    <span className="font-bold text-emerald-400 text-sm font-mono">+${tpl.amount.toLocaleString()}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-stone-500">{t.bank.term}:</span>
-                    <span className="font-semibold text-stone-800">{tpl.durationMonths} {t.bank.months}</span>
+                    <span className="text-[var(--ink-secondary)]">{t.bank.term}:</span>
+                    <span className="font-semibold text-[var(--ink)]">{tpl.durationMonths} {t.bank.months}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-stone-500">{t.bank.monthlyRate}:</span>
-                    <span className="font-semibold text-stone-800">{Math.round(tpl.interestRate * 100 * 10) / 10}%</span>
+                    <span className="text-[var(--ink-secondary)]">{t.bank.monthlyRate}:</span>
+                    <span className="font-semibold text-[var(--ink)]">{Math.round(tpl.interestRate * 100 * 10) / 10}%</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-stone-500">{t.bank.monthlyPayment}:</span>
-                    <span className="font-bold text-amber-900">${tpl.monthlyPayment.toLocaleString()}</span>
+                    <span className="text-[var(--ink-secondary)]">{t.bank.monthlyPayment}:</span>
+                    <span className="font-bold text-[var(--ink-value)]">${tpl.monthlyPayment.toLocaleString()}</span>
                   </div>
                 </div>
               </div>
@@ -177,7 +177,7 @@ export default function BankPage(): React.JSX.Element {
                 type="button"
                 disabled={actionPending}
                 onClick={() => void handleTakeLoan(tpl.id)}
-                className="w-full rounded bg-[var(--accent)] py-2 text-xs font-bold text-white shadow hover:bg-amber-900 transition disabled:opacity-60 cursor-pointer"
+                className="w-full rounded-lg btn-brass py-2 text-xs font-bold text-white shadow transition disabled:opacity-50 cursor-pointer"
               >
                 {t.bank.takeLoan}
               </button>

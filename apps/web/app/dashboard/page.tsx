@@ -10,6 +10,7 @@ import { CarBlueprintSilhouette } from '../../components/CarBlueprintSilhouette'
 import { QuickVehicleDesignModal } from '../../components/QuickVehicleDesignModal';
 import { QuickResearchModal } from '../../components/QuickResearchModal';
 import { MorningGazetteModal } from '../../components/MorningGazetteModal';
+import { EraEmblem } from '../../components/EraEmblem';
 
 import VehicleDesignView from '../../components/views/VehicleDesignView';
 import ProductionView from '../../components/views/ProductionView';
@@ -239,40 +240,49 @@ export default function DashboardPage(): React.JSX.Element {
 
   return (
     <div className="space-y-4">
-      {/* 1. ERA & ADVISOR STATUS BAR */}
-      <section className="card-lux p-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
-        {/* Left: Era material identity */}
-        <div className="flex items-center gap-3">
-          <span className="text-3xl p-2 rounded-xl bg-amber-100/80 border border-amber-900/20 shadow-2xs select-none">
-            {eraTheme.icon}
-          </span>
+      {/* 1. ERA & ADVISOR STATUS BAR - MATERIAL CENTERPIECE */}
+      <section className="material-plaque p-4 md:p-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 transition-all">
+        {/* Left: Era material identity with high-detail SVG crest */}
+        <div className="flex items-center gap-3.5">
+          <EraEmblem eraId={eraTheme.id} size={54} className="drop-shadow-md shrink-0" />
           <div>
-            <div className="flex items-center gap-2">
-              <h2 className="font-serif font-bold text-base text-amber-950">{getEraName(eraTheme, lang)}</h2>
-              <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-amber-200/80 text-amber-950 font-bold border border-amber-400/50">
+            <div className="flex items-center gap-2.5 flex-wrap">
+              <h2 className="font-serif font-bold text-base md:text-lg tracking-wide" style={{ color: 'var(--desk-title)' }}>
+                {getEraName(eraTheme, lang)}
+              </h2>
+              <span
+                className="text-[11px] font-mono px-2.5 py-0.5 rounded-full font-bold shadow-2xs border"
+                style={{
+                  backgroundColor: 'rgba(0,0,0,0.3)',
+                  color: 'var(--desk-highlight)',
+                  borderColor: 'var(--desk-highlight)',
+                }}
+              >
                 {currentYear} {lang === 'en' ? `(${currentQuarter}/4 Q)` : lang === 'uk' ? `р. (${currentQuarter}/4 кв.)` : lang === 'de' ? `(${currentQuarter}/4 Q.)` : `г. (${currentQuarter}/4 кв.)`}
               </span>
             </div>
-            <p className="text-xs text-stone-600 font-serif italic">
+            <p className="text-xs font-serif italic mt-0.5" style={{ color: 'var(--desk-subtext)' }}>
               {lang === 'en'
-                ? 'Era materials & aesthetic: '
+                ? 'Authentic era materials & aesthetics: '
                 : lang === 'uk'
-                ? 'Матеріали та стиль епохи: '
+                ? 'Автентичні матеріали та стиль епохи: '
                 : lang === 'de'
-                ? 'Materialien & Epochenstil: '
-                : 'Материалы и стиль эпохи: '}
-              <strong className="text-stone-900">{getEraMaterial(eraTheme, lang)}</strong>
+                ? 'Authentische Epochenmaterialien & Stil: '
+                : 'Аутентичные материалы и стиль эпохи: '}
+              <strong className="font-bold tracking-wide" style={{ color: 'var(--desk-highlight)' }}>
+                {getEraMaterial(eraTheme, lang)}
+              </strong>
             </p>
           </div>
         </div>
 
-        {/* Right: Quick actions (Newspaper & Design Car) */}
+        {/* Right: Quick actions (Newspaper & Design Car & Hall of Fame) */}
         <div className="flex items-center gap-2 self-stretch md:self-auto flex-wrap">
           {latestReport && (
             <button
               type="button"
               onClick={() => setIsGazetteModalOpen(true)}
-              className="flex-1 md:flex-initial rounded-lg border border-amber-900/30 bg-amber-50/80 px-3 py-1.5 text-xs font-serif font-bold text-amber-950 hover:bg-amber-100 shadow-2xs flex items-center justify-center gap-1.5 transition cursor-pointer"
+              className="flex-1 md:flex-initial rounded-lg border border-[var(--border-subtle)] bg-[var(--paper)]/85 px-3 py-1.5 text-xs font-serif font-bold era-heading hover:bg-[var(--paper)] shadow-2xs flex items-center justify-center gap-1.5 transition cursor-pointer"
             >
               <span>📰</span>
               <span>
@@ -307,7 +317,7 @@ export default function DashboardPage(): React.JSX.Element {
           <button
             type="button"
             onClick={() => setHallOfFameOpen(true)}
-            className="flex-1 md:flex-initial rounded-lg border border-amber-900/30 bg-amber-50/80 px-3 py-1.5 text-xs font-serif font-bold text-amber-950 hover:bg-amber-100 shadow-2xs flex items-center justify-center gap-1.5 transition cursor-pointer"
+            className="flex-1 md:flex-initial rounded-lg border border-[var(--border-subtle)] bg-[var(--paper)]/85 px-3 py-1.5 text-xs font-serif font-bold era-heading hover:bg-[var(--paper)] shadow-2xs flex items-center justify-center gap-1.5 transition cursor-pointer"
             title={
               lang === 'en'
                 ? 'Hall of Fame, Trophies & Saves'
@@ -333,7 +343,7 @@ export default function DashboardPage(): React.JSX.Element {
           <button
             type="button"
             onClick={() => handleTabChange('guide')}
-            className="flex-1 md:flex-initial rounded-lg border border-amber-900/30 bg-amber-50/80 px-3 py-1.5 text-xs font-serif font-bold text-amber-950 hover:bg-amber-100 shadow-2xs flex items-center justify-center gap-1.5 transition cursor-pointer"
+            className="flex-1 md:flex-initial rounded-lg border border-[var(--border-subtle)] bg-[var(--paper)]/85 px-3 py-1.5 text-xs font-serif font-bold era-heading hover:bg-[var(--paper)] shadow-2xs flex items-center justify-center gap-1.5 transition cursor-pointer"
             title={
               lang === 'en'
                 ? 'Industrialist Handbook & Game Guide'
@@ -359,7 +369,7 @@ export default function DashboardPage(): React.JSX.Element {
       </section>
 
       {/* 2. UNIFIED WORKSPACE DESK DOCK (ЕДИНОЕ ОКНО) */}
-      <nav className="flex items-center gap-1.5 overflow-x-auto pb-1 border-b-2 border-amber-900/30">
+      <nav className="flex items-center gap-1.5 overflow-x-auto pb-1 border-b-2 border-[var(--border-brass)]">
         {DESK_TABS.map((tab) => {
           const isActive = activeTab === tab.id;
           const tabLabel =
@@ -376,10 +386,10 @@ export default function DashboardPage(): React.JSX.Element {
               key={tab.id}
               type="button"
               onClick={() => handleTabChange(tab.id)}
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-t-xl text-xs font-serif font-bold transition-all whitespace-nowrap cursor-pointer select-none border-t-2 border-x ${
+              className={`flex items-center gap-2 px-4 py-2.5 rounded-t-xl text-xs font-serif transition-all whitespace-nowrap cursor-pointer select-none border-t-2 border-x ${
                 isActive
-                  ? 'bg-[var(--paper-card)] text-amber-950 border-t-amber-800 border-x-amber-900/30 shadow-md -mb-[2px] z-10'
-                  : 'bg-stone-200/50 border-transparent text-stone-600 hover:text-stone-900 hover:bg-stone-200/80'
+                  ? 'bg-[var(--paper-card)] text-[var(--ink-heading)] border-t-[var(--border-brass)] border-x-[var(--border-subtle)] font-bold shadow-md -mb-[2px] z-10'
+                  : 'bg-[var(--paper)]/25 border-transparent text-[var(--ink-secondary)] hover:text-[var(--ink-heading)] hover:bg-[var(--paper)]/50 font-medium'
               }`}
             >
               <span className="text-base">{tab.icon}</span>
@@ -393,15 +403,16 @@ export default function DashboardPage(): React.JSX.Element {
       {activeTab === 'overview' && (
         <div className="space-y-4">
           {/* ADVISORS LIVE FEEDBACK STRIP */}
+          {/* ADVISORS LIVE FEEDBACK STRIP */}
           <section className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
             {/* Chief Mechanic */}
-            <div className="rounded-xl border border-amber-900/20 bg-linear-to-b from-[var(--paper-card)] to-amber-50/40 p-3 flex items-start gap-2.5 shadow-2xs">
-              <span className="text-xl p-1.5 rounded-lg bg-amber-100/80 border border-amber-900/15 shadow-2xs select-none">👨‍🔧</span>
-              <div className="leading-snug">
-                <span className="font-serif font-bold text-amber-950 block text-xs tracking-wide">
+            <div className="era-card p-3.5 flex items-start gap-3 shadow-2xs">
+              <span className="text-xl p-2 rounded-xl era-stat-box select-none shrink-0">👨‍🔧</span>
+              <div className="leading-snug min-w-0">
+                <span className="font-serif font-bold era-heading block text-xs tracking-wide">
                   {getAdvisorTitle('engineer', eraTheme, lang)}:
                 </span>
-                <span className="text-stone-700 text-[11px] leading-relaxed mt-0.5 block">
+                <span className="era-label text-xs leading-relaxed mt-1 block">
                   {hasShortage
                     ? lang === 'en'
                       ? 'Sir, raw materials are running out! Assembly lines may grind to a halt.'
@@ -438,13 +449,13 @@ export default function DashboardPage(): React.JSX.Element {
             </div>
 
             {/* Treasurer */}
-            <div className="rounded-xl border border-amber-900/20 bg-linear-to-b from-[var(--paper-card)] to-amber-50/40 p-3 flex items-start gap-2.5 shadow-2xs">
-              <span className="text-xl p-1.5 rounded-lg bg-amber-100/80 border border-amber-900/15 shadow-2xs select-none">💼</span>
-              <div className="leading-snug">
-                <span className="font-serif font-bold text-amber-950 block text-xs tracking-wide">
+            <div className="era-card p-3.5 flex items-start gap-3 shadow-2xs">
+              <span className="text-xl p-2 rounded-xl era-stat-box select-none shrink-0">💼</span>
+              <div className="leading-snug min-w-0">
+                <span className="font-serif font-bold era-heading block text-xs tracking-wide">
                   {getAdvisorTitle('finance', eraTheme, lang)}:
                 </span>
-                <span className="text-stone-700 text-[11px] leading-relaxed mt-0.5 block">
+                <span className="era-label text-xs leading-relaxed mt-1 block">
                   {latestReport && latestReport.profit < 0
                     ? lang === 'en'
                       ? `Loss last quarter (-$${Math.abs(latestReport.profit).toLocaleString()})! Check markup and growing plant rent ($${premisesRent.toLocaleString()}/qtr).`
@@ -497,13 +508,13 @@ export default function DashboardPage(): React.JSX.Element {
             </div>
 
             {/* Plant Foreman */}
-            <div className="rounded-xl border border-amber-900/20 bg-linear-to-b from-[var(--paper-card)] to-amber-50/40 p-3 flex items-start gap-2.5 shadow-2xs">
-              <span className="text-xl p-1.5 rounded-lg bg-amber-100/80 border border-amber-900/15 shadow-2xs select-none">🏭</span>
-              <div className="leading-snug">
-                <span className="font-serif font-bold text-amber-950 block text-xs tracking-wide">
+            <div className="era-card p-3.5 flex items-start gap-3 shadow-2xs">
+              <span className="text-xl p-2 rounded-xl era-stat-box select-none shrink-0">🏭</span>
+              <div className="leading-snug min-w-0">
+                <span className="font-serif font-bold era-heading block text-xs tracking-wide">
                   {getAdvisorTitle('plant', eraTheme, lang)}:
                 </span>
-                <span className="text-stone-700 text-[11px] leading-relaxed mt-0.5 block">
+                <span className="era-label text-xs leading-relaxed mt-1 block">
                   {isOverCapacity
                     ? lang === 'en'
                       ? `Overcapacity! Planned ${totalPlannedUnits} units against factory limit of ${factory.capacity} cars/qtr.`
@@ -529,10 +540,10 @@ export default function DashboardPage(): React.JSX.Element {
             {/* ================= LEFT COLUMN: THE FACTORY FLOOR ================= */}
             <div className="lg:col-span-7 space-y-4">
               {/* Active Production Lines */}
-              <section className="card-lux p-4 space-y-3.5">
-                <div className="flex flex-wrap items-center justify-between gap-2 border-b border-amber-900/20 pb-2.5">
+              <section className="era-card p-4 space-y-3.5">
+                <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[var(--border-subtle)] pb-2.5">
                   <div>
-                    <h3 className="font-serif font-bold text-base text-amber-950 flex items-center gap-2">
+                    <h3 className="font-serif font-bold text-base era-heading flex items-center gap-2">
                       <span className="text-lg">🚗</span>
                       <span>
                         {lang === 'en'
@@ -544,17 +555,17 @@ export default function DashboardPage(): React.JSX.Element {
                           : 'Сборочные посты и производство'}
                       </span>
                     </h3>
-                    <span className="text-xs text-stone-600 font-serif">
+                    <span className="text-xs era-label font-serif">
                       {factory.name} • {lang === 'en' ? 'Capacity' : lang === 'uk' ? 'Потужність' : lang === 'de' ? 'Kapazität' : 'Мощность'}:{' '}
-                      <strong className="font-sans text-amber-950">
+                      <strong className="font-sans era-value">
                         {factory.capacity} {lang === 'en' ? 'cars/qtr' : lang === 'uk' ? 'авто/кв.' : lang === 'de' ? 'Autos/Q.' : 'авто/кв.'}
                       </strong>{' '}
                       • {lang === 'en' ? 'Overhead' : lang === 'uk' ? 'Утримання' : lang === 'de' ? 'Unterhalt' : 'Содержание'}:{' '}
-                      <strong className="font-sans text-stone-800">
+                      <strong className="font-sans era-value">
                         ${factory.monthlyOverhead * 3}/{lang === 'en' ? 'qtr' : lang === 'uk' ? 'кв.' : lang === 'de' ? 'Q.' : 'кв.'}
                       </strong>{' '}
                       • {lang === 'en' ? 'Premises Rent' : lang === 'uk' ? 'Оренда площ' : lang === 'de' ? 'Flächenmiete' : 'Аренда цехов'}:{' '}
-                      <strong className="font-sans text-amber-950 font-bold">
+                      <strong className="font-sans era-value font-bold">
                         ${premisesRent.toLocaleString()}/{lang === 'en' ? 'qtr' : lang === 'uk' ? 'кв.' : lang === 'de' ? 'Q.' : 'кв.'}
                       </strong>
                     </span>
@@ -570,7 +581,7 @@ export default function DashboardPage(): React.JSX.Element {
                       type="button"
                       disabled={planSaving}
                       onClick={handleSavePlan}
-                      className="btn-brass px-3 py-1.5 text-xs font-bold text-white disabled:opacity-50 shadow-md cursor-pointer"
+                      className="btn-brass px-3.5 py-1.5 text-xs font-bold text-white disabled:opacity-50 shadow-md cursor-pointer"
                     >
                       {planSaving
                         ? (lang === 'en' ? 'Saving...' : lang === 'uk' ? 'Збереження...' : lang === 'de' ? 'Speichern...' : 'Запись...')
@@ -581,8 +592,8 @@ export default function DashboardPage(): React.JSX.Element {
 
                 {/* Models list */}
                 {activeModels.length === 0 ? (
-                  <div className="rounded-xl border border-dashed border-amber-900/30 bg-amber-50/30 p-8 text-center text-xs text-stone-600 font-serif">
-                    <p className="text-sm text-stone-700">
+                  <div className="rounded-xl border border-dashed border-[var(--border-subtle)] bg-[var(--surface-nested)] p-8 text-center text-xs era-label font-serif">
+                    <p className="text-sm era-heading">
                       {lang === 'en'
                         ? 'No vehicle models designed for production yet.'
                         : lang === 'uk'
@@ -623,7 +634,7 @@ export default function DashboardPage(): React.JSX.Element {
                       return (
                         <div
                           key={model.id}
-                          className="rounded-xl border border-amber-900/20 bg-white/90 p-3 shadow-sm space-y-2.5 hover:border-amber-700/40 transition"
+                          className="rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-nested)] p-3 shadow-xs space-y-2.5 hover:border-[var(--border-brass)] transition"
                         >
                           <div className="grid grid-cols-1 sm:grid-cols-12 gap-3 items-center">
                             {/* 2D Blueprint preview */}
@@ -638,8 +649,8 @@ export default function DashboardPage(): React.JSX.Element {
                             {/* Model Specs & Info */}
                             <div className="sm:col-span-4 space-y-1.5 text-xs">
                               <div className="flex items-center gap-1.5 flex-wrap">
-                                <span className="font-serif font-bold text-sm text-amber-950">{model.name}</span>
-                                <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-100/90 text-amber-950 font-bold border border-amber-900/20">
+                                <span className="font-serif font-bold text-sm era-heading">{model.name}</span>
+                                <span className="text-[10px] px-1.5 py-0.5 rounded font-bold font-mono bg-[var(--tag-bg)] text-[var(--tag-text)] border border-[var(--border-brass)]/30">
                                   {trSeg}
                                 </span>
                                 {(() => {
@@ -670,40 +681,40 @@ export default function DashboardPage(): React.JSX.Element {
                                 })()}
                               </div>
 
-                              <div className="flex flex-wrap gap-2 text-[11px] text-stone-700 font-serif">
+                              <div className="flex flex-wrap gap-2 text-[11px] era-label font-serif">
                                 <span>
                                   {lang === 'en' ? 'Cost' : lang === 'uk' ? 'Собіварт' : lang === 'de' ? 'Selbstkosten' : 'Себест'}:{' '}
-                                  <strong className="font-mono text-stone-900">${model.productionCost}</strong>
+                                  <strong className="font-mono era-value">${model.productionCost}</strong>
                                 </span>
                                 <span>
                                   {lang === 'en' ? 'Price' : lang === 'uk' ? 'Ціна' : lang === 'de' ? 'Preis' : 'Цена'}:{' '}
-                                  <strong className="font-mono text-amber-950">${model.salePrice}</strong>
+                                  <strong className="font-mono era-value">${model.salePrice}</strong>
                                 </span>
                               </div>
 
-                              <div className="flex flex-wrap gap-1 text-[10px] text-stone-600 font-mono">
-                                <span className="bg-emerald-50 text-emerald-900 px-1.5 py-0.2 rounded border border-emerald-200">
+                              <div className="flex flex-wrap gap-1 text-[10px] font-mono">
+                                <span className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 px-1.5 py-0.5 rounded border border-emerald-500/20 font-bold">
                                   {lang === 'en' ? 'Rel' : lang === 'uk' ? 'Над' : lang === 'de' ? 'Zuverl' : 'Над'}: {model.stats.reliability}%
                                 </span>
-                                <span className="bg-amber-50 text-amber-900 px-1.5 py-0.2 rounded border border-amber-200">
+                                <span className="bg-amber-500/10 text-amber-600 dark:text-amber-400 px-1.5 py-0.5 rounded border border-amber-500/20 font-bold">
                                   {lang === 'en' ? 'Comf' : lang === 'uk' ? 'Комф' : lang === 'de' ? 'Komf' : 'Комф'}: {model.stats.comfort}
                                 </span>
-                                <span className="bg-purple-50 text-purple-900 px-1.5 py-0.2 rounded border border-purple-200">
+                                <span className="bg-purple-500/10 text-purple-600 dark:text-purple-400 px-1.5 py-0.5 rounded border border-purple-500/20 font-bold">
                                   {lang === 'en' ? 'Prest' : lang === 'uk' ? 'Прест' : lang === 'de' ? 'Prest' : 'Прест'}: {model.stats.prestige}
                                 </span>
                               </div>
                             </div>
 
                             {/* Interactive Quota Controls */}
-                            <div className="sm:col-span-3 flex flex-col items-end justify-center bg-amber-50/40 p-2.5 rounded-xl border border-amber-900/15">
-                              <span className="text-[10px] uppercase font-bold text-amber-900 tracking-wider">
+                            <div className="sm:col-span-3 flex flex-col items-end justify-center era-stat-box p-2.5 rounded-xl">
+                              <span className="text-[10px] uppercase font-bold era-heading tracking-wider">
                                 {lang === 'en' ? 'Production Quota' : lang === 'uk' ? 'Квота випуску' : lang === 'de' ? 'Produktionsquote' : 'Квота выпуска'}
                               </span>
                               <div className="flex items-center gap-1 mt-1">
                                 <button
                                   type="button"
                                   onClick={() => handleQuotaChange(model.id, quota - 1)}
-                                  className="h-6 w-6 rounded bg-stone-200 hover:bg-stone-300 font-bold text-stone-800 text-xs flex items-center justify-center border border-stone-300 cursor-pointer transition"
+                                  className="h-6 w-6 rounded bg-[var(--paper)] hover:bg-[var(--paper)]/80 font-bold era-heading text-xs flex items-center justify-center border border-[var(--border-subtle)] cursor-pointer transition shadow-2xs"
                                 >
                                   -
                                 </button>
@@ -713,33 +724,30 @@ export default function DashboardPage(): React.JSX.Element {
                                   max={factory.capacity}
                                   value={quota}
                                   onChange={(e) => handleQuotaChange(model.id, Number(e.target.value))}
-                                  className="h-6 w-12 text-center rounded border border-amber-900/30 font-bold font-mono text-xs text-stone-900 bg-white shadow-inner"
+                                  className="h-6 w-12 text-center rounded border border-[var(--border-subtle)] font-bold font-mono text-xs era-value bg-[var(--paper)] shadow-inner"
                                 />
                                 <button
                                   type="button"
                                   onClick={() => handleQuotaChange(model.id, quota + 1)}
-                                  className="h-6 w-6 rounded bg-stone-200 hover:bg-stone-300 font-bold text-stone-800 text-xs flex items-center justify-center border border-stone-300 cursor-pointer transition"
+                                  className="h-6 w-6 rounded bg-[var(--paper)] hover:bg-[var(--paper)]/80 font-bold era-heading text-xs flex items-center justify-center border border-[var(--border-subtle)] cursor-pointer transition shadow-2xs"
                                 >
                                   +
                                 </button>
                               </div>
-                              <span className="text-[10px] text-stone-500 font-mono mt-0.5">
-                                {lang === 'en' ? 'cars/qtr' : lang === 'uk' ? 'авто/кв.' : lang === 'de' ? 'Autos/Q.' : 'авто/кв.'}
-                              </span>
                             </div>
                           </div>
 
                           {/* Materials required strip */}
-                          <div className="flex flex-wrap gap-2 text-[10px] border-t border-amber-900/10 pt-1.5 text-stone-600">
-                            <span className="text-stone-400 font-serif">
+                          <div className="flex flex-wrap gap-2 text-[10px] border-t border-[var(--border-subtle)] pt-1.5 era-label">
+                            <span className="font-serif">
                               {lang === 'en' ? 'Materials per unit:' : lang === 'uk' ? 'Сировина на одиницю:' : lang === 'de' ? 'Material pro Einheit:' : 'Сырье на единицу:'}
                             </span>
                             {Object.entries(model.materialsRequired ?? {}).map(([mat, amt]) => {
                               if (!amt) return null;
                               return (
-                                <span key={mat} className="flex items-center gap-0.5 bg-stone-50 px-1.5 py-0.5 rounded border border-stone-200 text-stone-700">
+                                <span key={mat} className="flex items-center gap-1 era-stat-box px-1.5 py-0.5 rounded text-[10px] font-mono">
                                   <span>{MATERIAL_ICONS[mat as MaterialType] ?? ''}</span>
-                                  <span>{(t.materials[mat as MaterialType] as string | undefined) ?? mat}: <strong>{amt}</strong></span>
+                                  <span>{(t.materials[mat as MaterialType] as string | undefined) ?? mat}: <strong className="era-value">{amt}</strong></span>
                                 </span>
                               );
                             })}
@@ -752,9 +760,9 @@ export default function DashboardPage(): React.JSX.Element {
               </section>
 
               {/* Warehouse & Materials */}
-              <section className="card-lux p-4 space-y-3">
-                <div className="flex items-center justify-between border-b border-amber-900/20 pb-2">
-                  <h3 className="font-serif font-bold text-sm text-amber-950 flex items-center gap-1.5">
+              <section className="era-card p-4 space-y-3">
+                <div className="flex items-center justify-between border-b border-[var(--border-subtle)] pb-2">
+                  <h3 className="font-serif font-bold text-sm era-heading flex items-center gap-1.5">
                     <span className="text-base">📦</span>
                     <span>
                       {lang === 'en'
@@ -768,7 +776,7 @@ export default function DashboardPage(): React.JSX.Element {
                   </h3>
 
                   <div className="flex items-center gap-2 text-xs">
-                    <span className="text-stone-600 font-serif">
+                    <span className="era-label font-serif">
                       {lang === 'en' ? 'Auto-procure:' : lang === 'uk' ? 'Автозакупівля:' : lang === 'de' ? 'Autobeschaffung:' : 'Автозакупка:'}
                     </span>
                     <button
@@ -777,7 +785,7 @@ export default function DashboardPage(): React.JSX.Element {
                       className={`rounded-lg px-2.5 py-1 text-[11px] font-bold transition shadow-2xs cursor-pointer ${
                         isAutoProcure
                           ? 'bg-emerald-700 hover:bg-emerald-800 text-white'
-                          : 'bg-stone-300 hover:bg-stone-400 text-stone-800'
+                          : 'bg-[var(--surface-nested)] hover:bg-[var(--border-subtle)] era-label border border-[var(--border-subtle)]'
                       }`}
                     >
                       {isAutoProcure
@@ -801,23 +809,23 @@ export default function DashboardPage(): React.JSX.Element {
                         className={`rounded-lg border p-2 flex flex-col justify-between transition ${
                           isShort
                             ? inStock === 0
-                              ? 'border-rose-300 bg-rose-50/80 shadow-2xs'
-                              : 'border-amber-300 bg-amber-50/70 shadow-2xs'
-                            : 'border-stone-200 bg-white/90 shadow-2xs'
+                              ? 'border-rose-400 bg-rose-500/10 shadow-2xs'
+                              : 'border-amber-400 bg-amber-500/10 shadow-2xs'
+                            : 'border-[var(--border-subtle)] bg-[var(--surface-nested)] shadow-2xs'
                         }`}
                       >
                         <div className="flex justify-between items-start">
                           <div className="flex items-center gap-1">
                             <span className="text-sm">{icon}</span>
-                            <span className="font-serif font-bold text-stone-900">{t.materials[mat] ?? mat}</span>
+                            <span className="font-serif font-bold era-heading">{t.materials[mat] ?? mat}</span>
                           </div>
-                          <span className="text-[10px] text-stone-500 font-mono">
+                          <span className="text-[10px] era-label font-mono">
                             {lang === 'en' ? 'Req' : lang === 'uk' ? 'Потр' : lang === 'de' ? 'Bedarf' : 'Потр'}: {needed}
                           </span>
                         </div>
 
                         <div className="mt-1.5 flex items-baseline justify-between">
-                          <span className="text-sm font-bold font-mono text-stone-900">{inStock.toLocaleString()}</span>
+                          <span className="text-sm font-bold font-mono era-value">{inStock.toLocaleString()}</span>
                           {isShort && (
                             <button
                               type="button"
@@ -838,9 +846,9 @@ export default function DashboardPage(): React.JSX.Element {
         {/* ================= RIGHT COLUMN: R&D, MARKETS, AND BANK ================= */}
         <div className="lg:col-span-5 space-y-4">
           {/* 1. Research & Development Widget */}
-          <section className="card-lux p-4 space-y-3">
-            <div className="flex items-center justify-between border-b border-amber-900/20 pb-2">
-              <h3 className="font-serif font-bold text-sm text-amber-950 flex items-center gap-1.5">
+          <section className="era-card p-4 space-y-3">
+            <div className="flex items-center justify-between border-b border-[var(--border-subtle)] pb-2">
+              <h3 className="font-serif font-bold text-sm era-heading flex items-center gap-1.5">
                 <span className="text-base">🔬</span>
                 <span>
                   {lang === 'en'
@@ -855,7 +863,7 @@ export default function DashboardPage(): React.JSX.Element {
               <button
                 type="button"
                 onClick={() => setIsResearchModalOpen(true)}
-                className="text-xs font-serif font-bold text-amber-900 hover:text-amber-950 hover:underline cursor-pointer"
+                className="text-xs font-serif font-bold era-heading hover:underline cursor-pointer"
               >
                 {activeResearch
                   ? (lang === 'en' ? 'Change project' : lang === 'uk' ? 'Змінити проєкт' : lang === 'de' ? 'Projekt wechseln' : 'Сменить проект')
@@ -864,28 +872,28 @@ export default function DashboardPage(): React.JSX.Element {
             </div>
 
             {activeResearch ? (
-              <div className="rounded-xl border border-amber-900/25 bg-amber-50/70 p-3 space-y-2.5 text-xs shadow-2xs">
+              <div className="rounded-xl border border-[var(--border-brass)]/40 bg-[var(--surface-nested)] p-3 space-y-2.5 text-xs shadow-2xs">
                 <div className="flex justify-between items-start">
-                  <span className="font-bold text-amber-950 font-serif text-sm">
+                  <span className="font-bold era-heading font-serif text-sm">
                     {t.technologies[activeResearch.technologyId as keyof typeof t.technologies]?.name ?? activeResearch.technologyId}
                   </span>
-                  <span className="text-[10px] font-bold font-mono text-amber-950 bg-amber-200/80 border border-amber-400/50 px-2 py-0.5 rounded-md">
+                  <span className="text-[10px] font-bold font-mono px-2 py-0.5 rounded-md bg-[var(--tag-bg)] text-[var(--tag-text)] border border-[var(--border-brass)]/40">
                     ${activeResearch.allocatedBudget} / {lang === 'en' ? 'mo' : lang === 'uk' ? 'міс.' : lang === 'de' ? 'Monat' : 'мес.'}
                   </span>
                 </div>
 
                 {/* Progress bar */}
                 <div className="space-y-1">
-                  <div className="flex justify-between text-[11px] text-stone-600 font-mono">
+                  <div className="flex justify-between text-[11px] era-label font-mono">
                     <span>
                       {lang === 'en' ? 'Research progress:' : lang === 'uk' ? 'Прогрес розробки:' : lang === 'de' ? 'Forschungsfortschritt:' : 'Прогресс разработки:'}
                     </span>
-                    <span className="font-bold text-amber-950">
+                    <span className="font-bold era-value">
                       {Math.ceil(activeResearch.progressMonths / 3)} / {Math.ceil(activeResearch.totalMonths / 3)}{' '}
                       {lang === 'en' ? 'qtr' : lang === 'uk' ? 'кв.' : lang === 'de' ? 'Q.' : 'кв.'}
                     </span>
                   </div>
-                  <div className="h-2 w-full rounded-full bg-stone-300/80 overflow-hidden border border-stone-400/30">
+                  <div className="h-2 w-full rounded-full bg-[var(--paper)] overflow-hidden border border-[var(--border-subtle)]">
                     <div
                       className="h-full bg-linear-to-r from-amber-600 to-amber-900 transition-all duration-300 shadow-2xs"
                       style={{
@@ -896,7 +904,7 @@ export default function DashboardPage(): React.JSX.Element {
                 </div>
               </div>
             ) : (
-              <div className="rounded-xl border border-dashed border-amber-900/30 bg-amber-50/30 p-4 text-center text-xs text-stone-600 font-serif">
+              <div className="rounded-xl border border-dashed border-[var(--border-subtle)] bg-[var(--surface-nested)] p-4 text-center text-xs era-label font-serif">
                 <p>
                   {lang === 'en'
                     ? 'Laboratory is idle. No ongoing research.'
@@ -921,12 +929,12 @@ export default function DashboardPage(): React.JSX.Element {
 
             {/* Unlocked Technologies badges */}
             <div className="pt-1">
-              <span className="text-[10px] uppercase font-bold text-stone-500 font-serif block mb-1.5">
+              <span className="text-[10px] uppercase font-bold era-label font-serif block mb-1.5">
                 {lang === 'en' ? 'Unlocked Patents' : lang === 'uk' ? 'Вивчені патенти' : lang === 'de' ? 'Erforschte Patente' : 'Изученные патенты'} ({gameState.unlockedTechnologyIds?.length ?? 0}):
               </span>
               <div className="flex flex-wrap gap-1">
                 {(gameState.unlockedTechnologyIds ?? []).map((id) => (
-                  <span key={id} className="text-[10px] rounded-md bg-white/80 border border-amber-900/20 px-2 py-0.5 text-amber-950 font-serif shadow-2xs">
+                  <span key={id} className="text-[10px] rounded-md era-stat-box px-2 py-0.5 era-heading font-serif shadow-2xs">
                     ✓ {t.technologies[id as keyof typeof t.technologies]?.name ?? id}
                   </span>
                 ))}
@@ -935,9 +943,9 @@ export default function DashboardPage(): React.JSX.Element {
           </section>
 
           {/* 2. Global Markets & Competitors */}
-          <section className="card-lux p-4 space-y-3">
-            <div className="flex items-center justify-between border-b border-amber-900/20 pb-2">
-              <h3 className="font-serif font-bold text-sm text-amber-950 flex items-center gap-1.5">
+          <section className="era-card p-4 space-y-3">
+            <div className="flex items-center justify-between border-b border-[var(--border-subtle)] pb-2">
+              <h3 className="font-serif font-bold text-sm era-heading flex items-center gap-1.5">
                 <span className="text-base">🌍</span>
                 <span>
                   {lang === 'en' ? 'Markets & Competitors' : lang === 'uk' ? 'Ринки та Конкуренти' : lang === 'de' ? 'Märkte & Konkurrenten' : 'Рынки и Конкуренты'}
@@ -946,7 +954,7 @@ export default function DashboardPage(): React.JSX.Element {
               <button
                 type="button"
                 onClick={() => handleTabChange('markets')}
-                className="text-xs font-serif font-bold text-amber-900 hover:text-amber-950 hover:underline cursor-pointer"
+                className="text-xs font-serif font-bold era-heading hover:underline cursor-pointer"
               >
                 {lang === 'en' ? 'Details →' : lang === 'uk' ? 'Детальніше →' : lang === 'de' ? 'Details →' : 'Подробнее →'}
               </button>
@@ -954,23 +962,23 @@ export default function DashboardPage(): React.JSX.Element {
 
             {/* Region presence bars */}
             <div className="space-y-2 text-xs">
-              <div className="flex justify-between items-center text-[11px] text-stone-700">
+              <div className="flex justify-between items-center text-[11px] era-label">
                 <span className="font-serif">🇺🇸 {t.regions?.['north-america'] ?? 'Северная Америка'}:</span>
-                <strong className="text-stone-900 font-mono bg-stone-100 px-2 py-0.5 rounded border border-stone-200">
+                <strong className="era-value font-mono era-stat-box px-2 py-0.5 rounded">
                   {Math.round((company.marketPresence?.['north-america'] ?? 0) * 100)}%{' '}
                   {lang === 'en' ? 'share' : lang === 'uk' ? 'охоплення' : lang === 'de' ? 'Anteil' : 'охват'}
                 </strong>
               </div>
-              <div className="flex justify-between items-center text-[11px] text-stone-700">
+              <div className="flex justify-between items-center text-[11px] era-label">
                 <span className="font-serif">🇪🇺 {t.regions?.europe ?? 'Европа'}:</span>
-                <strong className="text-stone-900 font-mono bg-stone-100 px-2 py-0.5 rounded border border-stone-200">
+                <strong className="era-value font-mono era-stat-box px-2 py-0.5 rounded">
                   {Math.round((company.marketPresence?.europe ?? 0) * 100)}%{' '}
                   {lang === 'en' ? 'share' : lang === 'uk' ? 'охоплення' : lang === 'de' ? 'Anteil' : 'охват'}
                 </strong>
               </div>
-              <div className="flex justify-between items-center text-[11px] text-stone-700">
+              <div className="flex justify-between items-center text-[11px] era-label">
                 <span className="font-serif">🌍 {t.regions?.['middle-east'] ?? 'Ближний Восток'}:</span>
-                <strong className="text-stone-900 font-mono bg-stone-100 px-2 py-0.5 rounded border border-stone-200">
+                <strong className="era-value font-mono era-stat-box px-2 py-0.5 rounded">
                   {Math.round((company.marketPresence?.['middle-east'] ?? 0) * 100)}%{' '}
                   {lang === 'en' ? 'share' : lang === 'uk' ? 'охоплення' : lang === 'de' ? 'Anteil' : 'охват'}
                 </strong>
@@ -978,20 +986,20 @@ export default function DashboardPage(): React.JSX.Element {
             </div>
 
             {/* Key Competitors snapshot */}
-            <div className="border-t border-amber-900/15 pt-2.5 space-y-1.5 text-xs">
-              <span className="text-[10px] uppercase font-bold text-stone-500 font-serif block">
+            <div className="border-t border-[var(--border-subtle)] pt-2.5 space-y-1.5 text-xs">
+              <span className="text-[10px] uppercase font-bold era-label font-serif block">
                 {lang === 'en' ? 'Key rivals of the era:' : lang === 'uk' ? 'Головні суперники епохи:' : lang === 'de' ? 'Hauptkonkurrenten der Epoche:' : 'Главные соперники эпохи:'}
               </span>
               <div className="grid grid-cols-2 gap-2 text-[11px]">
-                <div className="rounded-lg border border-amber-900/15 bg-white/70 p-2 shadow-2xs">
-                  <div className="font-serif font-bold text-stone-900">🇺🇸 Fort Motor Co.</div>
-                  <span className="text-[10px] text-amber-900 font-mono">
+                <div className="rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-nested)] p-2 shadow-2xs">
+                  <div className="font-serif font-bold era-heading">🇺🇸 Fort Motor Co.</div>
+                  <span className="text-[10px] era-value font-mono">
                     {lang === 'en' ? 'Reputation' : lang === 'uk' ? 'Репутація' : lang === 'de' ? 'Ruf' : 'Репутация'}: 65 ★
                   </span>
                 </div>
-                <div className="rounded-lg border border-amber-900/15 bg-white/70 p-2 shadow-2xs">
-                  <div className="font-serif font-bold text-stone-900">🇩🇪 Mercer-Benz</div>
-                  <span className="text-[10px] text-amber-900 font-mono">
+                <div className="rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-nested)] p-2 shadow-2xs">
+                  <div className="font-serif font-bold era-heading">🇩🇪 Mercer-Benz</div>
+                  <span className="text-[10px] era-value font-mono">
                     {lang === 'en' ? 'Reputation' : lang === 'uk' ? 'Репутація' : lang === 'de' ? 'Ruf' : 'Репутация'}: 80 ★
                   </span>
                 </div>
@@ -1000,9 +1008,9 @@ export default function DashboardPage(): React.JSX.Element {
           </section>
 
           {/* 3. Bank & Treasury */}
-          <section className="card-lux p-4 space-y-3">
-            <div className="flex items-center justify-between border-b border-amber-900/20 pb-2">
-              <h3 className="font-serif font-bold text-sm text-amber-950 flex items-center gap-1.5">
+          <section className="era-card p-4 space-y-3">
+            <div className="flex items-center justify-between border-b border-[var(--border-subtle)] pb-2">
+              <h3 className="font-serif font-bold text-sm era-heading flex items-center gap-1.5">
                 <span className="text-base">🏦</span>
                 <span>
                   {lang === 'en' ? 'Treasury & Bank' : lang === 'uk' ? 'Казначейство та Банк' : lang === 'de' ? 'Finanzen & Bank' : 'Казначейство и Банк'}
@@ -1011,30 +1019,30 @@ export default function DashboardPage(): React.JSX.Element {
               <button
                 type="button"
                 onClick={() => handleTabChange('bank')}
-                className="text-xs font-serif font-bold text-amber-900 hover:text-amber-950 hover:underline cursor-pointer"
+                className="text-xs font-serif font-bold era-heading hover:underline cursor-pointer"
               >
                 {lang === 'en' ? 'Credit Portfolio →' : lang === 'uk' ? 'Кредитний портфель →' : lang === 'de' ? 'Kreditportfolio →' : 'Кредитный портфель →'}
               </button>
             </div>
 
             <div className="grid grid-cols-2 gap-2 text-xs">
-              <div className="rounded-xl border border-amber-900/15 bg-white/80 p-2.5 shadow-2xs">
-                <span className="text-stone-500 font-serif text-[10px] block">
+              <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-nested)] p-2.5 shadow-2xs">
+                <span className="era-label font-serif text-[10px] block">
                   {lang === 'en' ? 'Liquid Capital:' : lang === 'uk' ? 'Вільний капітал:' : lang === 'de' ? 'Freies Kapital:' : 'Свободный капитал:'}
                 </span>
-                <span className="text-base font-bold font-mono text-emerald-900">${company.cash.toLocaleString()}</span>
+                <span className="text-base font-bold font-mono text-emerald-600 dark:text-emerald-400">${company.cash.toLocaleString()}</span>
               </div>
-              <div className="rounded-xl border border-amber-900/15 bg-white/80 p-2.5 shadow-2xs">
-                <span className="text-stone-500 font-serif text-[10px] block">
+              <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-nested)] p-2.5 shadow-2xs">
+                <span className="era-label font-serif text-[10px] block">
                   {lang === 'en' ? 'Active Loans:' : lang === 'uk' ? 'Активні кредити:' : lang === 'de' ? 'Aktive Kredite:' : 'Активные кредиты:'}
                 </span>
-                <span className="text-base font-bold font-mono text-stone-900">{activeLoans.length}</span>
+                <span className="text-base font-bold font-mono era-value">{activeLoans.length}</span>
               </div>
             </div>
 
             {/* Quick loan button */}
-            <div className="flex items-center justify-between text-xs bg-amber-50/80 border border-amber-900/20 rounded-xl p-2.5 shadow-2xs">
-              <span className="text-[11px] text-amber-950 font-serif">
+            <div className="flex items-center justify-between text-xs bg-[var(--surface-nested)] border border-[var(--border-subtle)] rounded-xl p-2.5 shadow-2xs">
+              <span className="text-[11px] era-heading font-serif">
                 {lang === 'en' ? 'Need working capital?' : lang === 'uk' ? 'Потрібні оборотні кошти?' : lang === 'de' ? 'Betriebskapital benötigt?' : 'Требуются оборотные средства?'}
               </span>
               <button

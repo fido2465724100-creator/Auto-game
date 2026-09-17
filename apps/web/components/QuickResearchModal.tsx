@@ -56,30 +56,30 @@ export function QuickResearchModal({ isOpen, onClose, onStarted }: Props): React
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-3 backdrop-blur-xs">
-      <div className="relative max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-lg border border-amber-900/30 bg-[var(--paper)] p-5 shadow-2xl text-stone-900">
+      <div className="relative max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-xl border border-[var(--border-subtle)] bg-[var(--paper)] p-5 shadow-2xl text-[var(--ink)]">
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-stone-300 pb-3">
+        <div className="flex items-center justify-between border-b border-[var(--border-subtle)] pb-3">
           <div className="flex items-center gap-2">
             <span className="text-2xl">🔬</span>
             <div>
-              <h2 className="font-bold text-lg text-amber-950 font-serif">Научно-исследовательское бюро (НИОКР)</h2>
-              <p className="text-xs text-stone-500">Выбор технологии для финансирования лаборатории</p>
+              <h2 className="font-bold text-lg text-[var(--ink-heading)] era-heading">Научно-исследовательское бюро (НИОКР)</h2>
+              <p className="text-xs text-[var(--ink-secondary)]">Выбор технологии для финансирования лаборатории</p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="rounded p-1 text-stone-400 hover:bg-stone-200 hover:text-stone-700 text-lg font-bold"
+            className="rounded p-1 text-[var(--ink-secondary)] hover:text-[var(--ink)] text-lg font-bold cursor-pointer"
           >
             ✕
           </button>
         </div>
 
         {/* Budget selector */}
-        <div className="mt-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2 bg-amber-50/80 border border-amber-200 rounded p-3 text-xs">
+        <div className="mt-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2 bg-[var(--surface-nested)] border border-[var(--border-subtle)] rounded-lg p-3 text-xs">
           <div>
-            <span className="font-bold text-amber-950 block">Финансирование разработки:</span>
-            <span className="text-[11px] text-stone-600">
-              Текущий расход казны: <strong>${budget * 3} / квартал</strong> (${budget} / месяц)
+            <span className="font-bold text-[var(--ink-heading)] block">Финансирование разработки:</span>
+            <span className="text-[11px] text-[var(--ink-secondary)]">
+              Текущий расход казны: <strong className="text-[var(--ink-value)]">${budget * 3} / квартал</strong> (${budget} / месяц)
             </span>
           </div>
           <div className="flex items-center gap-2">
@@ -88,10 +88,10 @@ export function QuickResearchModal({ isOpen, onClose, onStarted }: Props): React
                 key={tier.monthly}
                 type="button"
                 onClick={() => setBudget(tier.monthly)}
-                className={`rounded px-2.5 py-1.5 font-bold transition text-xs cursor-pointer ${
+                className={`rounded-lg px-2.5 py-1.5 font-bold transition text-xs cursor-pointer ${
                   budget === tier.monthly
-                    ? 'bg-amber-900 text-white shadow-sm'
-                    : 'bg-white border border-stone-300 text-stone-700 hover:bg-stone-100'
+                    ? 'btn-brass text-white shadow-sm'
+                    : 'bg-[var(--paper)] border border-[var(--border-subtle)] text-[var(--ink)] hover:bg-[var(--surface-nested)]'
                 }`}
               >
                 <div>{tier.label}</div>
@@ -102,7 +102,7 @@ export function QuickResearchModal({ isOpen, onClose, onStarted }: Props): React
         </div>
 
         {loading ? (
-          <div className="py-12 text-center text-sm text-stone-500">Сбор патентных заявок...</div>
+          <div className="py-12 text-center text-sm text-[var(--ink-secondary)]">Сбор патентных заявок...</div>
         ) : (
           <div className="mt-4 grid gap-3 sm:grid-cols-2">
             {technologies.map((tech) => {
@@ -118,28 +118,28 @@ export function QuickResearchModal({ isOpen, onClose, onStarted }: Props): React
               return (
                 <div
                   key={tech.id}
-                  className={`rounded border p-3 flex flex-col justify-between text-xs space-y-2 transition ${
+                  className={`rounded-lg border p-3 flex flex-col justify-between text-xs space-y-2 transition ${
                     isCompleted
-                      ? 'border-emerald-300 bg-emerald-50/40 text-stone-700'
+                      ? 'border-emerald-600/50 bg-emerald-950/20 text-[var(--ink)]'
                       : isResearching
-                      ? 'border-amber-400 bg-amber-50/60 ring-1 ring-amber-400'
+                      ? 'border-amber-500/60 bg-amber-950/20 ring-1 ring-amber-500/40'
                       : isAvailable
-                      ? 'border-stone-300 bg-white hover:border-amber-700/40'
-                      : 'border-stone-200 bg-stone-100/60 opacity-60'
+                      ? 'border-[var(--border-subtle)] bg-[var(--surface-nested)] hover:border-[var(--border-brass)]'
+                      : 'border-[var(--border-subtle)] bg-[var(--surface-nested)] opacity-40'
                   }`}
                 >
                   <div>
                     <div className="flex items-start justify-between gap-1 mb-1">
-                      <span className="font-bold text-stone-900 font-serif leading-tight">{name}</span>
+                      <span className="font-bold text-[var(--ink-heading)] era-heading leading-tight">{name}</span>
                       <span
                         className={`text-[10px] font-bold px-1.5 py-0.5 rounded whitespace-nowrap ${
                           isCompleted
-                            ? 'bg-emerald-100 text-emerald-800'
+                            ? 'bg-emerald-950/40 text-emerald-300 border border-emerald-600/50'
                             : isResearching
-                            ? 'bg-amber-200 text-amber-900'
+                            ? 'bg-amber-950/40 text-amber-300 border border-amber-500/60'
                             : isAvailable
-                            ? 'bg-stone-200 text-stone-800'
-                            : 'bg-stone-200 text-stone-500'
+                            ? 'era-badge-accent'
+                            : 'bg-[var(--surface-nested)] text-[var(--ink-secondary)] border border-[var(--border-subtle)]'
                         }`}
                       >
                         {isCompleted && '✓ Изучено'}
@@ -148,17 +148,17 @@ export function QuickResearchModal({ isOpen, onClose, onStarted }: Props): React
                         {isLocked && '🔒 Закрыто'}
                       </span>
                     </div>
-                    <p className="text-[11px] text-stone-600 line-clamp-2">{desc}</p>
+                    <p className="text-[11px] text-[var(--ink-secondary)] line-clamp-2">{desc}</p>
                   </div>
 
-                  <div className="flex items-center justify-between border-t border-stone-200/60 pt-2 text-[11px] text-stone-500">
+                  <div className="flex items-center justify-between border-t border-[var(--border-subtle)] pt-2 text-[11px] text-[var(--ink-secondary)]">
                     <span>Срок: ~{Math.ceil(tech.researchDurationMonths / 3)} кв.</span>
                     {isAvailable && (
                       <button
                         type="button"
                         disabled={startingId === tech.id || currentCash < budget}
                         onClick={() => handleStart(tech.id)}
-                        className="rounded bg-amber-900 px-3 py-1 font-bold text-white hover:bg-amber-950 disabled:opacity-50 text-[11px]"
+                        className="rounded-lg btn-brass px-3 py-1 font-bold text-white disabled:opacity-50 text-[11px] cursor-pointer"
                       >
                         {startingId === tech.id ? 'Запуск...' : 'Начать проект'}
                       </button>

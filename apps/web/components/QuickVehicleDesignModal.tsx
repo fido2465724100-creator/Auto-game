@@ -152,30 +152,30 @@ export function QuickVehicleDesignModal({ isOpen, onClose, onCreated }: Props): 
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-3 backdrop-blur-xs">
-      <div className="card-lux relative max-h-[92vh] w-full max-w-4xl overflow-y-auto rounded-2xl border-2 border-amber-900/40 p-6 shadow-2xl text-stone-900">
+      <div className="era-card relative max-h-[92vh] w-full max-w-4xl overflow-y-auto p-6 shadow-2xl text-[var(--ink)]">
         {/* Header */}
-        <div className="flex items-center justify-between border-b-2 border-amber-900/20 pb-3.5">
+        <div className="flex items-center justify-between border-b-2 border-[var(--border-subtle)] pb-3.5">
           <div className="flex items-center gap-2.5">
-            <span className="text-3xl p-1.5 rounded-xl bg-amber-100/80 border border-amber-900/15 shadow-2xs select-none">📐</span>
+            <span className="text-3xl p-1.5 rounded-xl bg-[var(--surface-nested)] border border-[var(--border-subtle)] shadow-2xs select-none">📐</span>
             <div>
-              <h2 className="font-bold text-lg text-amber-950 font-serif tracking-wide">Чертежное бюро: Проектирование автомобиля</h2>
-              <p className="text-xs text-stone-600 font-serif italic">Создание новой модели экипажа с интеграцией в производственный план</p>
+              <h2 className="font-bold text-lg text-[var(--ink-heading)] era-heading tracking-wide">Чертежное бюро: Проектирование автомобиля</h2>
+              <p className="text-xs text-[var(--ink-secondary)] italic">Создание новой модели экипажа с интеграцией в производственный план</p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="rounded-lg p-1.5 text-stone-400 hover:bg-amber-100/60 hover:text-stone-800 text-lg font-bold transition cursor-pointer"
+            className="rounded-lg p-1.5 text-[var(--ink-secondary)] hover:text-[var(--ink)] text-lg font-bold transition cursor-pointer"
           >
             ✕
           </button>
         </div>
 
         {loading ? (
-          <div className="py-16 text-center text-sm text-stone-600 font-serif">Загрузка патентных чертежей и компонентов...</div>
+          <div className="py-16 text-center text-sm text-[var(--ink-secondary)]">Загрузка патентных чертежей и компонентов...</div>
         ) : (
           <div className="mt-4 space-y-4">
             {errorMsg && (
-              <div className="rounded-xl bg-rose-50 border border-rose-300 p-3 text-xs text-rose-800 font-bold shadow-2xs">
+              <div className="rounded-xl bg-rose-950/20 border border-rose-500/60 p-3 text-xs text-rose-300 font-bold shadow-2xs">
                 {errorMsg}
               </div>
             )}
@@ -183,9 +183,9 @@ export function QuickVehicleDesignModal({ isOpen, onClose, onCreated }: Props): 
             {/* Top Grid: Blueprint Visualizer + Segment & Name Selection */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* Left: 2D Blueprint */}
-              <div className="rounded-xl border border-amber-900/20 bg-white/90 p-3 space-y-2 shadow-2xs">
-                <div className="flex justify-between items-center text-xs text-stone-500 font-serif">
-                  <span className="font-bold uppercase tracking-wider text-amber-950">Чертеж прототипа</span>
+              <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-nested)] p-3 space-y-2 shadow-2xs">
+                <div className="flex justify-between items-center text-xs text-[var(--ink-secondary)]">
+                  <span className="font-bold uppercase tracking-wider text-[var(--ink-heading)] era-heading">Чертеж прототипа</span>
                   <span className="font-mono text-[11px]">Масштаб 1:20</span>
                 </div>
                 <CarBlueprintSilhouette
@@ -193,27 +193,27 @@ export function QuickVehicleDesignModal({ isOpen, onClose, onCreated }: Props): 
                   powertrain={detectedPowertrain}
                   className="w-full shadow-2xs"
                 />
-                <div className="grid grid-cols-3 gap-1 pt-1 text-[11px] text-stone-600 border-t border-amber-900/10 font-mono">
-                  <div>Надежность: <strong className="text-emerald-900">{calculatedSpecs.stats.reliability}%</strong></div>
-                  <div>Комфорт: <strong className="text-amber-900">{calculatedSpecs.stats.comfort}</strong></div>
-                  <div>Мощность: <strong className="text-stone-900">{calculatedSpecs.stats.performance}</strong></div>
+                <div className="grid grid-cols-3 gap-1 pt-1 text-[11px] text-[var(--ink-secondary)] border-t border-[var(--border-subtle)] font-mono">
+                  <div>Надежность: <strong className="text-emerald-400">{calculatedSpecs.stats.reliability}%</strong></div>
+                  <div>Комфорт: <strong className="text-[var(--ink-value)]">{calculatedSpecs.stats.comfort}</strong></div>
+                  <div>Мощность: <strong className="text-[var(--ink)]">{calculatedSpecs.stats.performance}</strong></div>
                 </div>
               </div>
 
               {/* Right: Model Name & Class */}
-              <div className="rounded-xl border border-amber-900/20 bg-amber-50/40 p-3.5 space-y-3 text-xs shadow-2xs">
+              <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-nested)] p-3.5 space-y-3 text-xs shadow-2xs">
                 <div>
-                  <label className="font-serif font-bold text-stone-800 block mb-1">Название модели:</label>
+                  <label className="font-bold text-[var(--ink-heading)] block mb-1">Название модели:</label>
                   <input
                     type="text"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    className="w-full rounded-lg border border-amber-900/30 bg-white px-3 py-1.5 font-serif font-bold text-stone-900 shadow-inner focus:outline-none focus:border-amber-700"
+                    className="w-full rounded-lg era-input px-3 py-1.5 font-bold text-[var(--ink)] shadow-inner"
                   />
                 </div>
 
                 <div>
-                  <label className="font-serif font-bold text-stone-800 block mb-1.5">Целевой сегмент рынка:</label>
+                  <label className="font-bold text-[var(--ink-heading)] block mb-1.5">Целевой сегмент рынка:</label>
                   <div className="grid grid-cols-2 gap-2">
                     {(['economy', 'family', 'luxury', 'utility'] as VehicleSegment[]).map((seg) => (
                       <button
@@ -222,12 +222,12 @@ export function QuickVehicleDesignModal({ isOpen, onClose, onCreated }: Props): 
                         onClick={() => handleSegmentChange(seg)}
                         className={`rounded-xl border-2 px-2.5 py-2 text-left transition cursor-pointer ${
                           segment === seg
-                            ? 'border-amber-800 bg-amber-100/90 font-bold text-amber-950 shadow-xs'
-                            : 'border-stone-200 bg-white/80 text-stone-600 hover:border-amber-900/30 hover:bg-amber-50/40'
+                            ? 'border-[var(--border-brass)] bg-[var(--surface-nested)] font-bold text-[var(--ink-heading)] shadow-xs ring-1 ring-[var(--border-brass)]'
+                            : 'border-[var(--border-subtle)] bg-[var(--paper)] text-[var(--ink)] hover:border-[var(--border-brass)]'
                         }`}
                       >
-                        <div className="font-serif font-bold leading-tight">{t.design.segments[seg]?.name ?? seg}</div>
-                        <div className="text-[10px] text-stone-500 font-serif line-clamp-1 mt-0.5">{t.design.segments[seg]?.description ?? ''}</div>
+                        <div className="font-bold text-[var(--ink-heading)] era-heading leading-tight">{t.design.segments[seg]?.name ?? seg}</div>
+                        <div className="text-[10px] text-[var(--ink-secondary)] line-clamp-1 mt-0.5">{t.design.segments[seg]?.description ?? ''}</div>
                       </button>
                     ))}
                   </div>
@@ -236,18 +236,18 @@ export function QuickVehicleDesignModal({ isOpen, onClose, onCreated }: Props): 
             </div>
 
             {/* Powertrain Filter Tabs */}
-            <div className="flex items-center gap-2 border-b border-stone-200 pb-2 text-xs">
-              <span className="font-bold text-stone-600">Силовая установка:</span>
+            <div className="flex items-center gap-2 border-b border-[var(--border-subtle)] pb-2 text-xs">
+              <span className="font-bold text-[var(--ink-secondary)]">Силовая установка:</span>
               <div className="flex gap-1">
                 {(['all', 'ice', 'steam', 'electric'] as const).map((p) => (
                   <button
                     key={p}
                     type="button"
                     onClick={() => setPowertrainFilter(p)}
-                    className={`rounded px-2.5 py-1 text-xs font-bold transition ${
+                    className={`rounded-md px-2.5 py-1 text-xs font-bold transition cursor-pointer ${
                       powertrainFilter === p
-                        ? 'bg-amber-900 text-white'
-                        : 'bg-stone-200 text-stone-700 hover:bg-stone-300'
+                        ? 'btn-brass text-white'
+                        : 'border border-[var(--border-subtle)] bg-[var(--paper)] text-[var(--ink)] hover:bg-[var(--surface-nested)]'
                     }`}
                   >
                     {p === 'all' && 'Все типы'}
@@ -263,11 +263,11 @@ export function QuickVehicleDesignModal({ isOpen, onClose, onCreated }: Props): 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
               {/* Engine */}
               <div>
-                <label className="font-bold text-stone-700 block mb-1">1. Двигатель / Силовая часть:</label>
+                <label className="font-bold text-[var(--ink-secondary)] block mb-1">1. Двигатель / Силовая часть:</label>
                 <select
                   value={selectedComponents.engine}
                   onChange={(e) => setSelectedComponents((prev) => ({ ...prev, engine: e.target.value }))}
-                  className="w-full rounded border border-stone-300 bg-white p-1.5 font-sans"
+                  className="w-full rounded-lg era-input p-1.5 font-sans"
                 >
                   {componentsByCategory.engine
                     .filter((c) => {
@@ -286,11 +286,11 @@ export function QuickVehicleDesignModal({ isOpen, onClose, onCreated }: Props): 
 
               {/* Chassis */}
               <div>
-                <label className="font-bold text-stone-700 block mb-1">2. Рама и шасси:</label>
+                <label className="font-bold text-[var(--ink-secondary)] block mb-1">2. Рама и шасси:</label>
                 <select
                   value={selectedComponents.chassis}
                   onChange={(e) => setSelectedComponents((prev) => ({ ...prev, chassis: e.target.value }))}
-                  className="w-full rounded border border-stone-300 bg-white p-1.5 font-sans"
+                  className="w-full rounded-lg era-input p-1.5 font-sans"
                 >
                   {componentsByCategory.chassis.map((c) => (
                     <option key={c.id} value={c.id} disabled={!c.isUnlocked}>
@@ -302,11 +302,11 @@ export function QuickVehicleDesignModal({ isOpen, onClose, onCreated }: Props): 
 
               {/* Brakes */}
               <div>
-                <label className="font-bold text-stone-700 block mb-1">3. Тормозная система:</label>
+                <label className="font-bold text-[var(--ink-secondary)] block mb-1">3. Тормозная система:</label>
                 <select
                   value={selectedComponents.brakes}
                   onChange={(e) => setSelectedComponents((prev) => ({ ...prev, brakes: e.target.value }))}
-                  className="w-full rounded border border-stone-300 bg-white p-1.5 font-sans"
+                  className="w-full rounded-lg era-input p-1.5 font-sans"
                 >
                   {componentsByCategory.brakes.map((c) => (
                     <option key={c.id} value={c.id} disabled={!c.isUnlocked}>
@@ -318,11 +318,11 @@ export function QuickVehicleDesignModal({ isOpen, onClose, onCreated }: Props): 
 
               {/* Comfort / Cabin */}
               <div>
-                <label className="font-bold text-stone-700 block mb-1">4. Кузов и кабина:</label>
+                <label className="font-bold text-[var(--ink-secondary)] block mb-1">4. Кузов и кабина:</label>
                 <select
                   value={selectedComponents.comfort}
                   onChange={(e) => setSelectedComponents((prev) => ({ ...prev, comfort: e.target.value }))}
-                  className="w-full rounded border border-stone-300 bg-white p-1.5 font-sans"
+                  className="w-full rounded-lg era-input p-1.5 font-sans"
                 >
                   {componentsByCategory.comfort.map((c) => (
                     <option key={c.id} value={c.id} disabled={!c.isUnlocked}>
@@ -334,41 +334,41 @@ export function QuickVehicleDesignModal({ isOpen, onClose, onCreated }: Props): 
             </div>
 
             {/* Materials Required Preview */}
-            <div className="rounded border border-stone-200 bg-stone-50 p-2.5 text-xs">
-              <span className="font-bold text-stone-700 block mb-1">Расход сырья на 1 автомобиль:</span>
+            <div className="rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-nested)] p-2.5 text-xs text-[var(--ink)]">
+              <span className="font-bold text-[var(--ink-secondary)] block mb-1">Расход сырья на 1 автомобиль:</span>
               <div className="flex flex-wrap gap-3">
                 {Object.entries(calculatedSpecs.materialsRequired).map(([mat, amount]) => (
-                  <span key={mat} className="flex items-center gap-1 font-mono text-stone-800">
+                  <span key={mat} className="flex items-center gap-1 font-mono text-[var(--ink)]">
                     <span>{MATERIAL_ICONS[mat as MaterialType] ?? '📦'}</span>
                     <span>{(t.materials[mat as MaterialType] as string | undefined) ?? mat}:</span>
-                    <strong>{amount}</strong>
+                    <strong className="text-[var(--ink-value)]">{amount}</strong>
                   </span>
                 ))}
               </div>
             </div>
 
             {/* Pricing and Quota */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 border-t border-amber-900/15 pt-3 text-xs">
-              <div className="rounded-xl border border-amber-900/15 bg-white/70 p-2.5 shadow-2xs">
-                <label className="font-serif font-bold text-stone-700 block">Себестоимость сборки:</label>
-                <div className="text-base font-mono font-bold text-stone-900 mt-0.5">${calculatedSpecs.productionCost}</div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 border-t border-[var(--border-subtle)] pt-3 text-xs">
+              <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-nested)] p-2.5 shadow-2xs">
+                <label className="font-bold text-[var(--ink-secondary)] block">Себестоимость сборки:</label>
+                <div className="text-base font-mono font-bold text-[var(--ink)] mt-0.5">${calculatedSpecs.productionCost}</div>
               </div>
-              <div className="rounded-xl border border-amber-900/15 bg-white/70 p-2.5 shadow-2xs">
-                <label className="font-serif font-bold text-stone-700 block">Отпускная цена продажи ($):</label>
+              <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-nested)] p-2.5 shadow-2xs">
+                <label className="font-bold text-[var(--ink-secondary)] block">Отпускная цена продажи ($):</label>
                 <input
                   type="number"
                   min={calculatedSpecs.productionCost}
                   step={50}
                   value={salePrice}
                   onChange={(e) => setSalePrice(Number(e.target.value))}
-                  className="mt-1 w-full rounded-lg border border-amber-900/30 bg-white px-2.5 py-1 font-mono font-bold text-amber-950 shadow-inner"
+                  className="mt-1 w-full rounded-lg era-input px-2.5 py-1 font-mono font-bold text-[var(--ink-value)] shadow-inner"
                 />
-                <span className="text-[10px] text-stone-600 font-mono mt-0.5 block">
+                <span className="text-[10px] text-[var(--ink-secondary)] font-mono mt-0.5 block">
                   Маржа: +${salePrice - calculatedSpecs.productionCost} / авто
                 </span>
               </div>
-              <div className="rounded-xl border border-amber-900/15 bg-white/70 p-2.5 shadow-2xs">
-                <label className="font-serif font-bold text-stone-700 block">
+              <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-nested)] p-2.5 shadow-2xs">
+                <label className="font-bold text-[var(--ink-secondary)] block">
                   Квота выпуска ({t.topbar.unitsQuarter}):
                 </label>
                 <input
@@ -377,20 +377,20 @@ export function QuickVehicleDesignModal({ isOpen, onClose, onCreated }: Props): 
                   max={factoryCapacity}
                   value={quarterlyQuota}
                   onChange={(e) => setQuarterlyQuota(Number(e.target.value))}
-                  className="mt-1 w-full rounded-lg border border-amber-900/30 bg-white px-2.5 py-1 font-mono font-bold text-amber-950 shadow-inner"
+                  className="mt-1 w-full rounded-lg era-input px-2.5 py-1 font-mono font-bold text-[var(--ink)] shadow-inner"
                 />
-                <span className="text-[10px] text-stone-500 font-mono mt-0.5 block">
+                <span className="text-[10px] text-[var(--ink-secondary)] font-mono mt-0.5 block">
                   Лимит фабрики: {factoryCapacity} {t.topbar.unitsQuarter}
                 </span>
               </div>
             </div>
 
             {/* Actions */}
-            <div className="flex justify-end gap-3 border-t border-amber-900/20 pt-4">
+            <div className="flex justify-end gap-3 border-t border-[var(--border-subtle)] pt-4">
               <button
                 type="button"
                 onClick={onClose}
-                className="rounded-xl border border-amber-900/30 bg-white/80 px-4 py-2 text-xs font-serif font-bold text-stone-700 hover:bg-stone-100 transition cursor-pointer shadow-2xs"
+                className="rounded-xl border border-[var(--border-subtle)] bg-[var(--paper)] px-4 py-2 text-xs font-bold text-[var(--ink)] hover:bg-[var(--surface-nested)] transition cursor-pointer shadow-2xs"
               >
                 Отмена
               </button>

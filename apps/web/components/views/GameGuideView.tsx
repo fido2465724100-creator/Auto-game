@@ -53,12 +53,12 @@ export default function GameGuideView({ isModal = false }: Props): React.JSX.Ele
     <div className="space-y-4">
       {/* HEADER BANNER (ONLY IN STANDALONE TAB) */}
       {!isModal && (
-        <div className="rounded-xl border border-amber-900/30 bg-[var(--paper)] p-6 shadow-sm">
+        <div className="era-card p-6 shadow-sm">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div className="space-y-1">
               <div className="flex items-center gap-2">
                 <span className="text-2xl">📖</span>
-                <h2 className="font-serif text-2xl font-bold text-amber-950">
+                <h2 className="text-2xl font-bold text-[var(--ink-heading)] era-heading">
                   {lang === 'en'
                     ? 'Industrialist Handbook & Game Guide'
                     : lang === 'uk'
@@ -68,7 +68,7 @@ export default function GameGuideView({ isModal = false }: Props): React.JSX.Ele
                     : 'Справочник промышленника и Руководство по игре'}
                 </h2>
               </div>
-              <p className="text-xs text-stone-600 font-serif">
+              <p className="text-xs text-[var(--ink-secondary)]">
                 {lang === 'en'
                   ? 'Comprehensive manual for managing an automobile concern from 1900 to 2026'
                   : lang === 'uk'
@@ -79,7 +79,7 @@ export default function GameGuideView({ isModal = false }: Props): React.JSX.Ele
               </p>
             </div>
 
-            <div className="flex items-center gap-2 text-xs font-mono bg-amber-100/70 border border-amber-800/20 px-3 py-1.5 rounded-lg text-amber-900 self-start md:self-auto">
+            <div className="flex items-center gap-2 text-xs font-mono era-badge-accent px-3 py-1.5 rounded-lg self-start md:self-auto">
               <span>
                 {lang === 'en'
                   ? '⏳ 504 turns'
@@ -117,8 +117,8 @@ export default function GameGuideView({ isModal = false }: Props): React.JSX.Ele
       {/* TWO COLUMNS: NAVIGATION (LEFT) & CONTENT (RIGHT) */}
       <div className="grid grid-cols-1 md:grid-cols-12 gap-4 sm:gap-6 items-start">
         {/* CHAPTERS MENU */}
-        <aside className="md:col-span-4 rounded-xl border border-stone-300 bg-[var(--paper)] p-3 shadow-xs space-y-1 md:sticky md:top-2">
-          <span className="text-[10px] font-bold uppercase tracking-wider text-stone-500 px-3 py-1.5 block">
+        <aside className="md:col-span-4 era-card p-3 shadow-xs space-y-1 md:sticky md:top-2">
+          <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--ink-secondary)] px-3 py-1.5 block">
             {lang === 'en'
               ? 'Chapters'
               : lang === 'uk'
@@ -134,40 +134,40 @@ export default function GameGuideView({ isModal = false }: Props): React.JSX.Ele
                 key={ch.id}
                 type="button"
                 onClick={() => setActiveChapter(ch.id)}
-                className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs font-serif font-bold text-left transition-all cursor-pointer ${
+                className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs font-bold text-left transition-all cursor-pointer ${
                   isActive
-                    ? 'bg-amber-900 text-white shadow-xs'
-                    : 'text-stone-700 hover:bg-stone-200/60'
+                    ? 'btn-brass text-white shadow-xs'
+                    : 'text-[var(--ink)] hover:bg-[var(--surface-nested)]'
                 }`}
               >
                 <div className="flex items-center gap-2.5 truncate">
                   <span className="text-base">{ch.icon}</span>
                   <span className="truncate">{getChapterTitle(ch)}</span>
                 </div>
-                {isActive && <span className="text-amber-200 text-xs font-bold">→</span>}
+                {isActive && <span className="text-[var(--accent-gold)] text-xs font-bold">→</span>}
               </button>
             );
           })}
         </aside>
 
         {/* CHAPTER CONTENT */}
-        <main className="md:col-span-8 rounded-xl border border-stone-300 bg-[var(--paper)] p-6 shadow-sm leading-relaxed space-y-5">
+        <main className="md:col-span-8 era-card p-6 shadow-sm leading-relaxed space-y-5 text-[var(--ink)]">
           {activeChapter === 'overview' && (
             <div className="space-y-4">
-              <h3 className="font-serif text-xl font-bold text-amber-950 flex items-center gap-2 border-b border-stone-200 pb-2">
+              <h3 className="text-xl font-bold text-[var(--ink-heading)] era-heading flex items-center gap-2 border-b border-[var(--border-subtle)] pb-2">
                 <span>🎯</span>
                 <span>Цель и основы управления (1900–2026)</span>
               </h3>
 
-              <div className="space-y-3 text-xs text-stone-800">
+              <div className="space-y-3 text-xs text-[var(--ink)]">
                 <p>
                   Вы начинаете в <strong>1900 году</strong> в роли смелого инженера-фабриканта в эпоху зарождения
                   мирового автопрома. В вашем распоряжении — кустарная мануфактура со скромным выпуском в 
                   <strong> 2–4 автомобиля в квартал</strong> (10–16 машин в год) и начальный капитал <strong>$14 000</strong>.
                 </p>
 
-                <div className="rounded-lg bg-amber-50/80 border border-amber-200 p-3 space-y-1.5 text-amber-950">
-                  <span className="font-bold block">Ключевой временной темп: Поквартальный ход (Q1–Q4)</span>
+                <div className="rounded-lg bg-[var(--surface-nested)] border border-[var(--border-subtle)] p-3 space-y-1.5 text-[var(--ink)]">
+                  <span className="font-bold text-[var(--ink-heading)] block">Ключевой временной темп: Поквартальный ход (Q1–Q4)</span>
                   <p className="text-[11px] text-stone-700">
                     Один клик кнопки <strong>«Завершить квартал»</strong> переводит время ровно на 3 месяца вперед. В году 4 квартала. 
                     Всего в игре <strong>504 хода</strong> (1900–2026 гг.). Такой темп идеально совпадает с финансовой отчетностью P&L, 

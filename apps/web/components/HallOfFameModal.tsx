@@ -129,11 +129,11 @@ export function HallOfFameModal(): React.JSX.Element | null {
         onClick={(e) => e.stopPropagation()}
       >
         {/* HEADER */}
-        <div className="shrink-0 flex items-center justify-between border-b border-stone-300 bg-[var(--paper)] px-5 py-3.5 shadow-xs">
+        <div className="shrink-0 flex items-center justify-between border-b border-[var(--border-subtle)] bg-[var(--paper-card)] px-5 py-3.5 shadow-xs">
           <div className="flex items-center gap-3">
             <span className="text-2xl select-none">🏆</span>
             <div>
-              <h3 className="font-serif font-bold text-base text-amber-950 leading-tight">
+              <h3 className="font-bold text-base text-[var(--ink-heading)] era-heading leading-tight">
                 {lang === 'en'
                   ? 'Hall of Fame & Dynasty Achievements'
                   : lang === 'uk'
@@ -142,7 +142,7 @@ export function HallOfFameModal(): React.JSX.Element | null {
                   ? 'Ruhmeshalle & Industrie-Erfolge'
                   : 'Зал Славы и Достижения автопромышленника'}
               </h3>
-              <p className="text-[11px] text-stone-500 font-serif">
+              <p className="text-[11px] text-[var(--ink-secondary)]">
                 {lang === 'en'
                   ? 'Historical milestones, trophy showcase and game save management (1900–2026)'
                   : lang === 'uk'
@@ -156,7 +156,7 @@ export function HallOfFameModal(): React.JSX.Element | null {
           <button
             type="button"
             onClick={() => setHallOfFameOpen(false)}
-            className="w-8 h-8 rounded-full flex items-center justify-center text-stone-500 hover:text-stone-900 hover:bg-stone-200 transition cursor-pointer text-lg font-bold leading-none"
+            className="w-8 h-8 rounded-full flex items-center justify-center text-[var(--ink-secondary)] hover:text-[var(--ink)] hover:bg-[var(--surface-nested)] transition cursor-pointer text-lg font-bold leading-none"
             title="Закрыть (Esc)"
           >
             ✕
@@ -167,11 +167,11 @@ export function HallOfFameModal(): React.JSX.Element | null {
         <div className="flex-1 min-h-0 overflow-y-auto p-4 sm:p-6 space-y-6">
           {/* DYNASTY 2026 VICTORY BANNER (IF REACHED) */}
           {isDynastyComplete && (
-            <div className="rounded-xl border-2 border-amber-600/60 bg-gradient-to-r from-amber-100 via-amber-50 to-amber-100 p-5 shadow-md">
+            <div className="rounded-xl border-2 border-[var(--border-brass)] bg-[var(--surface-nested)] p-5 shadow-md">
               <div className="flex items-center gap-4">
                 <span className="text-4xl">👑</span>
                 <div className="space-y-1">
-                  <h4 className="font-serif font-bold text-lg text-amber-950">
+                  <h4 className="font-bold text-lg text-[var(--ink-heading)] era-heading">
                     {lang === 'en'
                       ? 'Century Triumph: 126 Years Completed!'
                       : lang === 'uk'
@@ -180,7 +180,7 @@ export function HallOfFameModal(): React.JSX.Element | null {
                       ? 'Jahrhundert-Triumph: 126 Jahre vollendet!'
                       : 'Великий Триумф: 126 лет истории пройдены!'}
                   </h4>
-                  <p className="text-xs text-stone-700 leading-relaxed font-serif">
+                  <p className="text-xs text-[var(--ink-secondary)] leading-relaxed">
                     {lang === 'en'
                       ? `Your company ${gameState?.company.name} successfully traversed 504 quarters from a modest 1900 workshop to the modern era of 2026.`
                       : lang === 'uk'
@@ -196,8 +196,8 @@ export function HallOfFameModal(): React.JSX.Element | null {
 
           {/* QUICK DYNASTY METRICS */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <div className="rounded-xl border border-stone-300 bg-[var(--paper)] p-3 shadow-2xs">
-              <span className="text-[10px] uppercase font-bold text-stone-500 block">
+            <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-nested)] p-3 shadow-2xs">
+              <span className="text-[10px] uppercase font-bold text-[var(--ink-secondary)] block">
                 {lang === 'en'
                   ? 'Liquid Capital'
                   : lang === 'uk'
@@ -206,12 +206,12 @@ export function HallOfFameModal(): React.JSX.Element | null {
                   ? 'Freies Kapital'
                   : 'Свободный капитал'}
               </span>
-              <span className="text-base font-mono font-bold text-emerald-800">
+              <span className="text-base font-mono font-bold text-emerald-400">
                 ${(gameState?.company.cash ?? 0).toLocaleString()}
               </span>
             </div>
-            <div className="rounded-xl border border-stone-300 bg-[var(--paper)] p-3 shadow-2xs">
-              <span className="text-[10px] uppercase font-bold text-stone-500 block">
+            <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-nested)] p-3 shadow-2xs">
+              <span className="text-[10px] uppercase font-bold text-[var(--ink-secondary)] block">
                 {lang === 'en'
                   ? 'Brand Reputation'
                   : lang === 'uk'
@@ -220,12 +220,12 @@ export function HallOfFameModal(): React.JSX.Element | null {
                   ? 'Markenruf'
                   : 'Репутация марки'}
               </span>
-              <span className="text-base font-serif font-bold text-amber-900">
+              <span className="text-base font-bold text-[var(--accent-gold)]">
                 ★ {gameState?.company.reputation ?? 0}
               </span>
             </div>
-            <div className="rounded-xl border border-stone-300 bg-[var(--paper)] p-3 shadow-2xs">
-              <span className="text-[10px] uppercase font-bold text-stone-500 block">
+            <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-nested)] p-3 shadow-2xs">
+              <span className="text-[10px] uppercase font-bold text-[var(--ink-secondary)] block">
                 {lang === 'en'
                   ? 'Current Era'
                   : lang === 'uk'
@@ -234,12 +234,12 @@ export function HallOfFameModal(): React.JSX.Element | null {
                   ? 'Epoche / Jahr'
                   : 'Эпоха / Год'}
               </span>
-              <span className="text-base font-serif font-bold text-stone-800">
+              <span className="text-base font-bold text-[var(--ink-heading)]">
                 {year} {lang === 'en' ? `(Q${quarter})` : lang === 'uk' ? `р. (${quarter} кв.)` : lang === 'de' ? `(Q${quarter})` : `г. (${quarter} кв.)`}
               </span>
             </div>
-            <div className="rounded-xl border border-stone-300 bg-[var(--paper)] p-3 shadow-2xs">
-              <span className="text-[10px] uppercase font-bold text-stone-500 block">
+            <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-nested)] p-3 shadow-2xs">
+              <span className="text-[10px] uppercase font-bold text-[var(--ink-secondary)] block">
                 {lang === 'en'
                   ? 'Achievements'
                   : lang === 'uk'
@@ -248,7 +248,7 @@ export function HallOfFameModal(): React.JSX.Element | null {
                   ? 'Erfolge freigeschaltet'
                   : 'Трофеи открыты'}
               </span>
-              <span className="text-base font-mono font-bold text-amber-950">
+              <span className="text-base font-mono font-bold text-[var(--ink-value)]">
                 {unlockedCount} / {totalCount} ({progressPercent}%)
               </span>
             </div>
@@ -256,7 +256,7 @@ export function HallOfFameModal(): React.JSX.Element | null {
 
           {/* PROGRESS BAR */}
           <div className="space-y-1.5">
-            <div className="flex justify-between text-xs font-serif font-bold text-stone-700">
+            <div className="flex justify-between text-xs font-bold text-[var(--ink-secondary)]">
               <span>
                 {lang === 'en'
                   ? 'Dynasty Progression'
@@ -268,9 +268,9 @@ export function HallOfFameModal(): React.JSX.Element | null {
               </span>
               <span>{progressPercent}%</span>
             </div>
-            <div className="h-2 w-full bg-stone-200 rounded-full overflow-hidden">
+            <div className="h-2 w-full bg-[var(--surface-nested)] border border-[var(--border-subtle)] rounded-full overflow-hidden">
               <div
-                className="h-full bg-gradient-to-r from-amber-600 via-amber-700 to-amber-900 transition-all duration-300"
+                className="h-full bg-gradient-to-r from-amber-600 via-amber-500 to-amber-400 transition-all duration-300"
                 style={{ width: `${progressPercent}%` }}
               />
             </div>
@@ -278,7 +278,7 @@ export function HallOfFameModal(): React.JSX.Element | null {
 
           {/* ACHIEVEMENTS GRID */}
           <div className="space-y-3">
-            <h4 className="font-serif font-bold text-sm text-amber-950 flex items-center gap-2 border-b border-stone-300 pb-1.5">
+            <h4 className="font-bold text-sm text-[var(--ink-heading)] era-heading flex items-center gap-2 border-b border-[var(--border-subtle)] pb-1.5">
               <span>🎖️</span>
               <span>
                 {lang === 'en'
@@ -297,33 +297,33 @@ export function HallOfFameModal(): React.JSX.Element | null {
                   key={ach.id}
                   className={`rounded-xl border p-3.5 transition-all flex items-start gap-3 ${
                     ach.unlocked
-                      ? 'border-amber-700/40 bg-amber-50/80 shadow-xs'
-                      : 'border-stone-300 bg-stone-100/60 opacity-65'
+                      ? 'border-[var(--border-brass)] bg-[var(--surface-nested)] shadow-xs'
+                      : 'border-[var(--border-subtle)] bg-[var(--surface-nested)] opacity-40'
                   }`}
                 >
                   <div
                     className={`w-10 h-10 rounded-xl flex items-center justify-center text-xl shrink-0 shadow-2xs ${
                       ach.unlocked
-                        ? 'bg-gradient-to-br from-amber-200 to-amber-400 border border-amber-500'
-                        : 'bg-stone-200 text-stone-400 border border-stone-300'
+                        ? 'bg-[var(--tag-bg)] border border-[var(--border-brass)] text-[var(--tag-text)]'
+                        : 'bg-[var(--surface-nested)] text-[var(--ink-secondary)] border border-[var(--border-subtle)]'
                     }`}
                   >
                     {ach.icon}
                   </div>
                   <div className="flex-1 min-w-0 space-y-1">
                     <div className="flex items-center justify-between gap-1">
-                      <span className="font-serif font-bold text-xs text-amber-950 truncate">
+                      <span className="font-bold text-xs text-[var(--ink-heading)] era-heading truncate">
                         {getAchievementTitle(ach)}
                       </span>
                       {ach.unlocked ? (
-                        <span className="text-[10px] font-mono font-bold text-emerald-800 bg-emerald-100/70 border border-emerald-300 px-1.5 py-0.5 rounded">
+                        <span className="text-[10px] font-mono font-bold text-emerald-300 bg-emerald-950/40 border border-emerald-600/50 px-1.5 py-0.5 rounded">
                           {ach.unlockedAtYear ? `${ach.unlockedAtYear} Q${ach.unlockedAtQuarter ?? 1}` : '✓'}
                         </span>
                       ) : (
-                        <span className="text-[10px] font-mono text-stone-500">🔒</span>
+                        <span className="text-[10px] font-mono text-[var(--ink-secondary)]">🔒</span>
                       )}
                     </div>
-                    <p className="text-[11px] text-stone-600 leading-snug">
+                    <p className="text-[11px] text-[var(--ink-secondary)] leading-snug">
                       {getAchievementDesc(ach)}
                     </p>
                   </div>
@@ -333,11 +333,11 @@ export function HallOfFameModal(): React.JSX.Element | null {
           </div>
 
           {/* SAVE & LOAD SECTION */}
-          <div className="rounded-xl border border-stone-300 bg-[var(--paper)] p-4 shadow-xs space-y-3">
+          <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-nested)] p-4 shadow-xs space-y-3">
             <div className="flex items-center gap-2">
               <span className="text-xl">💾</span>
               <div>
-                <h4 className="font-serif font-bold text-sm text-amber-950">
+                <h4 className="font-bold text-sm text-[var(--ink-heading)] era-heading">
                   {lang === 'en'
                     ? 'Game Save Management'
                     : lang === 'uk'
@@ -346,7 +346,7 @@ export function HallOfFameModal(): React.JSX.Element | null {
                     ? 'Spielstand-Verwaltung'
                     : 'Экспорт и Загрузка файла сохранения'}
                 </h4>
-                <p className="text-[11px] text-stone-500 font-serif">
+                <p className="text-[11px] text-[var(--ink-secondary)]">
                   {lang === 'en'
                     ? 'Download your progress as a JSON file or restore a previous game at any time.'
                     : lang === 'uk'
@@ -359,7 +359,7 @@ export function HallOfFameModal(): React.JSX.Element | null {
             </div>
 
             {importMessage && (
-              <div className="p-2.5 rounded-lg text-xs font-serif font-bold border border-amber-300 bg-amber-50 text-amber-950">
+              <div className="p-2.5 rounded-lg text-xs font-bold border border-[var(--border-brass)] bg-[var(--paper)] text-[var(--ink)]">
                 {importMessage}
               </div>
             )}
@@ -368,7 +368,7 @@ export function HallOfFameModal(): React.JSX.Element | null {
               <button
                 type="button"
                 onClick={handleExport}
-                className="flex items-center gap-2 rounded-lg bg-amber-900 hover:bg-amber-950 text-white px-4 py-2 text-xs font-serif font-bold transition shadow-xs cursor-pointer"
+                className="flex items-center gap-2 rounded-lg btn-brass text-white px-4 py-2 text-xs font-bold transition shadow-xs cursor-pointer"
               >
                 <span>💾</span>
                 <span>
@@ -386,7 +386,7 @@ export function HallOfFameModal(): React.JSX.Element | null {
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
                 disabled={isImporting}
-                className="flex items-center gap-2 rounded-lg border border-amber-900/40 bg-white hover:bg-amber-50 text-amber-950 px-4 py-2 text-xs font-serif font-bold transition shadow-xs cursor-pointer disabled:opacity-50"
+                className="flex items-center gap-2 rounded-lg border border-[var(--border-subtle)] bg-[var(--paper)] hover:bg-[var(--surface-nested)] text-[var(--ink)] px-4 py-2 text-xs font-bold transition shadow-xs cursor-pointer disabled:opacity-50"
               >
                 <span>📂</span>
                 <span>
@@ -409,8 +409,8 @@ export function HallOfFameModal(): React.JSX.Element | null {
         </div>
 
         {/* FOOTER */}
-        <div className="shrink-0 border-t border-stone-300 bg-[var(--paper)] px-5 py-3 flex items-center justify-between">
-          <span className="text-xs text-stone-500 font-serif hidden sm:inline">
+        <div className="shrink-0 border-t border-[var(--border-subtle)] bg-[var(--paper-card)] px-5 py-3 flex items-center justify-between">
+          <span className="text-xs text-[var(--ink-secondary)] hidden sm:inline">
             {lang === 'en'
               ? 'Trophies are awarded automatically upon completing achievements.'
               : lang === 'uk'
@@ -422,7 +422,7 @@ export function HallOfFameModal(): React.JSX.Element | null {
           <button
             type="button"
             onClick={() => setHallOfFameOpen(false)}
-            className="rounded-lg bg-amber-900 px-5 py-2 text-xs font-serif font-bold text-white shadow-xs hover:bg-amber-950 transition cursor-pointer ml-auto"
+            className="rounded-lg btn-brass px-5 py-2 text-xs font-bold text-white shadow-xs transition cursor-pointer ml-auto"
           >
             {lang === 'en' ? 'Close' : lang === 'uk' ? 'Закрити' : lang === 'de' ? 'Schließen' : 'Закрыть'}
           </button>

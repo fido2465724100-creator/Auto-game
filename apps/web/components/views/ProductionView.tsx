@@ -184,29 +184,29 @@ export default function ProductionPage(): React.JSX.Element {
   return (
     <div className="space-y-6">
       {/* HEADER */}
-      <div className="border-b border-amber-900/20 pb-4">
-        <h1 className="text-2xl font-bold text-amber-950 flex items-center gap-2">
+      <div className="border-b border-[var(--border-subtle)] pb-4">
+        <h1 className="text-2xl font-bold text-[var(--ink-heading)] era-heading flex items-center gap-2">
           <span>🏭</span> {t.production.title}
         </h1>
-        <p className="text-xs text-stone-600 font-sans mt-1">
+        <p className="text-xs text-[var(--ink-secondary)] font-sans mt-1">
           {t.production.subtitle}
         </p>
       </div>
 
       {statusMsg && (
-        <div className="rounded border border-amber-800/40 bg-amber-50 px-4 py-2.5 text-xs text-amber-950 font-semibold shadow-xs flex justify-between items-center">
+        <div className="rounded-lg border border-[var(--border-brass)] bg-[var(--surface-nested)] px-4 py-2.5 text-xs text-[var(--ink)] font-semibold shadow-xs flex justify-between items-center">
           <span>{statusMsg}</span>
-          <button onClick={() => setStatusMsg(null)} className="text-stone-400 hover:text-stone-700 font-bold ml-4">✕</button>
+          <button onClick={() => setStatusMsg(null)} className="text-[var(--ink-secondary)] hover:text-[var(--ink)] font-bold ml-4">✕</button>
         </div>
       )}
 
       {/* SHORTAGE ALERT */}
       {hasShortage && !isAutoProcure && (
-        <div className="rounded-md border border-rose-400 bg-rose-50 p-4 text-rose-900 text-xs shadow-xs">
-          <div className="flex items-center gap-2 font-bold mb-1">
+        <div className="rounded-lg border border-rose-500/60 bg-rose-950/20 p-4 text-rose-300 text-xs shadow-xs">
+          <div className="flex items-center gap-2 font-bold mb-1 text-rose-200">
             <span className="text-base">⚠️</span> {t.production.shortageAlert}
           </div>
-          <p className="text-[11px] text-rose-700">
+          <p className="text-[11px] text-rose-300/90">
             {t.production.shortageHint}
           </p>
         </div>
@@ -214,11 +214,11 @@ export default function ProductionPage(): React.JSX.Element {
 
       {/* AUTO-PROCUREMENT CASH DEFICIT ALERT */}
       {hasShortage && isAutoProcure && currentCash < totalProcureCost && (
-        <div className="rounded-md border border-amber-500 bg-amber-50 p-4 text-amber-950 text-xs shadow-xs">
-          <div className="flex items-center gap-2 font-bold mb-1">
+        <div className="rounded-lg border border-amber-500/60 bg-amber-950/20 p-4 text-amber-200 text-xs shadow-xs">
+          <div className="flex items-center gap-2 font-bold mb-1 text-amber-100">
             <span className="text-base">⚠️</span> Внимание: для автозакупки недостающего сырья требуется ${totalProcureCost.toLocaleString()}, а в кассе только ${currentCash.toLocaleString()}!
           </div>
-          <p className="text-[11px] text-amber-800">
+          <p className="text-[11px] text-amber-200/90">
             Из-за дефицита оборотных средств цех сможет закупить материалы лишь частично. Чтобы избежать простоя сборки, пополните баланс кредитом в Банке или оптимизируйте квоты выпуска под доступный бюджет.
           </p>
         </div>
@@ -226,7 +226,7 @@ export default function ProductionPage(): React.JSX.Element {
 
       {/* OVER CAPACITY ALERT */}
       {isOverCapacity && (
-        <div className="rounded-md border border-amber-400 bg-amber-50 p-3.5 text-amber-900 text-xs shadow-xs flex items-center gap-2">
+        <div className="rounded-lg border border-amber-500/60 bg-amber-950/20 p-3.5 text-amber-200 text-xs shadow-xs flex items-center gap-2">
           <span className="text-base">⚠️</span>
           <span>
             {t.production.overCapacityWarning} ({totalPlannedUnits} / {factory.capacity} {t.topbar.unitsQuarter})
@@ -236,8 +236,8 @@ export default function ProductionPage(): React.JSX.Element {
 
       {/* BANK / LIQUIDITY BANNER */}
       {(currentCash < 4000 || (gameState.company.loans?.length ?? 0) > 0) && (
-        <div className="rounded-md border border-amber-800/30 bg-gradient-to-r from-amber-50 to-stone-50 p-3.5 text-xs shadow-xs flex flex-wrap items-center justify-between gap-3">
-          <div className="flex items-center gap-2 text-amber-950">
+        <div className="rounded-lg border border-[var(--border-brass)] bg-[var(--surface-nested)] p-3.5 text-xs shadow-xs flex flex-wrap items-center justify-between gap-3">
+          <div className="flex items-center gap-2 text-[var(--ink)]">
             <span className="text-base">🏦</span>
             <span>
               {(gameState.company.loans?.length ?? 0) > 0
@@ -247,7 +247,7 @@ export default function ProductionPage(): React.JSX.Element {
           </div>
           <a
             href="/bank"
-            className="rounded bg-amber-800 text-white px-3 py-1 font-bold text-xs hover:bg-amber-900 transition shadow-xs"
+            className="rounded-lg btn-brass px-3 py-1 font-bold text-xs transition shadow-xs"
           >
             Банк и кредиты →
           </a>
@@ -255,36 +255,36 @@ export default function ProductionPage(): React.JSX.Element {
       )}
 
       {/* FACTORY CARD */}
-      <div className="rounded-lg border border-amber-900/20 bg-amber-50/40 p-5 shadow-xs">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-amber-900/10 pb-4">
+      <div className="era-card p-5">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[var(--border-subtle)] pb-4">
           <div>
             <div className="flex items-center gap-2">
-              <h2 className="text-lg font-bold text-amber-950">{factory.name}</h2>
-              <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-amber-800 text-white">
+              <h2 className="text-lg font-bold text-[var(--ink-heading)] era-heading">{factory.name}</h2>
+              <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded era-badge-accent">
                 {t.production.level} {factory.level}
               </span>
             </div>
-            <p className="text-xs text-stone-500 font-sans mt-0.5">
+            <p className="text-xs text-[var(--ink-secondary)] font-sans mt-0.5">
               {t.production.historicalPlantSubtitle}
             </p>
           </div>
 
           <div className="flex items-center gap-3">
             <div className="text-right">
-              <span className="text-[10px] text-stone-500 uppercase block font-semibold">{t.production.overheadMonthly}</span>
-              <span className="text-xs font-bold text-stone-800">${(factory.monthlyOverhead * 3).toLocaleString()} / кв.</span>
+              <span className="text-[10px] text-[var(--ink-secondary)] uppercase block font-semibold">{t.production.overheadMonthly}</span>
+              <span className="text-xs font-bold text-[var(--ink)]">${(factory.monthlyOverhead * 3).toLocaleString()} / кв.</span>
             </div>
             <div className="text-right">
-              <span className="text-[10px] text-stone-500 uppercase block font-semibold">{t?.production?.premisesRent ?? 'Аренда производственных площадей'}</span>
-              <span className="text-xs font-bold text-amber-950">${premisesRent.toLocaleString()} / кв.</span>
+              <span className="text-[10px] text-[var(--ink-secondary)] uppercase block font-semibold">{t?.production?.premisesRent ?? 'Аренда производственных площадей'}</span>
+              <span className="text-xs font-bold text-[var(--ink-value)]">${premisesRent.toLocaleString()} / кв.</span>
             </div>
             <button
               onClick={handleExpandFactory}
               disabled={actionPending || currentCash < factory.upgradeCost}
-              className={`px-4 py-2 rounded text-xs font-bold transition shadow-xs ${
+              className={`px-4 py-2 rounded-lg text-xs font-bold transition shadow-xs cursor-pointer ${
                 currentCash >= factory.upgradeCost
-                  ? 'bg-amber-800 text-white hover:bg-amber-900'
-                  : 'bg-stone-300 text-stone-500 cursor-not-allowed'
+                  ? 'btn-brass text-white'
+                  : 'bg-[var(--surface-nested)] text-[var(--ink-secondary)] opacity-50 cursor-not-allowed'
               }`}
             >
               🏗️ {t.production.expandBtn} (${factory.upgradeCost.toLocaleString()})
@@ -294,20 +294,20 @@ export default function ProductionPage(): React.JSX.Element {
 
         {/* CAPACITY BAR */}
         <div className="mt-4">
-          <div className="flex justify-between text-xs font-semibold text-stone-700 mb-1.5">
+          <div className="flex justify-between text-xs font-semibold text-[var(--ink)] mb-1.5">
             <span>{t.production.capacityUsed}</span>
             <span>
               {totalPlannedUnits} / {factory.capacity} {t.topbar.unitsQuarter} ({capacityPercent}%)
             </span>
           </div>
-          <div className="w-full h-3.5 bg-stone-200 rounded-full overflow-hidden border border-stone-300/80">
+          <div className="w-full h-3.5 bg-[var(--surface-nested)] rounded-full overflow-hidden border border-[var(--border-subtle)]">
             <div
               className={`h-full transition-all duration-300 ${
                 isOverCapacity
                   ? 'bg-rose-600'
                   : capacityPercent > 85
                   ? 'bg-amber-600'
-                  : 'bg-emerald-700'
+                  : 'bg-emerald-600'
               }`}
               style={{ width: `${Math.min(100, (totalPlannedUnits / factory.capacity) * 100)}%` }}
             />
@@ -316,13 +316,13 @@ export default function ProductionPage(): React.JSX.Element {
       </div>
 
       {/* PRODUCTION LINES & QUOTAS */}
-      <div className="rounded-lg border border-stone-300 bg-[var(--paper)] p-5 shadow-xs">
-        <div className="flex items-center justify-between border-b border-stone-200 pb-3 mb-4">
+      <div className="era-card p-5">
+        <div className="flex items-center justify-between border-b border-[var(--border-subtle)] pb-3 mb-4">
           <div>
-            <h2 className="text-base font-bold text-amber-950 flex items-center gap-2">
+            <h2 className="text-base font-bold text-[var(--ink-heading)] era-heading flex items-center gap-2">
               <span>🚗</span> {t.production.linesTitle}
             </h2>
-            <p className="text-xs text-stone-500 font-sans">
+            <p className="text-xs text-[var(--ink-secondary)] font-sans">
               {t.production.planSubtitle}
             </p>
           </div>
@@ -330,14 +330,14 @@ export default function ProductionPage(): React.JSX.Element {
           <button
             onClick={handleSavePlan}
             disabled={actionPending}
-            className="px-4 py-2 rounded bg-amber-800 text-white text-xs font-bold hover:bg-amber-900 transition shadow-xs"
+            className="btn-brass px-4 py-2 rounded-lg text-xs font-bold transition shadow-xs cursor-pointer"
           >
             💾 {t.production.savePlanBtn}
           </button>
         </div>
 
         {activeModels.length === 0 ? (
-          <p className="py-6 text-center text-xs text-stone-500 italic">
+          <p className="py-6 text-center text-xs text-[var(--ink-secondary)] italic">
             {t.production.noModels}
           </p>
         ) : (
@@ -351,29 +351,29 @@ export default function ProductionPage(): React.JSX.Element {
               return (
                 <div
                   key={model.id}
-                  className="rounded border border-stone-200 bg-stone-50/70 p-4 transition hover:border-amber-700/40"
+                  className="rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-nested)] p-4 transition hover:border-[var(--border-brass)]"
                 >
                   <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
                     <div>
                       <div className="flex items-center gap-2">
-                        <span className="font-bold text-sm text-amber-950">{model.name}</span>
-                        <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-amber-100 text-amber-900">
+                        <span className="font-bold text-sm text-[var(--ink-heading)] era-heading">{model.name}</span>
+                        <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded era-badge-accent">
                           {t.design.segments[model.targetSegment]?.name ?? model.targetSegment}
                         </span>
                       </div>
-                      <div className="flex items-center gap-4 mt-1 text-xs text-stone-600 font-sans">
-                        <span>{t.production.costPerUnit}: <strong>${unitCost.toLocaleString()}</strong></span>
+                      <div className="flex items-center gap-4 mt-1 text-xs text-[var(--ink-secondary)] font-sans">
+                        <span>{t.production.costPerUnit}: <strong className="text-[var(--ink)]">${unitCost.toLocaleString()}</strong></span>
                         <span>•</span>
-                        <span>{t.design.salePrice}: <strong>${model.salePrice.toLocaleString()}</strong></span>
+                        <span>{t.design.salePrice}: <strong className="text-[var(--ink-value)]">${model.salePrice.toLocaleString()}</strong></span>
                         <span>•</span>
-                        <span>{t.production.totalCost}: <strong>${totalCost.toLocaleString()}</strong> / кв.</span>
+                        <span>{t.production.totalCost}: <strong className="text-[var(--ink)]">${totalCost.toLocaleString()}</strong> / кв.</span>
                       </div>
                     </div>
 
                     {/* QUOTA INPUT */}
                     <div className="flex items-center gap-3">
                       <div className="text-right">
-                        <label htmlFor={`quota-${model.id}`} className="block text-[10px] text-stone-500 uppercase font-semibold">
+                        <label htmlFor={`quota-${model.id}`} className="block text-[10px] text-[var(--ink-secondary)] uppercase font-semibold">
                           {t.production.plannedUnits}
                         </label>
                         <div className="flex items-center gap-1.5 mt-0.5">
@@ -385,17 +385,17 @@ export default function ProductionPage(): React.JSX.Element {
                             step="1"
                             value={planned}
                             onChange={(e) => handlePlanChange(model.id, Number(e.target.value))}
-                            className="w-24 rounded border border-stone-300 bg-white px-2.5 py-1 text-right text-xs font-bold text-stone-900 focus:border-amber-800 focus:outline-none"
+                            className="w-24 rounded-lg era-input px-2.5 py-1 text-right text-xs font-bold text-[var(--ink)]"
                           />
-                          <span className="text-xs text-stone-500">{t.production.unitsShort}</span>
+                          <span className="text-xs text-[var(--ink-secondary)]">{t.production.unitsShort}</span>
                         </div>
                       </div>
                     </div>
                   </div>
 
                   {/* MATERIAL REQUIREMENTS PER UNIT */}
-                  <div className="mt-3 pt-2.5 border-t border-stone-200/80">
-                    <span className="text-[10px] text-stone-500 uppercase block font-semibold mb-1.5">
+                  <div className="mt-3 pt-2.5 border-t border-[var(--border-subtle)]">
+                    <span className="text-[10px] text-[var(--ink-secondary)] uppercase block font-semibold mb-1.5">
                       {t.production.materialsRequiredPerUnit}:
                     </span>
                     <div className="flex flex-wrap gap-2">
@@ -409,11 +409,11 @@ export default function ProductionPage(): React.JSX.Element {
                         return (
                           <span
                             key={matKey}
-                            className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[11px] bg-white border border-stone-200 text-stone-700 shadow-2xs font-sans"
+                            className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[11px] bg-[var(--paper)] border border-[var(--border-subtle)] text-[var(--ink)] shadow-2xs font-sans"
                           >
                             <span>{icon}</span>
                             <span>{name}:</span>
-                            <strong>{amount} {unit}</strong>
+                            <strong className="text-[var(--ink-value)]">{amount} {unit}</strong>
                           </span>
                         );
                       })}
@@ -427,34 +427,34 @@ export default function ProductionPage(): React.JSX.Element {
       </div>
 
       {/* MATERIALS WAREHOUSE & COMMODITY MARKET */}
-      <div className="rounded-lg border border-stone-300 bg-[var(--paper)] p-5 shadow-xs">
-        <div className="flex flex-col md:flex-row md:items-center justify-between border-b border-stone-200 pb-3 mb-4 gap-3">
+      <div className="era-card p-5">
+        <div className="flex flex-col md:flex-row md:items-center justify-between border-b border-[var(--border-subtle)] pb-3 mb-4 gap-3">
           <div>
-            <h2 className="text-base font-bold text-amber-950 flex items-center gap-2">
+            <h2 className="text-base font-bold text-[var(--ink-heading)] era-heading flex items-center gap-2">
               <span>🪵</span> {t.production.warehouseTitle}
             </h2>
-            <p className="text-xs text-stone-500 font-sans">
+            <p className="text-xs text-[var(--ink-secondary)] font-sans">
               {t.production.warehouseSubtitle}
             </p>
           </div>
 
           {/* AUTO-PROCUREMENT TOGGLE */}
-          <div className="flex items-center gap-3 bg-amber-50/80 border border-amber-800/20 px-3 py-2 rounded-md">
+          <div className="flex items-center gap-3 bg-[var(--surface-nested)] border border-[var(--border-subtle)] px-3 py-2 rounded-lg">
             <input
               type="checkbox"
               id="autoProcure"
               checked={isAutoProcure}
               onChange={handleToggleAutoProcure}
               disabled={actionPending}
-              className="h-4 w-4 rounded border-stone-300 text-amber-800 focus:ring-amber-800 cursor-pointer"
+              className="h-4 w-4 rounded border-[var(--border-subtle)] text-[var(--accent)] focus:ring-[var(--accent-gold)] cursor-pointer"
             />
-            <label htmlFor="autoProcure" className="cursor-pointer text-xs font-bold text-amber-950 select-none">
+            <label htmlFor="autoProcure" className="cursor-pointer text-xs font-bold text-[var(--ink)] select-none">
               {t.production.autoProcurement}
             </label>
           </div>
         </div>
 
-        <p className="text-[11px] text-stone-500 italic mb-4">
+        <p className="text-[11px] text-[var(--ink-secondary)] italic mb-4">
           {t.production.autoProcurementHint}
         </p>
 
@@ -474,9 +474,9 @@ export default function ProductionPage(): React.JSX.Element {
                 className={`rounded-lg border p-4 flex flex-col justify-between transition ${
                   isShort
                     ? inStock === 0
-                      ? 'border-rose-400 bg-rose-50/50'
-                      : 'border-amber-300 bg-amber-50/30'
-                    : 'border-stone-200 bg-stone-50/50 hover:border-amber-700/30'
+                      ? 'border-rose-500/60 bg-rose-950/20'
+                      : 'border-amber-500/50 bg-amber-950/15'
+                    : 'border-[var(--border-subtle)] bg-[var(--surface-nested)] hover:border-[var(--border-brass)]'
                 }`}
               >
                 <div>
@@ -484,32 +484,32 @@ export default function ProductionPage(): React.JSX.Element {
                     <div className="flex items-center gap-2">
                       <span className="text-2xl">{icon}</span>
                       <div>
-                        <h3 className="font-bold text-sm text-stone-900 leading-tight">{name}</h3>
-                        <span className="text-[10px] text-stone-500 font-sans">
+                        <h3 className="font-bold text-sm text-[var(--ink-heading)] leading-tight">{name}</h3>
+                        <span className="text-[10px] text-[var(--ink-secondary)] font-sans">
                           {t.production.yearAvailable}: {item.yearAvailable} г.
                         </span>
                       </div>
                     </div>
-                    <span className="text-xs font-bold px-2 py-0.5 rounded bg-amber-100 text-amber-950">
+                    <span className="text-xs font-bold px-2 py-0.5 rounded era-badge-accent">
                       ${item.basePrice} / {unit}
                     </span>
                   </div>
 
-                  <p className="text-[11px] text-stone-600 font-sans mt-2 line-clamp-2">
+                  <p className="text-[11px] text-[var(--ink-secondary)] font-sans mt-2 line-clamp-2">
                     {item.description}
                   </p>
 
-                  <div className="mt-3 pt-2.5 border-t border-stone-200/80 space-y-1 text-xs">
+                  <div className="mt-3 pt-2.5 border-t border-[var(--border-subtle)] space-y-1 text-xs">
                     <div className="flex justify-between">
-                      <span className="text-stone-500 font-sans">{t.production.inStock}:</span>
-                      <span className={`font-bold ${isShort ? 'text-rose-700' : 'text-stone-900'}`}>
+                      <span className="text-[var(--ink-secondary)] font-sans">{t.production.inStock}:</span>
+                      <span className={`font-bold ${isShort ? 'text-rose-400' : 'text-[var(--ink)]'}`}>
                         {inStock.toLocaleString()} {unit}
                       </span>
                     </div>
 
                     <div className="flex justify-between">
-                      <span className="text-stone-500 font-sans">{t.production.needNextMonth}:</span>
-                      <span className="font-bold text-stone-800">
+                      <span className="text-[var(--ink-secondary)] font-sans">{t.production.needNextMonth}:</span>
+                      <span className="font-bold text-[var(--ink-value)]">
                         {demand.toLocaleString()} {unit}
                       </span>
                     </div>
@@ -517,8 +517,8 @@ export default function ProductionPage(): React.JSX.Element {
                 </div>
 
                 {/* PURCHASE BATCH BUTTONS */}
-                <div className="mt-4 pt-3 border-t border-stone-200">
-                  <span className="block text-[10px] text-stone-500 uppercase font-semibold mb-1.5">
+                <div className="mt-4 pt-3 border-t border-[var(--border-subtle)]">
+                  <span className="block text-[10px] text-[var(--ink-secondary)] uppercase font-semibold mb-1.5">
                     {t.production.buyBatchBtn}:
                   </span>
                   <div className="grid grid-cols-3 gap-1.5">
@@ -531,10 +531,10 @@ export default function ProductionPage(): React.JSX.Element {
                           key={batch}
                           onClick={() => handleBuyMaterial(item.id, batch)}
                           disabled={actionPending || !canAfford}
-                          className={`px-1.5 py-1 rounded text-[10px] font-bold transition flex flex-col items-center ${
+                          className={`px-1.5 py-1 rounded text-[10px] font-bold transition flex flex-col items-center cursor-pointer ${
                             canAfford
-                              ? 'bg-amber-800/10 text-amber-950 border border-amber-800/30 hover:bg-amber-800 hover:text-white'
-                              : 'bg-stone-100 text-stone-400 border border-stone-200 cursor-not-allowed'
+                              ? 'bg-[var(--paper)] text-[var(--ink)] border border-[var(--border-subtle)] hover:border-[var(--border-brass)] hover:text-[var(--accent-gold)]'
+                              : 'bg-transparent text-[var(--ink-secondary)] opacity-40 border border-[var(--border-subtle)] cursor-not-allowed'
                           }`}
                         >
                           <span>+{batch} {unit}</span>

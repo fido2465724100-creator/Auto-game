@@ -311,6 +311,10 @@ export function getEraTheme(year: number): EraThemeConfig {
   return ERA_THEMES['era-2020'];
 }
 
+export function getEraId(year: number): EraId {
+  return getEraTheme(year).id;
+}
+
 export function getEraName(theme: EraThemeConfig, lang: Language): string {
   if (lang === 'en') return theme.nameEn;
   if (lang === 'uk') return theme.nameUk;
