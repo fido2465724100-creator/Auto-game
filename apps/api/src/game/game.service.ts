@@ -26,6 +26,7 @@ import {
   vehicleComponentSeed,
   competitorsSeed,
   competitorMilestonesSeed,
+  achievementsSeed,
 } from '../../../../data';
 
 function createInitialGameState(setup?: {
@@ -128,6 +129,7 @@ function createInitialGameState(setup?: {
     reportHistory: [],
     competitors: competitorsSeed,
     competitorMilestones: competitorMilestonesSeed,
+    achievements: achievementsSeed.map((a) => ({ ...a })),
   };
 }
 

@@ -13,6 +13,8 @@ interface GameContextType {
   setSetupModalOpen: (open: boolean) => void;
   isGuideModalOpen: boolean;
   setGuideModalOpen: (open: boolean) => void;
+  isHallOfFameOpen: boolean;
+  setHallOfFameOpen: (open: boolean) => void;
   refreshState: () => Promise<void>;
   endTurn: () => Promise<void>;
   takeLoan: (templateId: string) => Promise<void>;
@@ -25,6 +27,8 @@ interface GameContextType {
   expandFactory: () => Promise<void>;
   setupCompany: (dto: { name: string; country: CountryId; founderPerk: FounderPerk; badge: BadgeDesign }) => Promise<void>;
   resetGame: (dto?: Partial<{ name: string; country: CountryId; founderPerk: FounderPerk; badge: BadgeDesign }>) => Promise<void>;
+  exportSave: () => Promise<string>;
+  importSave: (jsonString: string) => Promise<void>;
 }
 
 const GameContext = createContext<GameContextType>({
@@ -36,6 +40,8 @@ const GameContext = createContext<GameContextType>({
   setSetupModalOpen: () => {},
   isGuideModalOpen: false,
   setGuideModalOpen: () => {},
+  isHallOfFameOpen: false,
+  setHallOfFameOpen: () => {},
   refreshState: async () => {},
   endTurn: async () => {},
   takeLoan: async () => {},
@@ -48,6 +54,8 @@ const GameContext = createContext<GameContextType>({
   expandFactory: async () => {},
   setupCompany: async () => {},
   resetGame: async () => {},
+  exportSave: async () => '',
+  importSave: async () => {},
 });
 
 export function GameProvider({ children }: { children: ReactNode }): React.JSX.Element {
@@ -57,6 +65,22 @@ export function GameProvider({ children }: { children: ReactNode }): React.JSX.E
   const [pendingEndTurn, setPendingEndTurn] = useState(false);
   const [isSetupModalOpen, setSetupModalOpen] = useState(false);
   const [isGuideModalOpen, setGuideModalOpen] = useState(false);
+  const [isHallOfFameOpen, setHallOfFameOpen] = useState(false);
+
+  const exportSave = async (): Promise<string> => {
+    return api.exportSave();
+  };
+
+  const importSave = async (jsonString: string): Promise<void> => {
+    try {
+      const state = await api.importSave(jsonString);
+      setGameState(state);
+      setError(null);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Ошибка загрузки сохранения');
+      throw err;
+    }
+  };
 
   const refreshState = async (): Promise<void> => {
     try {
@@ -158,6 +182,8 @@ export function GameProvider({ children }: { children: ReactNode }): React.JSX.E
         setSetupModalOpen,
         isGuideModalOpen,
         setGuideModalOpen,
+        isHallOfFameOpen,
+        setHallOfFameOpen,
         refreshState,
         endTurn,
         takeLoan,
@@ -170,6 +196,8 @@ export function GameProvider({ children }: { children: ReactNode }): React.JSX.E
         expandFactory,
         setupCompany,
         resetGame,
+        exportSave,
+        importSave,
       }}
     >
       {children}

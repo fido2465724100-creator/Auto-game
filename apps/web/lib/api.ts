@@ -258,4 +258,12 @@ export const api = {
       return browserGameEngine.resetGame(dto);
     }
   },
+
+  exportSave: async (): Promise<string> => {
+    return browserGameEngine.exportSave();
+  },
+
+  importSave: async (jsonString: string): Promise<GameState> => {
+    return browserGameEngine.importSave(jsonString);
+  },
 };

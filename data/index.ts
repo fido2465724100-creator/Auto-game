@@ -3,4 +3,5 @@ export { technologies1900to1915Seed } from './technologies/technologies-1900-191
 export { eventsSeed } from './events/events';
 export { vehicleComponentSeed } from './vehicle-components/components';
 export { competitorsSeed, competitorMilestonesSeed } from './competitors/competitors';
+export { achievementsSeed } from './achievements/achievements';
 

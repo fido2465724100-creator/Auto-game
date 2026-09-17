@@ -6,7 +6,15 @@ import { useLanguage } from '../../lib/i18n';
 import { getEraTheme } from '../../lib/eraTheme';
 
 export function TopTimelineBar(): React.JSX.Element {
-  const { gameState, endTurn, pendingEndTurn, setSetupModalOpen, setGuideModalOpen, resetGame } = useGame();
+  const {
+    gameState,
+    endTurn,
+    pendingEndTurn,
+    setSetupModalOpen,
+    setGuideModalOpen,
+    resetGame,
+    setHallOfFameOpen,
+  } = useGame();
   const { lang, setLang, t } = useLanguage();
 
   const year = gameState?.date.year ?? 1900;
@@ -123,6 +131,17 @@ export function TopTimelineBar(): React.JSX.Element {
               EN
             </button>
           </div>
+
+          {/* Hall of Fame / Achievements button */}
+          <button
+            type="button"
+            onClick={() => setHallOfFameOpen(true)}
+            className="flex items-center gap-1 rounded border border-amber-900/30 bg-amber-50 px-2.5 py-1 text-xs font-serif font-bold text-amber-950 hover:bg-amber-100 shadow-2xs transition cursor-pointer"
+            title={lang === 'en' ? 'Hall of Fame, Trophies & Save/Load' : 'Зал Славы, Трофеи и Сохранения'}
+          >
+            <span>🏆</span>
+            <span className="hidden sm:inline">{lang === 'en' ? 'Trophies' : 'Зал славы'}</span>
+          </button>
 
           {/* Guide / Manual button */}
           <button

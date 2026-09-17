@@ -30,6 +30,7 @@ import {
   vehicleComponentSeed,
   competitorsSeed,
   competitorMilestonesSeed,
+  achievementsSeed,
 } from '@ait/data';
 
 const STORAGE_KEY = 'ait_autogame_save_v1';
@@ -134,7 +135,99 @@ function createInitialGameState(setup?: {
     reportHistory: [],
     competitors: competitorsSeed,
     competitorMilestones: competitorMilestonesSeed,
+    achievements: achievementsSeed.map((a) => ({ ...a })),
   };
+}
+
+function evaluateAchievements(state: GameState): GameState {
+  const currentAchievements = state.achievements && state.achievements.length > 0
+    ? [...state.achievements]
+    : achievementsSeed.map((a) => ({ ...a }));
+
+  const latestReport = state.reportHistory[0];
+  const year = state.date.year;
+  const quarter = state.date.quarter ?? 1;
+
+  let changed = false;
+
+  const unlock = (id: string) => {
+    const idx = currentAchievements.findIndex((a) => a.id === id);
+    const ach = idx !== -1 ? currentAchievements[idx] : undefined;
+    if (ach && !ach.unlocked) {
+      currentAchievements[idx] = {
+        ...ach,
+        unlocked: true,
+        unlockedAtYear: year,
+        unlockedAtQuarter: quarter as 1 | 2 | 3 | 4,
+      };
+      changed = true;
+    }
+  };
+
+  // 1. first-capital: single quarter net profit >= $15,000
+  if (latestReport && latestReport.profit >= 15_000) {
+    unlock('first-capital');
+  }
+
+  // 2. first-million: cash >= $1,000,000
+  if (state.company.cash >= 1_000_000) {
+    unlock('first-million');
+  }
+
+  // 3. assembly-magnate: factory capacity >= 50 or quarterly production >= 50
+  if ((state.company.productionCapacity ?? 0) >= 50 || (latestReport && latestReport.unitsProduced >= 50)) {
+    unlock('assembly-magnate');
+  }
+
+  // 4. depression-survivor: year >= 1934 and cash > 0
+  if (year >= 1934 && state.company.cash > 0) {
+    unlock('depression-survivor');
+  }
+
+  // 5. tech-titan: unlocked 10+ technologies
+  if ((state.unlockedTechnologyIds?.length ?? 0) >= 10) {
+    unlock('tech-titan');
+  }
+
+  // 6. transcontinental: active presence in all 3 regions
+  const presence = state.company.marketPresence;
+  if (presence && presence['north-america'] > 0 && presence['europe'] > 0 && presence['middle-east'] > 0) {
+    unlock('transcontinental');
+  }
+
+  // 7. green-pioneer: electric or hybrid vehicle model active
+  const hasGreenModel = state.vehicleModels.some((m) => {
+    const eng = vehicleComponentSeed.find((c) => c.id === m.components.engine);
+    return (
+      eng?.powertrainType === 'electric' ||
+      eng?.id === 'hybrid-synergy-drive-unit' ||
+      eng?.id === 'dual-motor-ev-powertrain' ||
+      eng?.id === 'solid-state-hyper-drive'
+    );
+  });
+  if (hasGreenModel) {
+    unlock('green-pioneer');
+  }
+
+  // 8. market-leader: revenue >= $80,000 in a quarter
+  if (latestReport && latestReport.revenue >= 80_000) {
+    unlock('market-leader');
+  }
+
+  // 9. legendary-reputation: reputation >= 90
+  if (state.company.reputation >= 90) {
+    unlock('legendary-reputation');
+  }
+
+  // 10. dynasty-2026: year >= 2026
+  if (year >= 2026) {
+    unlock('dynasty-2026');
+  }
+
+  if (changed || !state.achievements) {
+    return { ...state, achievements: currentAchievements };
+  }
+  return state;
 }
 
 class BrowserGameEngineClass {
@@ -152,7 +245,10 @@ class BrowserGameEngineClass {
       if (raw) {
         const parsed = JSON.parse(raw) as GameState;
         if (parsed && parsed.date && parsed.company) {
-          return parsed;
+          if (!parsed.achievements || parsed.achievements.length === 0) {
+            parsed.achievements = achievementsSeed.map((a) => ({ ...a }));
+          }
+          return evaluateAchievements(parsed);
         }
       }
     } catch {
@@ -480,6 +576,22 @@ class BrowserGameEngineClass {
     return newState;
   }
 
+  exportSave(): string {
+    const state = this.getState();
+    return JSON.stringify(state, null, 2);
+  }
+
+  importSave(jsonString: string): GameState {
+    const parsed = JSON.parse(jsonString) as GameState;
+    if (!parsed || !parsed.date || !parsed.company) {
+      throw new Error('Некорректный формат файла сохранения');
+    }
+    const validated = evaluateAchievements(parsed);
+    this.gameState = validated;
+    this.saveToStorage(validated);
+    return validated;
+  }
+
   endTurn(): GameState {
     const state = this.getState();
     const output = runEndTurn({
@@ -491,8 +603,9 @@ class BrowserGameEngineClass {
       ...(state.competitorMilestones ? { competitorMilestones: state.competitorMilestones } : {}),
     });
 
-    this.gameState = output.gameState;
-    this.saveToStorage(output.gameState);
+    const stateWithAchievements = evaluateAchievements(output.gameState);
+    this.gameState = stateWithAchievements;
+    this.saveToStorage(stateWithAchievements);
     return this.gameState;
   }
 }

@@ -256,6 +256,18 @@ export interface MonthlyReport {
 
 export type QuarterlyReport = MonthlyReport;
 
+export interface Achievement {
+  id: string;
+  titleRu: string;
+  titleEn: string;
+  descriptionRu: string;
+  descriptionEn: string;
+  icon: string;
+  unlocked: boolean;
+  unlockedAtYear?: number;
+  unlockedAtQuarter?: 1 | 2 | 3 | 4;
+}
+
 export interface GameState {
   id: string;
   company: Company;
@@ -267,6 +279,7 @@ export interface GameState {
   reportHistory: MonthlyReport[];
   competitors?: Competitor[];
   competitorMilestones?: CompetitorMilestone[];
+  achievements?: Achievement[];
 }
 
 export interface EndTurnInput {

@@ -57,6 +57,7 @@ export default function DashboardPage(): React.JSX.Element {
     setAutoProcurement,
     buyMaterial,
     takeLoan,
+    setHallOfFameOpen,
   } = useGame();
   const { t, lang } = useLanguage();
 
@@ -271,6 +272,16 @@ export default function DashboardPage(): React.JSX.Element {
           >
             <span>📐</span>
             <span>+ Спроектировать модель</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setHallOfFameOpen(true)}
+            className="flex-1 md:flex-initial rounded border border-amber-900/30 bg-amber-50 px-3 py-1.5 text-xs font-serif font-bold text-amber-950 hover:bg-amber-100 shadow-xs flex items-center justify-center gap-1.5 cursor-pointer"
+            title="Зал Славы, Ордена и Сохранения"
+          >
+            <span>🏆</span>
+            <span>{lang === 'en' ? 'Trophies' : 'Зал славы'}</span>
           </button>
 
           <button
