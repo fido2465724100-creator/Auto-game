@@ -11,6 +11,8 @@ interface GameContextType {
   pendingEndTurn: boolean;
   isSetupModalOpen: boolean;
   setSetupModalOpen: (open: boolean) => void;
+  isGuideModalOpen: boolean;
+  setGuideModalOpen: (open: boolean) => void;
   refreshState: () => Promise<void>;
   endTurn: () => Promise<void>;
   takeLoan: (templateId: string) => Promise<void>;
@@ -32,6 +34,8 @@ const GameContext = createContext<GameContextType>({
   pendingEndTurn: false,
   isSetupModalOpen: false,
   setSetupModalOpen: () => {},
+  isGuideModalOpen: false,
+  setGuideModalOpen: () => {},
   refreshState: async () => {},
   endTurn: async () => {},
   takeLoan: async () => {},
@@ -52,6 +56,7 @@ export function GameProvider({ children }: { children: ReactNode }): React.JSX.E
   const [error, setError] = useState<string | null>(null);
   const [pendingEndTurn, setPendingEndTurn] = useState(false);
   const [isSetupModalOpen, setSetupModalOpen] = useState(false);
+  const [isGuideModalOpen, setGuideModalOpen] = useState(false);
 
   const refreshState = async (): Promise<void> => {
     try {
@@ -151,6 +156,8 @@ export function GameProvider({ children }: { children: ReactNode }): React.JSX.E
         pendingEndTurn,
         isSetupModalOpen,
         setSetupModalOpen,
+        isGuideModalOpen,
+        setGuideModalOpen,
         refreshState,
         endTurn,
         takeLoan,

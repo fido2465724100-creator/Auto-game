@@ -74,7 +74,7 @@ export default function GameGuideView({ isModal = false }: Props): React.JSX.Ele
       {/* TWO COLUMNS: NAVIGATION (LEFT) & CONTENT (RIGHT) */}
       <div className="grid grid-cols-1 md:grid-cols-12 gap-4 sm:gap-6 items-start">
         {/* CHAPTERS MENU */}
-        <aside className="md:col-span-4 rounded-xl border border-stone-300 bg-[var(--paper)] p-3 shadow-xs space-y-1">
+        <aside className="md:col-span-4 rounded-xl border border-stone-300 bg-[var(--paper)] p-3 shadow-xs space-y-1 md:sticky md:top-2">
           <span className="text-[10px] font-bold uppercase tracking-wider text-stone-500 px-3 py-1.5 block">
             {lang === 'en' ? 'Chapters' : 'Разделы справочника'}
           </span>

@@ -1,6 +1,7 @@
 import './globals.css';
 import { TopTimelineBar } from '../components/layout/TopTimelineBar';
 import { CompanySetupModal } from '../components/CompanySetupModal';
+import { GameGuideModal } from '../components/GameGuideModal';
 import { LanguageProvider } from '../lib/i18n';
 import { GameProvider } from '../context/GameContext';
 
@@ -12,6 +13,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }):
           <GameProvider>
             {/* BRAND SETUP & ONBOARDING MODAL */}
             <CompanySetupModal />
+
+            {/* INDUSTRIALIST HANDBOOK / GAME GUIDE MODAL */}
+            <GameGuideModal />
 
             {/* MAIN UNIFIED WINDOW */}
             <div className="flex-1 flex flex-col min-w-0">

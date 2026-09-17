@@ -1,15 +1,13 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useGame } from '../../context/GameContext';
 import { useLanguage } from '../../lib/i18n';
 import { getEraTheme } from '../../lib/eraTheme';
-import { GameGuideModal } from '../GameGuideModal';
 
 export function TopTimelineBar(): React.JSX.Element {
-  const { gameState, endTurn, pendingEndTurn, setSetupModalOpen } = useGame();
+  const { gameState, endTurn, pendingEndTurn, setSetupModalOpen, setGuideModalOpen } = useGame();
   const { lang, setLang, t } = useLanguage();
-  const [isGuideOpen, setIsGuideOpen] = useState(false);
 
   const year = gameState?.date.year ?? 1900;
   const quarter = (gameState?.date.quarter ?? (gameState?.date.month ? Math.ceil(gameState.date.month / 3) : 1)) as 1 | 2 | 3 | 4;
@@ -129,7 +127,7 @@ export function TopTimelineBar(): React.JSX.Element {
           {/* Guide / Manual button */}
           <button
             type="button"
-            onClick={() => setIsGuideOpen(true)}
+            onClick={() => setGuideModalOpen(true)}
             className="flex items-center gap-1 rounded border border-amber-900/30 bg-amber-50 px-2.5 py-1 text-xs font-serif font-bold text-amber-950 hover:bg-amber-100 shadow-2xs transition cursor-pointer"
             title="Руководство по игре и правила"
           >
@@ -220,9 +218,6 @@ export function TopTimelineBar(): React.JSX.Element {
           </div>
         </div>
       </div>
-
-      {/* GAME MANUAL MODAL */}
-      <GameGuideModal isOpen={isGuideOpen} onClose={() => setIsGuideOpen(false)} />
     </header>
   );
 }
