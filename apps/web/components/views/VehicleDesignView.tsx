@@ -64,6 +64,9 @@ export default function VehicleDesignPage(): React.JSX.Element {
   const [salePrice, setSalePrice] = useState<number>(SEGMENT_PROFILES.economy.baseSalePrice);
 
   const factoryCapacity = gameState?.company.factory?.capacity ?? gameState?.company.productionCapacity ?? 4;
+  const currentPlan = gameState?.productionPlan ?? {};
+  const currentAllocated = Object.values(currentPlan).reduce((sum, n) => sum + (Number(n) || 0), 0);
+  const remainingCapacity = Math.max(0, factoryCapacity - currentAllocated);
 
   useEffect(() => {
     api.getVehicleComponents()
@@ -424,14 +427,14 @@ export default function VehicleDesignPage(): React.JSX.Element {
                   id="annual-quota"
                   type="number"
                   min={0}
-                  max={factoryCapacity}
+                  max={remainingCapacity}
                   step={1}
                   value={annualQuota}
-                  onChange={(e) => setAnnualQuota(Math.max(0, Number(e.target.value)))}
+                  onChange={(e) => setAnnualQuota(Math.max(0, Math.min(remainingCapacity, Number(e.target.value))))}
                   className="w-24 rounded-lg era-input px-3 py-2 text-[var(--ink)] font-mono font-bold text-sm shadow-inner"
                 />
                 <span className="text-xs text-[var(--ink-secondary)]">
-                  {t.topbar.unitsQuarter} ({t.design.factoryCapacityHint}: <strong className="font-mono text-[var(--ink-heading)]">{factoryCapacity} {t.topbar.unitsQuarter}</strong>)
+                  {lang === 'en' ? 'cars/yr' : lang === 'uk' ? 'авто/рік' : lang === 'de' ? 'Fz./Jahr' : 'авто/год'} ({lang === 'en' ? 'Available' : lang === 'uk' ? 'Вільно' : lang === 'de' ? 'Frei' : 'Свободно'}: <strong className={`font-mono ${remainingCapacity > 0 ? 'text-emerald-700 dark:text-emerald-300 font-bold' : 'text-amber-600 font-bold'}`}>{remainingCapacity} / {factoryCapacity}</strong>)
                 </span>
               </div>
             </div>

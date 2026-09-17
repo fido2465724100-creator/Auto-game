@@ -55,16 +55,20 @@ export function QuickVehicleDesignModal({ isOpen, onClose, onCreated }: Props): 
   const [salePrice, setSalePrice] = useState<number>(SEGMENT_PROFILES.economy.baseSalePrice);
 
   const factoryCapacity = gameState?.company.factory?.capacity ?? gameState?.company.productionCapacity ?? 4;
+  const currentPlan = gameState?.productionPlan ?? {};
+  const currentAllocated = Object.values(currentPlan).reduce((sum, n) => sum + (Number(n) || 0), 0);
+  const remainingCapacity = Math.max(0, factoryCapacity - currentAllocated);
 
   useEffect(() => {
     if (isOpen) {
       setLoading(true);
+      setQuarterlyQuota(remainingCapacity > 0 ? Math.min(4, remainingCapacity) : 0);
       api.getVehicleComponents()
         .then(setAvailableComponents)
         .catch(() => setAvailableComponents([]))
         .finally(() => setLoading(false));
     }
-  }, [isOpen]);
+  }, [isOpen, remainingCapacity]);
 
   const handleSegmentChange = (newSegment: VehicleSegment): void => {
     setSegment(newSegment);
@@ -432,13 +436,16 @@ export function QuickVehicleDesignModal({ isOpen, onClose, onCreated }: Props): 
                 <input
                   type="number"
                   min={0}
-                  max={factoryCapacity}
+                  max={remainingCapacity}
                   value={quarterlyQuota}
-                  onChange={(e) => setQuarterlyQuota(Number(e.target.value))}
+                  onChange={(e) => setQuarterlyQuota(Math.max(0, Math.min(remainingCapacity, Number(e.target.value))))}
                   className="mt-1 w-full rounded-lg era-input px-2.5 py-1 font-mono font-bold text-[var(--ink)] shadow-inner"
                 />
                 <span className="text-[10px] text-[var(--ink-secondary)] font-mono mt-0.5 block">
-                  {lang === 'en' ? 'Factory Limit' : lang === 'uk' ? 'Ліміт фабрики' : lang === 'de' ? 'Werkslimit' : 'Лимит фабрики'}: {factoryCapacity} {lang === 'en' ? 'cars/yr' : lang === 'uk' ? 'авто/рік' : lang === 'de' ? 'Fz./Jahr' : 'авто/год'}
+                  {lang === 'en' ? 'Available Capacity' : lang === 'uk' ? 'Вільна потужність' : lang === 'de' ? 'Freie Kapazität' : 'Свободная мощность'}:{' '}
+                  <strong className={remainingCapacity > 0 ? 'text-emerald-700 dark:text-emerald-300 font-bold' : 'text-amber-600 font-bold'}>
+                    {remainingCapacity} / {factoryCapacity} {lang === 'en' ? 'cars/yr' : lang === 'uk' ? 'авто/рік' : lang === 'de' ? 'Fz./Jahr' : 'авто/год'}
+                  </strong>
                 </span>
               </div>
             </div>

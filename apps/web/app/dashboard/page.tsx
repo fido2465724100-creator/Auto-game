@@ -229,12 +229,39 @@ export default function DashboardPage(): React.JSX.Element {
   const activeLoans = company.loans ?? [];
   const totalQuarterlyLoanPayment = activeLoans.reduce((sum, l) => sum + l.monthlyPayment * 3, 0);
 
-  // Quota change handlers
+  // Quota change handlers with strict factory capacity enforcement
   const handleQuotaChange = (modelId: string, val: number) => {
+    const currentVal = Number(planDraft[modelId]) || 0;
+    const otherPlanned = Object.entries(planDraft).reduce((sum, [id, n]) => {
+      return id === modelId ? sum : sum + (Number(n) || 0);
+    }, 0);
+    const remainingFree = Math.max(0, factory.capacity - otherPlanned);
+    const maxAllowed = Math.max(currentVal, remainingFree);
+    const clamped = Math.max(0, Math.min(maxAllowed, val));
+
     setPlanDraft((prev) => ({
       ...prev,
-      [modelId]: Math.max(0, val),
+      [modelId]: clamped,
     }));
+  };
+
+  const handleBalancePlan = () => {
+    if (totalPlannedUnits <= 0 || activeModels.length === 0) return;
+    const plannedModels = activeModels.filter((m) => (planDraft[m.id] ?? 0) > 0);
+    if (plannedModels.length === 0) return;
+    const scale = factory.capacity / totalPlannedUnits;
+    const newPlan: Record<string, number> = { ...planDraft };
+    let allocated = 0;
+    plannedModels.forEach((m, idx) => {
+      if (idx === plannedModels.length - 1) {
+        newPlan[m.id] = Math.max(0, factory.capacity - allocated);
+      } else {
+        const val = Math.floor((planDraft[m.id] ?? 0) * scale);
+        newPlan[m.id] = val;
+        allocated += val;
+      }
+    });
+    setPlanDraft(newPlan);
   };
 
   const handleSavePlan = async () => {
@@ -471,7 +498,18 @@ export default function DashboardPage(): React.JSX.Element {
                     </span>
                   </div>
 
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    {isOverCapacity && (
+                      <button
+                        type="button"
+                        onClick={handleBalancePlan}
+                        className="px-2.5 py-1 text-xs font-bold bg-amber-500/20 text-amber-950 dark:text-amber-300 border border-amber-500/60 hover:bg-amber-500/30 rounded-lg transition shadow-xs cursor-pointer flex items-center gap-1 animate-pulse"
+                        title={lang === 'en' ? 'Fit quotas to factory capacity' : 'Вписать план в лимит завода'}
+                      >
+                        <span>⚖️</span>
+                        <span>{lang === 'en' ? 'Fit to Capacity' : lang === 'uk' ? 'Вписати в ліміт' : lang === 'de' ? 'Anpassen' : 'Вписать в лимит'} ({factory.capacity})</span>
+                      </button>
+                    )}
                     {planSavedNotice && (
                       <span className="text-xs font-bold text-emerald-900 bg-emerald-100 border border-emerald-300 px-2.5 py-1 rounded-lg animate-pulse shadow-2xs">
                         {lang === 'en' ? '✓ Plan saved' : lang === 'uk' ? '✓ План збережено' : lang === 'de' ? '✓ Plan gespeichert' : '✓ План сохранен'}
@@ -606,50 +644,70 @@ export default function DashboardPage(): React.JSX.Element {
                             </div>
 
                             {/* Interactive Quota Controls */}
-                            <div className="sm:col-span-3 flex flex-col items-end justify-center era-stat-box p-2.5 rounded-xl">
-                              <span className="text-[10px] uppercase font-bold era-heading tracking-wider">
-                                {lang === 'en' ? 'Production Quota' : lang === 'uk' ? 'Квота випуску' : lang === 'de' ? 'Produktionsquote' : 'Квота выпуска'}
-                              </span>
-                              <div className="flex items-center gap-1 mt-1">
-                                <button
-                                  type="button"
-                                  onClick={() => handleQuotaChange(model.id, quota - 1)}
-                                  className="h-6 w-6 rounded bg-[var(--paper)] hover:bg-[var(--paper)]/80 font-bold era-heading text-xs flex items-center justify-center border border-[var(--border-subtle)] cursor-pointer transition shadow-2xs"
-                                >
-                                  -
-                                </button>
-                                <input
-                                  type="number"
-                                  min={0}
-                                  max={factory.capacity}
-                                  value={quota}
-                                  onChange={(e) => handleQuotaChange(model.id, Number(e.target.value))}
-                                  className="h-6 w-12 text-center rounded border border-[var(--border-subtle)] font-bold font-mono text-xs era-value bg-[var(--paper)] shadow-inner"
-                                />
-                                <button
-                                  type="button"
-                                  onClick={() => handleQuotaChange(model.id, quota + 1)}
-                                  className="h-6 w-6 rounded bg-[var(--paper)] hover:bg-[var(--paper)]/80 font-bold era-heading text-xs flex items-center justify-center border border-[var(--border-subtle)] cursor-pointer transition shadow-2xs"
-                                >
-                                  +
-                                </button>
-                              </div>
-                              <button
-                                type="button"
-                                onClick={async () => {
-                                  try {
-                                    await decommissionVehicleModel(model.id);
-                                  } catch (err) {
-                                    console.error(err);
-                                  }
-                                }}
-                                className="mt-2 text-[10px] font-bold text-rose-700 dark:text-rose-400 hover:text-rose-950 dark:hover:text-rose-200 border border-rose-300/80 dark:border-rose-800/60 bg-rose-50/80 dark:bg-rose-950/30 px-2 py-0.5 rounded transition flex items-center gap-1 cursor-pointer shadow-2xs"
-                                title={lang === 'en' ? 'Discontinue from production' : lang === 'uk' ? 'Зняти з виробництва' : lang === 'de' ? 'Aus Produktion nehmen' : 'Снять с производства'}
-                              >
-                                <span>🛑</span>
-                                <span>{lang === 'en' ? 'Discontinue' : lang === 'uk' ? 'Зняти з серії' : lang === 'de' ? 'Einstellen' : 'Снять с серии'}</span>
-                              </button>
-                            </div>
+                            {(() => {
+                              const otherPlanned = totalPlannedUnits - quota;
+                              const maxForThisModel = Math.max(quota, factory.capacity - otherPlanned);
+                              return (
+                                <div className="sm:col-span-3 flex flex-col items-end justify-center era-stat-box p-2.5 rounded-xl">
+                                  <div className="flex items-center justify-between w-full text-[10px] uppercase font-bold era-heading tracking-wider">
+                                    <span>{lang === 'en' ? 'Quota' : lang === 'uk' ? 'Квота' : lang === 'de' ? 'Quote' : 'Квота'}</span>
+                                    <span className="opacity-70 font-mono">
+                                      ({lang === 'en' ? 'max' : lang === 'uk' ? 'макс' : lang === 'de' ? 'max' : 'макс'}: {maxForThisModel})
+                                    </span>
+                                  </div>
+                                  <div className="flex items-center gap-1 mt-1">
+                                    <button
+                                      type="button"
+                                      disabled={quota <= 0}
+                                      onClick={() => handleQuotaChange(model.id, quota - 1)}
+                                      className="h-6 w-6 rounded bg-[var(--paper)] hover:bg-[var(--paper)]/80 disabled:opacity-30 font-bold era-heading text-xs flex items-center justify-center border border-[var(--border-subtle)] cursor-pointer transition shadow-2xs"
+                                    >
+                                      -
+                                    </button>
+                                    <input
+                                      type="number"
+                                      min={0}
+                                      max={maxForThisModel}
+                                      value={quota}
+                                      onChange={(e) => handleQuotaChange(model.id, Number(e.target.value))}
+                                      className="h-6 w-12 text-center rounded border border-[var(--border-subtle)] font-bold font-mono text-xs era-value bg-[var(--paper)] shadow-inner"
+                                    />
+                                    <button
+                                      type="button"
+                                      disabled={quota >= maxForThisModel}
+                                      onClick={() => handleQuotaChange(model.id, quota + 1)}
+                                      className="h-6 w-6 rounded bg-[var(--paper)] hover:bg-[var(--paper)]/80 disabled:opacity-30 font-bold era-heading text-xs flex items-center justify-center border border-[var(--border-subtle)] cursor-pointer transition shadow-2xs"
+                                    >
+                                      +
+                                    </button>
+                                    <button
+                                      type="button"
+                                      disabled={quota >= maxForThisModel}
+                                      onClick={() => handleQuotaChange(model.id, maxForThisModel)}
+                                      className="px-1.5 h-6 rounded bg-[var(--paper)] hover:bg-[var(--surface-nested)] disabled:opacity-30 border border-[var(--border-subtle)] text-[9px] font-bold era-label cursor-pointer shadow-2xs transition"
+                                      title={lang === 'en' ? 'Take all remaining factory capacity' : 'Занять весь свободный резерв цеха'}
+                                    >
+                                      {lang === 'en' ? 'Max' : lang === 'uk' ? 'Макс' : lang === 'de' ? 'Max' : 'Макс'}
+                                    </button>
+                                  </div>
+                                  <button
+                                    type="button"
+                                    onClick={async () => {
+                                      try {
+                                        await decommissionVehicleModel(model.id);
+                                      } catch (err) {
+                                        console.error(err);
+                                      }
+                                    }}
+                                    className="mt-2 text-[10px] font-bold text-rose-700 dark:text-rose-400 hover:text-rose-950 dark:hover:text-rose-200 border border-rose-300/80 dark:border-rose-800/60 bg-rose-50/80 dark:bg-rose-950/30 px-2 py-0.5 rounded transition flex items-center gap-1 cursor-pointer shadow-2xs"
+                                    title={lang === 'en' ? 'Discontinue from production' : lang === 'uk' ? 'Зняти з виробництва' : lang === 'de' ? 'Aus Produktion nehmen' : 'Снять с производства'}
+                                  >
+                                    <span>🛑</span>
+                                    <span>{lang === 'en' ? 'Discontinue' : lang === 'uk' ? 'Зняти з серії' : lang === 'de' ? 'Einstellen' : 'Снять с серии'}</span>
+                                  </button>
+                                </div>
+                              );
+                            })()}
                           </div>
 
                           {/* Materials required strip */}

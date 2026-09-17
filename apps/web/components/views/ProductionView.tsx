@@ -116,10 +116,58 @@ export default function ProductionPage(): React.JSX.Element {
   }
 
   const handlePlanChange = (modelId: string, value: number) => {
+    const currentVal = Number(planDraft[modelId]) || 0;
+    const otherPlanned = Object.entries(planDraft).reduce((sum, [id, n]) => {
+      return id === modelId ? sum : sum + (Number(n) || 0);
+    }, 0);
+    // If already over capacity, allow decreasing from currentVal, but ceiling is currentVal or remaining capacity
+    const remainingFree = Math.max(0, factory.capacity - otherPlanned);
+    const maxAllowed = Math.max(currentVal, remainingFree);
+    const clamped = Math.max(0, Math.min(maxAllowed, value));
+
     setPlanDraft((prev) => ({
       ...prev,
-      [modelId]: Math.max(0, value),
+      [modelId]: clamped,
     }));
+  };
+
+  // Helper: Distribute available capacity equally across all active models
+  const handleDistributeEqually = () => {
+    if (activeModels.length === 0) return;
+    const count = activeModels.length;
+    const baseQuota = Math.floor(factory.capacity / count);
+    const remainder = factory.capacity % count;
+    const newPlan: Record<string, number> = {};
+    activeModels.forEach((m, idx) => {
+      newPlan[m.id] = baseQuota + (idx < remainder ? 1 : 0);
+    });
+    setPlanDraft(newPlan);
+  };
+
+  // Helper: Proportionally scale existing plan to exactly fit factory capacity
+  const handleBalancePlan = () => {
+    if (totalPlannedUnits <= 0 || activeModels.length === 0) {
+      handleDistributeEqually();
+      return;
+    }
+    const plannedModels = activeModels.filter((m) => (planDraft[m.id] ?? 0) > 0);
+    if (plannedModels.length === 0) {
+      handleDistributeEqually();
+      return;
+    }
+    const scale = factory.capacity / totalPlannedUnits;
+    const newPlan: Record<string, number> = { ...planDraft };
+    let allocated = 0;
+    plannedModels.forEach((m, idx) => {
+      if (idx === plannedModels.length - 1) {
+        newPlan[m.id] = Math.max(0, factory.capacity - allocated);
+      } else {
+        const val = Math.floor((planDraft[m.id] ?? 0) * scale);
+        newPlan[m.id] = val;
+        allocated += val;
+      }
+    });
+    setPlanDraft(newPlan);
   };
 
   const handleSavePlan = async () => {
@@ -299,12 +347,27 @@ export default function ProductionPage(): React.JSX.Element {
           </div>
         </div>
 
-        {/* CAPACITY BAR */}
-        <div className="mt-4">
-          <div className="flex justify-between text-xs font-semibold text-[var(--ink)] mb-1.5">
-            <span>{t.production.capacityUsed}</span>
-            <span>
-              {totalPlannedUnits} / {factory.capacity} {t.topbar.unitsQuarter} ({capacityPercent}%)
+        {/* CAPACITY BAR & AVAILABLE CAPACITY BADGE */}
+        <div className="mt-4 space-y-2">
+          <div className="flex flex-wrap justify-between items-center text-xs font-semibold text-[var(--ink)] gap-2">
+            <span className="flex items-center gap-2 flex-wrap">
+              <span>{t.production.capacityUsed}</span>
+              {totalPlannedUnits < factory.capacity ? (
+                <span className="text-[11px] font-bold text-emerald-800 dark:text-emerald-300 bg-emerald-100 dark:bg-emerald-950/40 border border-emerald-300 px-2 py-0.5 rounded-md">
+                  {lang === 'en' ? `Available: ${factory.capacity - totalPlannedUnits} cars/yr` : lang === 'uk' ? `Вільно: ${factory.capacity - totalPlannedUnits} авто/рік` : lang === 'de' ? `Verfügbar: ${factory.capacity - totalPlannedUnits} Fz./Jahr` : `Свободно: ${factory.capacity - totalPlannedUnits} авто/год`}
+                </span>
+              ) : totalPlannedUnits === factory.capacity ? (
+                <span className="text-[11px] font-bold text-blue-800 dark:text-blue-300 bg-blue-100 dark:bg-blue-950/40 border border-blue-300 px-2 py-0.5 rounded-md">
+                  {lang === 'en' ? '100% Utilized' : lang === 'uk' ? '100% Завантаження' : lang === 'de' ? '100% ausgelastet' : '100% Загрузка'}
+                </span>
+              ) : (
+                <span className="text-[11px] font-bold text-rose-800 dark:text-rose-300 bg-rose-100 dark:bg-rose-950/40 border border-rose-300 px-2 py-0.5 rounded-md animate-pulse">
+                  {lang === 'en' ? `Overcapacity by ${totalPlannedUnits - factory.capacity} cars/yr!` : lang === 'uk' ? `Перевантаження на ${totalPlannedUnits - factory.capacity} авто/рік!` : lang === 'de' ? `Überlastung um ${totalPlannedUnits - factory.capacity} Fz./Jahr!` : `Перегруз на ${totalPlannedUnits - factory.capacity} авто/год!`}
+                </span>
+              )}
+            </span>
+            <span className="font-mono">
+              {totalPlannedUnits} / {factory.capacity} {lang === 'en' ? 'cars/yr' : lang === 'uk' ? 'авто/рік' : lang === 'de' ? 'Fz./Jahr' : 'авто/год'} ({capacityPercent}%)
             </span>
           </div>
           <div className="w-full h-3.5 bg-[var(--surface-nested)] rounded-full overflow-hidden border border-[var(--border-subtle)]">
@@ -324,7 +387,7 @@ export default function ProductionPage(): React.JSX.Element {
 
       {/* PRODUCTION LINES & QUOTAS */}
       <div className="era-card p-5">
-        <div className="flex items-center justify-between border-b border-[var(--border-subtle)] pb-3 mb-4">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--border-subtle)] pb-3 mb-4">
           <div>
             <h2 className="text-base font-bold text-[var(--ink-heading)] era-heading flex items-center gap-2">
               <span>🚗</span> {t.production.linesTitle}
@@ -334,13 +397,35 @@ export default function ProductionPage(): React.JSX.Element {
             </p>
           </div>
 
-          <button
-            onClick={handleSavePlan}
-            disabled={actionPending}
-            className="btn-brass px-4 py-2 rounded-lg text-xs font-bold transition shadow-xs cursor-pointer"
-          >
-            💾 {t.production.savePlanBtn}
-          </button>
+          <div className="flex items-center gap-2 flex-wrap">
+            {isOverCapacity && (
+              <button
+                type="button"
+                onClick={handleBalancePlan}
+                className="px-3 py-1.5 rounded-lg text-xs font-bold bg-amber-500/20 text-amber-950 dark:text-amber-300 border border-amber-500/60 hover:bg-amber-500/30 transition shadow-xs cursor-pointer flex items-center gap-1 animate-pulse"
+                title={lang === 'en' ? 'Proportionally scale down quotas to fit factory capacity' : 'Автоматически урезать квоты моделей, чтобы они ровно вписались в лимит цеха'}
+              >
+                <span>⚖️</span>
+                <span>{lang === 'en' ? 'Fit to Capacity' : lang === 'uk' ? 'Вписати в ліміт' : lang === 'de' ? 'An Kapazität anpassen' : 'Вписать в лимит цеха'} ({factory.capacity})</span>
+              </button>
+            )}
+            <button
+              type="button"
+              onClick={handleDistributeEqually}
+              className="px-2.5 py-1.5 rounded-lg text-xs font-bold bg-[var(--paper)] text-[var(--ink)] border border-[var(--border-subtle)] hover:bg-[var(--surface-nested)] transition shadow-xs cursor-pointer flex items-center gap-1"
+              title={lang === 'en' ? 'Divide factory capacity equally among all models' : 'Разделить всю мощность цеха поровну между всеми моделями'}
+            >
+              <span>⚖️</span>
+              <span>{lang === 'en' ? 'Equal Share' : lang === 'uk' ? 'Порівну' : lang === 'de' ? 'Gleichmäßig' : 'Поровну'}</span>
+            </button>
+            <button
+              onClick={handleSavePlan}
+              disabled={actionPending}
+              className="btn-brass px-4 py-1.5 rounded-lg text-xs font-bold transition shadow-xs cursor-pointer"
+            >
+              💾 {t.production.savePlanBtn}
+            </button>
+          </div>
         </div>
 
         {activeModels.length === 0 ? (
@@ -351,6 +436,8 @@ export default function ProductionPage(): React.JSX.Element {
           <div className="space-y-4">
             {activeModels.map((model) => {
               const planned = planDraft[model.id] ?? 0;
+              const otherPlanned = totalPlannedUnits - planned;
+              const maxForThisModel = Math.max(planned, factory.capacity - otherPlanned);
               const unitCost = model.productionCost;
               const totalCost = unitCost * planned;
               const req = model.materialsRequired ?? {};
@@ -377,24 +464,62 @@ export default function ProductionPage(): React.JSX.Element {
                       </div>
                     </div>
 
-                    {/* QUOTA INPUT & DECOMMISSION BUTTON */}
+                    {/* QUOTA INPUT & QUICK BUTTONS */}
                     <div className="flex items-center gap-3">
                       <div className="text-right">
                         <label htmlFor={`quota-${model.id}`} className="block text-[10px] text-[var(--ink-secondary)] uppercase font-semibold">
-                          {t.production.plannedUnits}
+                          {t.production.plannedUnits}{' '}
+                          <span className="opacity-70 font-mono">
+                            ({lang === 'en' ? 'max' : lang === 'uk' ? 'макс' : lang === 'de' ? 'max' : 'макс'}: {maxForThisModel})
+                          </span>
                         </label>
-                        <div className="flex items-center gap-1.5 mt-0.5">
+                        <div className="flex items-center gap-1 mt-0.5">
+                          <button
+                            type="button"
+                            onClick={() => handlePlanChange(model.id, planned - 1)}
+                            disabled={planned <= 0}
+                            className="h-7 w-7 rounded bg-[var(--paper)] hover:bg-[var(--surface-nested)] disabled:opacity-30 font-bold era-heading text-xs flex items-center justify-center border border-[var(--border-subtle)] cursor-pointer shadow-2xs transition"
+                            title="-1"
+                          >
+                            -
+                          </button>
                           <input
                             id={`quota-${model.id}`}
                             type="number"
                             min="0"
-                            max={factory.capacity}
+                            max={maxForThisModel}
                             step="1"
                             value={planned}
                             onChange={(e) => handlePlanChange(model.id, Number(e.target.value))}
-                            className="w-24 rounded-lg era-input px-2.5 py-1 text-right text-xs font-bold text-[var(--ink)]"
+                            className="w-16 rounded-lg era-input px-2 py-1 text-center text-xs font-bold font-mono text-[var(--ink)] shadow-inner"
                           />
-                          <span className="text-xs text-[var(--ink-secondary)]">{t.production.unitsShort}</span>
+                          <button
+                            type="button"
+                            onClick={() => handlePlanChange(model.id, planned + 1)}
+                            disabled={planned >= maxForThisModel}
+                            className="h-7 w-7 rounded bg-[var(--paper)] hover:bg-[var(--surface-nested)] disabled:opacity-30 font-bold era-heading text-xs flex items-center justify-center border border-[var(--border-subtle)] cursor-pointer shadow-2xs transition"
+                            title="+1"
+                          >
+                            +
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handlePlanChange(model.id, maxForThisModel)}
+                            disabled={planned >= maxForThisModel}
+                            className="px-2 py-1 rounded bg-[var(--paper)] hover:bg-[var(--surface-nested)] disabled:opacity-30 border border-[var(--border-subtle)] text-[10px] font-bold era-label cursor-pointer shadow-2xs transition"
+                            title={lang === 'en' ? 'Take all remaining factory capacity' : lang === 'uk' ? 'Зайняти всю вільну потужність' : lang === 'de' ? 'Restkapazität belegen' : 'Занять весь свободный резерв цеха'}
+                          >
+                            {lang === 'en' ? 'Max' : lang === 'uk' ? 'Макс' : lang === 'de' ? 'Max' : 'Макс'}
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handlePlanChange(model.id, 0)}
+                            disabled={planned <= 0}
+                            className="px-1.5 py-1 rounded bg-[var(--paper)] hover:bg-rose-950/20 text-stone-500 hover:text-rose-600 disabled:opacity-30 border border-[var(--border-subtle)] text-[10px] font-bold cursor-pointer shadow-2xs transition"
+                            title={lang === 'en' ? 'Reset to 0' : 'Обнулить'}
+                          >
+                            0
+                          </button>
                         </div>
                       </div>
 
@@ -416,7 +541,7 @@ export default function ProductionPage(): React.JSX.Element {
                             setStatusMsg(`Ошибка: ${String(err)}`);
                           }
                         }}
-                        className="self-end mb-0.5 py-1 px-2 rounded-lg border border-amber-600/40 bg-[var(--paper)] hover:bg-amber-950/20 text-amber-200 text-xs font-bold transition flex items-center gap-1 cursor-pointer shadow-xs"
+                        className="self-end mb-0.5 py-1.5 px-2.5 rounded-lg border border-amber-600/40 bg-[var(--paper)] hover:bg-amber-950/20 text-amber-950 dark:text-amber-200 text-xs font-bold transition flex items-center gap-1 cursor-pointer shadow-xs"
                         title={lang === 'en' ? 'Discontinue from production' : lang === 'uk' ? 'Зняти з виробництва' : lang === 'de' ? 'Produktion einstellen' : 'Снять с производства'}
                       >
                         <span>🛑</span>
