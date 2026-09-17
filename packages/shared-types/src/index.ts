@@ -252,6 +252,9 @@ export interface MonthlyReport {
   materialExpenses?: number;
   capacityUsed?: number;
   shortageOccurred?: boolean;
+  productionCost?: number;
+  overheadCost?: number;
+  researchCost?: number;
 }
 
 export type QuarterlyReport = MonthlyReport;

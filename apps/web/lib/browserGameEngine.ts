@@ -67,17 +67,17 @@ function createInitialGameState(setup?: {
       country,
       founderPerk,
       badge,
-      cash: 14_000,
+      cash: 15_000,
       reputation: 30,
       productionCapacity: 4,
-      overheadMonthly: 400,
+      overheadMonthly: 50,
       marketPresence,
       inventoryMaterials: {
-        steel: 200,
-        wood: 250,
-        rubber: 60,
-        leather: 30,
-        aluminum: 0,
+        steel: 500,
+        wood: 600,
+        rubber: 150,
+        leather: 80,
+        aluminum: 20,
         plastic: 0,
       },
       autoProcurement: true,
@@ -85,8 +85,8 @@ function createInitialGameState(setup?: {
         name: factoryNames[country] ?? 'Кустарная мануфактура №1',
         level: 1,
         capacity: 4,
-        monthlyOverhead: 200,
-        upgradeCost: 6_000,
+        monthlyOverhead: 40,
+        upgradeCost: 4_000,
       },
     },
     unlockedTechnologyIds: ['standardized-steering-wheel'],
@@ -504,16 +504,16 @@ class BrowserGameEngineClass {
       name: 'Кустарная мануфактура №1',
       level: 1,
       capacity: state.company.productionCapacity,
-      monthlyOverhead: 200,
-      upgradeCost: 6_000,
+      monthlyOverhead: 40,
+      upgradeCost: 4_000,
     };
 
     if (state.company.cash < factory.upgradeCost) return state;
 
     const newLevel = factory.level + 1;
     const newCapacity = factory.capacity + 4;
-    const newOverhead = factory.monthlyOverhead + 150;
-    const nextUpgradeCost = Math.round(factory.upgradeCost * 1.6);
+    const newOverhead = factory.monthlyOverhead + 50;
+    const nextUpgradeCost = Math.round(factory.upgradeCost * 1.5);
 
     return this.updateState((s) => ({
       ...s,

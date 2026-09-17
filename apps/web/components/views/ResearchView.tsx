@@ -23,7 +23,7 @@ export default function ResearchPage(): React.JSX.Element {
   const handleStartResearch = async (technologyId: string): Promise<void> => {
     setPendingId(technologyId);
     try {
-      await startResearch(technologyId, 2000);
+      await startResearch(technologyId, 100);
       load();
     } finally {
       setPendingId(null);
@@ -74,7 +74,7 @@ export default function ResearchPage(): React.JSX.Element {
                 <div className="flex items-center gap-3 text-xs text-stone-500 mt-1">
                   <span>{t.research.year}: <strong className="text-stone-700">{tech.yearAvailable}</strong></span>
                   <span>•</span>
-                  <span>{t.research.budgetMonth}: <strong className="text-stone-700">$2,000</strong></span>
+                  <span>{t.research.budgetMonth}: <strong className="text-stone-700">$100</strong> <span className="text-[10px] text-stone-500">($300 / кв.)</span></span>
                 </div>
 
                 <p className="my-3 text-xs text-stone-700 leading-relaxed">

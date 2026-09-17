@@ -146,8 +146,8 @@ export default function DashboardPage(): React.JSX.Element {
     name: 'Мастерская №1',
     level: 1,
     capacity: company.productionCapacity,
-    monthlyOverhead: 200,
-    upgradeCost: 6000,
+    monthlyOverhead: 40,
+    upgradeCost: 4000,
   };
 
   const activeModels = gameState.vehicleModels.filter((m) => m.active);
@@ -344,11 +344,15 @@ export default function DashboardPage(): React.JSX.Element {
               <div className="leading-snug">
                 <span className="font-serif font-bold text-amber-950 block text-xs tracking-wide">{eraTheme.advisorTitles.financeRu}:</span>
                 <span className="text-stone-700 text-[11px] leading-relaxed mt-0.5 block">
-                  {company.cash < 2500
+                  {latestReport && latestReport.profit < 0
+                    ? `Убыток в прошлом кв. (-$${Math.abs(latestReport.profit).toLocaleString()})! Проверьте наценку в конструкторе (рекомендуем +40–50% к себестоимости).`
+                    : latestReport && latestReport.profit > 0
+                    ? `Отличная маржа! Чистая прибыль за кв. составила +$${latestReport.profit.toLocaleString()}. Казна растет.`
+                    : company.cash < 2500
                     ? 'Оборотный капитал на минимуме! Рекомендуется привлечь банковский заем.'
                     : activeLoans.length > 0
                     ? `Обслуживаем ${activeLoans.length} займа (-$${totalQuarterlyLoanPayment.toLocaleString()} / кв.). Казна стабильна.`
-                    : `Свободный капитал $${company.cash.toLocaleString()}. Финансы в идеальном порядке.`}
+                    : `Капитал $${company.cash.toLocaleString()}. Финансы в полном порядке.`}
                 </span>
               </div>
             </div>

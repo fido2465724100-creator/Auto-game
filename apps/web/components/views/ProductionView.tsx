@@ -48,8 +48,8 @@ export default function ProductionPage(): React.JSX.Element {
     name: 'Главная мануфактура',
     level: 1,
     capacity: gameState.company.productionCapacity,
-    monthlyOverhead: 8_000,
-    upgradeCost: 35_000,
+    monthlyOverhead: 40,
+    upgradeCost: 4_000,
   };
 
   const currentCash = gameState.company.cash;

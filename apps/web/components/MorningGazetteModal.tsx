@@ -63,6 +63,66 @@ export function MorningGazetteModal({ isOpen, onClose, report, companyName }: Pr
           </p>
         </div>
 
+        {/* Financial Audit Ledger Strip */}
+        <div className="my-3 rounded-lg border border-amber-900/20 bg-amber-50/70 p-3 text-xs">
+          <div className="font-serif font-bold text-amber-950 flex flex-wrap items-center justify-between border-b border-amber-900/15 pb-1.5 mb-2 gap-2">
+            <span className="flex items-center gap-1.5">
+              <span>⚖️</span>
+              <span>Бухгалтерский отчет за {qName} {year} г.</span>
+            </span>
+            <span
+              className={`font-mono font-bold px-2 py-0.5 rounded text-xs ${
+                isProfit
+                  ? 'bg-emerald-100 text-emerald-900 border border-emerald-300'
+                  : 'bg-rose-100 text-rose-900 border border-rose-300'
+              }`}
+            >
+              {isProfit ? 'ИТОГ: ЧИСТАЯ ПРИБЫЛЬ +' : 'ИТОГ: ЧИСТЫЙ УБЫТОК -'}${Math.abs(report.profit).toLocaleString()}
+            </span>
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[11px]">
+            <div className="bg-white/80 p-2 rounded border border-amber-900/10 shadow-2xs">
+              <span className="text-stone-500 block">Выручка ({report.unitsSold} авто):</span>
+              <strong className="text-emerald-800 font-mono text-xs">+${report.revenue.toLocaleString()}</strong>
+            </div>
+            <div className="bg-white/80 p-2 rounded border border-amber-900/10 shadow-2xs">
+              <span className="text-stone-500 block">Себестоимость сборки:</span>
+              <strong className="text-rose-850 font-mono text-xs">-${(report.productionCost ?? 0).toLocaleString()}</strong>
+            </div>
+            <div className="bg-white/80 p-2 rounded border border-amber-900/10 shadow-2xs">
+              <span className="text-stone-500 block">Содержание мастерской:</span>
+              <strong className="text-stone-800 font-mono text-xs">-${(report.overheadCost ?? 0).toLocaleString()}</strong>
+            </div>
+            <div className="bg-white/80 p-2 rounded border border-amber-900/10 shadow-2xs">
+              <span className="text-stone-500 block">НИОКР (Лаборатория):</span>
+              <strong className="text-stone-800 font-mono text-xs">-${(report.researchCost ?? 0).toLocaleString()}</strong>
+            </div>
+          </div>
+
+          {!isProfit && (
+            <div className="mt-2 text-[11px] bg-amber-100/70 p-2 rounded text-amber-950 flex items-start gap-2 border border-amber-300/80">
+              <span className="text-sm">💡</span>
+              <div>
+                <strong>Совет казначея:</strong>{' '}
+                {(report.productionCost ?? 0) >= report.revenue ? (
+                  <span>
+                    Цена продажи ваших авто близка к себестоимости деталей или ниже нее. Зайдите в <em>Конструктор</em> и увеличьте отпускную цену (здоровая наценка — 35–50% сверху себестоимости).
+                  </span>
+                ) : (report.researchCost ?? 0) > report.revenue * 0.4 ? (
+                  <span>
+                    Лаборатория забирает значительную долю оборота (${report.researchCost ?? 0}). На старте 1900 г. выбирайте экономный бюджет исследований.
+                  </span>
+                ) : (
+                  <span>
+                    Рынку требуется больше машин. Увеличьте план выпуска на вкладке <em>Завод</em> до предела мастерской (4 авто/кв.) или скорректируйте параметры модели.
+                  </span>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+
         {/* 3 Columns Layout (Newspaper style) */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 border-b-2 border-stone-300 pb-4 text-xs">
           {/* Column 1: Sales & Markets */}

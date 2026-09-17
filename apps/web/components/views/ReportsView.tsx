@@ -72,6 +72,22 @@ export default function ReportsPage(): React.JSX.Element {
                 </div>
               </div>
 
+              {/* Detailed Cost Breakdown */}
+              <div className="rounded bg-amber-50/60 p-2.5 border border-amber-200/80 text-[11px] space-y-1">
+                <div className="font-bold text-amber-950 flex justify-between border-b border-amber-200/60 pb-1">
+                  <span>Статьи расходов и выручка:</span>
+                  <span className={report.profit >= 0 ? 'text-emerald-700 font-mono font-bold' : 'text-rose-700 font-mono font-bold'}>
+                    {report.profit >= 0 ? '+' : ''}${report.profit.toLocaleString()}
+                  </span>
+                </div>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1 text-stone-700">
+                  <div>• Выручка: <strong className="text-emerald-750 font-mono font-bold">+${report.revenue.toLocaleString()}</strong></div>
+                  <div>• Сборка (детали): <strong className="text-rose-750 font-mono font-bold">-${(report.productionCost ?? 0).toLocaleString()}</strong></div>
+                  <div>• Содержание цеха: <strong className="text-stone-800 font-mono font-bold">-${(report.overheadCost ?? 0).toLocaleString()}</strong></div>
+                  <div>• Лаборатория: <strong className="text-stone-800 font-mono font-bold">-${(report.researchCost ?? 0).toLocaleString()}</strong></div>
+                </div>
+              </div>
+
               {/* Event Notes & Bank Overdraft alerts */}
               {report.eventNotes && report.eventNotes.length > 0 ? (
                 <div className="text-[12px] bg-amber-50 border border-amber-200 rounded p-2.5 text-amber-900 space-y-1">

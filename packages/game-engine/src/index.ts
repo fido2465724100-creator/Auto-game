@@ -26,7 +26,7 @@ export const MATERIALS_CATALOG: MaterialMarketItem[] = [
   {
     id: 'steel',
     name: 'Сталь и Чугун',
-    basePrice: 25,
+    basePrice: 2,
     unit: 'кг',
     yearAvailable: 1900,
     description: 'Основной металл для блоков цилиндров, рам, рессор и мостов.',
@@ -34,7 +34,7 @@ export const MATERIALS_CATALOG: MaterialMarketItem[] = [
   {
     id: 'wood',
     name: 'Конструкционная древесина',
-    basePrice: 15,
+    basePrice: 1,
     unit: 'ед.',
     yearAvailable: 1900,
     description: 'Критически важный материал эпохи 1900–1920: каретные кузова, спицы колес, щитки.',
@@ -42,7 +42,7 @@ export const MATERIALS_CATALOG: MaterialMarketItem[] = [
   {
     id: 'rubber',
     name: 'Натуральный каучук',
-    basePrice: 30,
+    basePrice: 3,
     unit: 'кг',
     yearAvailable: 1900,
     description: 'Колониальный каучук для ранних сплошных и пневматических шин, сальников и ремней.',
@@ -50,7 +50,7 @@ export const MATERIALS_CATALOG: MaterialMarketItem[] = [
   {
     id: 'leather',
     name: 'Кожа и Обивочный текстиль',
-    basePrice: 40,
+    basePrice: 4,
     unit: 'м²',
     yearAvailable: 1900,
     description: 'Материал отделки открытых диванов экипажа и складных брезентово-кожаных крыш.',
@@ -58,15 +58,15 @@ export const MATERIALS_CATALOG: MaterialMarketItem[] = [
   {
     id: 'aluminum',
     name: 'Алюминий и Сплавы',
-    basePrice: 75,
+    basePrice: 5,
     unit: 'кг',
     yearAvailable: 1915,
-    description: 'Легкий и дорогой металл. Снижает вес авто и повышает скоростные качества.',
+    description: 'Легкий и прочный металл. Снижает вес авто и повышает скоростные качества.',
   },
   {
     id: 'plastic',
     name: 'Полимеры и Пластик',
-    basePrice: 12,
+    basePrice: 2,
     unit: 'кг',
     yearAvailable: 1950,
     description: 'Инновация 1950-х годов: удешевляет интерьер, заменяет дерево и тяжелые панели.',
@@ -370,14 +370,21 @@ function simulateRegionDemand(
     model.stats.performance * region.preferenceWeights.performance +
     model.stats.prestige * region.preferenceWeights.prestige;
 
-  const normalizedStats = weightedStats / 100;
-  const pricePenalty = Math.max(0.45, 1 - model.salePrice / 100_000);
-  const reputationFactor = 0.6 + reputation / 200;
+  const normalizedStats = Math.max(0.2, weightedStats / 100);
 
-  // Era scaling: pioneer automobile market in 1900-1905 is a handcrafted boutique niche
-  const eraDemandFactor = Math.min(1.0, 0.05 + Math.max(0, year - 1900) * 0.02);
+  // Price competitiveness compared to baseline segment price
+  const basePrice = SEGMENT_PROFILES[model.targetSegment]?.baseSalePrice ?? 1000;
+  const priceRatio = model.salePrice / (basePrice || 1);
+  const priceFactor = priceRatio <= 1
+    ? Math.min(1.35, 1 + (1 - priceRatio) * 0.7)
+    : Math.max(0.1, 1 - (priceRatio - 1) * 1.1);
 
-  const baseDemand = region.marketSize * normalizedStats * pricePenalty * reputationFactor * appealBonus * eraDemandFactor;
+  const reputationFactor = 0.7 + reputation / 200;
+
+  // Era scaling: pioneer automobile market in 1900-1905 is healthy enough to support early workshops
+  const eraDemandFactor = Math.min(1.0, 0.18 + Math.max(0, year - 1900) * 0.02);
+
+  const baseDemand = region.marketSize * normalizedStats * priceFactor * reputationFactor * appealBonus * eraDemandFactor;
   return Math.max(1, Math.floor(baseDemand * eventMultiplier));
 }
 
@@ -415,15 +422,15 @@ export function runEndTurn(input: EndTurnInput): EndTurnOutput {
 
   // Factory capacity & inventory setup (quarterly capacity)
   const factoryCapacity = currentState.company.factory?.capacity ?? currentState.company.productionCapacity ?? 4;
-  const factoryMonthlyOverhead = currentState.company.factory?.monthlyOverhead ?? 0;
+  const factoryMonthlyOverhead = currentState.company.factory?.monthlyOverhead ?? 40;
   const quarterlyOverhead = (currentState.company.overheadMonthly + factoryMonthlyOverhead) * 3;
 
   const defaultInventory: Record<MaterialType, number> = {
-    steel: 200,
-    wood: 250,
-    rubber: 60,
-    leather: 30,
-    aluminum: 0,
+    steel: 500,
+    wood: 600,
+    rubber: 150,
+    leather: 80,
+    aluminum: 20,
     plastic: 0,
   };
 
@@ -604,13 +611,16 @@ export function runEndTurn(input: EndTurnInput): EndTurnOutput {
 
   const appealBonus = techAppealBonus(unlockedTechnologyIds, input.technologies);
 
-  let remainingInventory = producedUnits;
   let unitsSold = 0;
   let revenue = 0;
 
+  // Sell units model-by-model using each model's actual produced stock and true sale price
   for (const model of currentState.vehicleModels.filter((item) => item.active)) {
+    let modelStock = producedByModel[model.id] ?? 0;
+    if (modelStock <= 0) continue;
+
     for (const region of input.regions) {
-      if (remainingInventory <= 0) {
+      if (modelStock <= 0) {
         break;
       }
 
@@ -626,10 +636,10 @@ export function runEndTurn(input: EndTurnInput): EndTurnOutput {
       const marketPresence = currentState.company.marketPresence[region.id] ?? 0;
       const suitability = model.regionSuitability[region.id] ?? 0.5;
       const adjustedDemand = Math.max(1, Math.floor(expectedDemand * marketPresence * suitability));
-      const sold = Math.min(remainingInventory, adjustedDemand);
+      const sold = Math.min(modelStock, adjustedDemand);
 
       unitsSold += sold;
-      remainingInventory -= sold;
+      modelStock -= sold;
       salesByRegion[region.id] += sold;
       revenue += sold * model.salePrice;
     }
@@ -674,7 +684,9 @@ export function runEndTurn(input: EndTurnInput): EndTurnOutput {
 
   // Quarterly research cost (3 months)
   const researchCost = currentState.activeResearch.reduce((acc, project) => acc + project.allocatedBudget * 3, 0);
-  const expenses = productionCost + researchCost + quarterlyOverhead + loanPayments + materialProcurementCost;
+  // Production cost already incorporates parts, materials and assembly labor as calculated in the Designer.
+  // Operating expenses: Production (COGS) + Workshop Overhead + Research R&D + Loan Payments.
+  const expenses = productionCost + researchCost + quarterlyOverhead + loanPayments;
   const profit = revenue - expenses;
 
   // Reputation change
@@ -724,6 +736,9 @@ export function runEndTurn(input: EndTurnInput): EndTurnOutput {
     revenue,
     expenses,
     profit,
+    productionCost,
+    overheadCost: quarterlyOverhead,
+    researchCost,
     researchProgress: researchProgress.map((project) => ({
       technologyId: project.technologyId,
       progressMonths: project.progressMonths,

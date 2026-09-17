@@ -19,7 +19,7 @@ export function QuickResearchModal({ isOpen, onClose, onStarted }: Props): React
   const [technologies, setTechnologies] = useState<Array<Technology & { status: string }>>([]);
   const [loading, setLoading] = useState(true);
   const [startingId, setStartingId] = useState<string | null>(null);
-  const [budget, setBudget] = useState<number>(1000);
+  const [budget, setBudget] = useState<number>(100);
 
   const currentCash = gameState?.company.cash ?? 0;
 
@@ -48,6 +48,12 @@ export function QuickResearchModal({ isOpen, onClose, onStarted }: Props): React
     }
   };
 
+  const BUDGET_TIERS = [
+    { monthly: 50, quarterly: 150, label: 'Эконом' },
+    { monthly: 100, quarterly: 300, label: 'Стандарт' },
+    { monthly: 200, quarterly: 600, label: 'Ускоренный' },
+  ];
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-3 backdrop-blur-xs">
       <div className="relative max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-lg border border-amber-900/30 bg-[var(--paper)] p-5 shadow-2xl text-stone-900">
@@ -69,24 +75,27 @@ export function QuickResearchModal({ isOpen, onClose, onStarted }: Props): React
         </div>
 
         {/* Budget selector */}
-        <div className="mt-3 flex items-center justify-between bg-amber-50/80 border border-amber-200 rounded p-3 text-xs">
+        <div className="mt-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2 bg-amber-50/80 border border-amber-200 rounded p-3 text-xs">
           <div>
-            <span className="font-bold text-amber-950 block">Квартальный бюджет лаборатории:</span>
-            <span className="text-[11px] text-stone-600">Чем выше бюджет, тем быстрее инженеры сделают открытие.</span>
+            <span className="font-bold text-amber-950 block">Финансирование разработки:</span>
+            <span className="text-[11px] text-stone-600">
+              Текущий расход казны: <strong>${budget * 3} / квартал</strong> (${budget} / месяц)
+            </span>
           </div>
           <div className="flex items-center gap-2">
-            {[500, 1000, 2000].map((b) => (
+            {BUDGET_TIERS.map((tier) => (
               <button
-                key={b}
+                key={tier.monthly}
                 type="button"
-                onClick={() => setBudget(b)}
-                className={`rounded px-2.5 py-1 font-bold transition text-xs ${
-                  budget === b
-                    ? 'bg-amber-900 text-white'
+                onClick={() => setBudget(tier.monthly)}
+                className={`rounded px-2.5 py-1.5 font-bold transition text-xs cursor-pointer ${
+                  budget === tier.monthly
+                    ? 'bg-amber-900 text-white shadow-sm'
                     : 'bg-white border border-stone-300 text-stone-700 hover:bg-stone-100'
                 }`}
               >
-                ${b} / кв.
+                <div>{tier.label}</div>
+                <div className="text-[10px] font-normal opacity-90">${tier.quarterly}/кв.</div>
               </button>
             ))}
           </div>
