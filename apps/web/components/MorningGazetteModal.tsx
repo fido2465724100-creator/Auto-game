@@ -50,20 +50,42 @@ export function MorningGazetteModal(props: Props = {}): React.JSX.Element | null
         {/* Lead Headline */}
         <div className="my-4 border-b-2 border-stone-300 pb-3">
           <div className="flex items-center gap-2 text-xs font-bold text-amber-900 uppercase tracking-wide">
-            <span>⚡ Главная новость номера:</span>
+            <span>
+              {lang === 'en'
+                ? '⚡ Breaking Industry News:'
+                : lang === 'uk'
+                ? '⚡ Головна новина номера:'
+                : lang === 'de'
+                ? '⚡ Eilmeldung:'
+                : '⚡ Главная новость номера:'}
+            </span>
             <span>{companyName}</span>
           </div>
           <h2 className="text-xl sm:text-2xl font-bold text-stone-950 leading-tight mt-1">
             {isProfit
-              ? `УСПЕХ НА СБОРОЧНЫХ ЛИНИЯХ: ПРИБЫЛЬ СОСТАВИЛА +$${report.profit.toLocaleString()}!`
-              : `СЛОЖНЫЙ ПЕРИОД ДЛЯ МАНУФАКТУРЫ: ГОДОВОЙ УБЫТОК -$${Math.abs(report.profit).toLocaleString()}`}
+              ? lang === 'en'
+                ? `ASSEMBLY LINES TRIUMPH: ANNUAL PROFIT REACHES +$${report.profit.toLocaleString()}!`
+                : lang === 'uk'
+                ? `ТРІУМФ НА СКЛАДАЛЬНИХ ЛІНІЯХ: РІЧНИЙ ПРИБУТОК СКЛАВ +$${report.profit.toLocaleString()}!`
+                : lang === 'de'
+                ? `ERFOLG AN DEN MONTAGELINIEN: JAHRESGEWINN ERREICHT +$${report.profit.toLocaleString()}!`
+                : `УСПЕХ НА СБОРОЧНЫХ ЛИНИЯХ: ГОДОВАЯ ПРИБЫЛЬ СОСТАВИЛА +$${report.profit.toLocaleString()}!`
+              : lang === 'en'
+              ? `CHALLENGING YEAR FOR MANUFACTURE: ANNUAL DEFICIT -$${Math.abs(report.profit).toLocaleString()}`
+              : lang === 'uk'
+              ? `СКЛАДНИЙ РІК ДЛЯ МАНУФАКТУРИ: РІЧНИЙ ЗБИТОК -$${Math.abs(report.profit).toLocaleString()}`
+              : lang === 'de'
+              ? `SCHWIERIGES JAHR FÜR DIE MANUFAKTUR: JAHRESFEHLBETRAG -$${Math.abs(report.profit).toLocaleString()}`
+              : `СЛОЖНЫЙ ГОД ДЛЯ МАНУФАКТУРЫ: ГОДОВОЙ УБЫТОК -$${Math.abs(report.profit).toLocaleString()}`}
           </h2>
           <p className="text-xs text-stone-700 mt-2 leading-relaxed">
-            По официальным данным конторы заводы компании завершили {year} год со следующими результатами: выпущено{' '}
-            <strong>{report.unitsProduced}</strong> самоходных экипажей, реализовано на рынках{' '}
-            <strong>{report.unitsSold}</strong> единиц. Совокупная выручка достигла{' '}
-            <strong>${report.revenue.toLocaleString()}</strong> при расходах{' '}
-            <strong>${report.expenses.toLocaleString()}</strong>.
+            {lang === 'en'
+              ? `According to official plant ledgers, the company concluded the year ${year} with the following figures: produced ${report.unitsProduced} motor carriages, delivered ${report.unitsSold} units to consumer markets. Total revenue reached $${report.revenue.toLocaleString()} with total operational expenses of $${report.expenses.toLocaleString()}.`
+              : lang === 'uk'
+              ? `За офіційними даними контори, заводи компанії завершили ${year} рік з наступними результатами: випущено ${report.unitsProduced} самохідних екіпажів, реалізовано на ринках ${report.unitsSold} одиниць. Сукупна виручка сягнула $${report.revenue.toLocaleString()} при витратах $${report.expenses.toLocaleString()}.`
+              : lang === 'de'
+              ? `Laut offiziellen Büchern schloss das Unternehmen das Jahr ${year} mit folgenden Ergebnissen ab: ${report.unitsProduced} Motorfahrzeuge hergestellt, ${report.unitsSold} Einheiten auf den Märkten abgesetzt. Der Gesamtumsatz belief sich auf $${report.revenue.toLocaleString()} bei Gesamtausgaben von $${report.expenses.toLocaleString()}.`
+              : `По официальным данным конторы заводы компании завершили ${year} год со следующими результатами: выпущено ${report.unitsProduced} самоходных экипажей, реализовано на рынках ${report.unitsSold} единиц. Совокупная выручка достигла $${report.revenue.toLocaleString()} при расходах $${report.expenses.toLocaleString()}.`}
           </p>
         </div>
 
@@ -72,7 +94,15 @@ export function MorningGazetteModal(props: Props = {}): React.JSX.Element | null
           <div className="font-serif font-bold text-amber-950 flex flex-wrap items-center justify-between border-b border-amber-900/15 pb-1.5 mb-2 gap-2">
             <span className="flex items-center gap-1.5">
               <span>⚖️</span>
-              <span>Бухгалтерский отчет за {year} г.</span>
+              <span>
+                {lang === 'en'
+                  ? `Annual Financial Audit for ${year}`
+                  : lang === 'uk'
+                  ? `Бухгалтерський звіт за ${year} рік`
+                  : lang === 'de'
+                  ? `Jahres-Auditbericht für ${year}`
+                  : `Бухгалтерский отчет за ${year} г.`}
+              </span>
             </span>
             <span
               className={`font-mono font-bold px-2 py-0.5 rounded text-xs ${
@@ -81,29 +111,42 @@ export function MorningGazetteModal(props: Props = {}): React.JSX.Element | null
                   : 'bg-rose-100 text-rose-900 border border-rose-300'
               }`}
             >
-              {isProfit ? 'ИТОГ: ЧИСТАЯ ПРИБЫЛЬ +' : 'ИТОГ: ЧИСТЫЙ УБЫТОК -'}${Math.abs(report.profit).toLocaleString()}
+              {isProfit
+                ? (lang === 'en' ? 'RESULT: NET PROFIT +' : lang === 'uk' ? 'ПІДСУМОК: ЧИСТИЙ ПРИБУТОК +' : lang === 'de' ? 'ERGEBNIS: JAHRESÜBERSCHUSS +' : 'ИТОГ: ЧИСТАЯ ПРИБЫЛЬ +')
+                : (lang === 'en' ? 'RESULT: NET DEFICIT -' : lang === 'uk' ? 'ПІДСУМОК: ЧИСТИЙ ЗБИТОК -' : lang === 'de' ? 'ERGEBNIS: JAHRESFEHLBETRAG -' : 'ИТОГ: ЧИСТЫЙ УБЫТОК -')}
+              ${Math.abs(report.profit).toLocaleString()}
             </span>
           </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 text-[11px]">
             <div className="bg-white/80 p-2 rounded border border-amber-900/10 shadow-2xs">
-              <span className="text-stone-500 block">Выручка ({report.unitsSold} авто):</span>
+              <span className="text-stone-500 block">
+                {lang === 'en' ? `Revenue (${report.unitsSold} cars):` : lang === 'uk' ? `Виручка (${report.unitsSold} авто):` : lang === 'de' ? `Umsatz (${report.unitsSold} Fz.):` : `Выручка (${report.unitsSold} авто):`}
+              </span>
               <strong className="text-emerald-800 font-mono text-xs">+${report.revenue.toLocaleString()}</strong>
             </div>
             <div className="bg-white/80 p-2 rounded border border-amber-900/10 shadow-2xs">
-              <span className="text-stone-500 block">Себестоимость сборки:</span>
+              <span className="text-stone-500 block">
+                {lang === 'en' ? 'Assembly Cost:' : lang === 'uk' ? 'Собівартість складання:' : lang === 'de' ? 'Montage-Kosten:' : 'Себестоимость сборки:'}
+              </span>
               <strong className="text-rose-850 font-mono text-xs">-${(report.productionCost ?? 0).toLocaleString()}</strong>
             </div>
             <div className="bg-white/80 p-2 rounded border border-amber-900/10 shadow-2xs">
-              <span className="text-stone-500 block">Содержание цеха:</span>
+              <span className="text-stone-500 block">
+                {lang === 'en' ? 'Plant Overhead:' : lang === 'uk' ? 'Утримання цехів:' : lang === 'de' ? 'Werksunterhalt:' : 'Содержание цеха:'}
+              </span>
               <strong className="text-stone-800 font-mono text-xs">-${(report.overheadCost ?? 0).toLocaleString()}</strong>
             </div>
             <div className="bg-white/80 p-2 rounded border border-amber-900/10 shadow-2xs">
-              <span className="text-stone-500 block">Аренда площадей:</span>
+              <span className="text-stone-500 block">
+                {lang === 'en' ? 'Premises Rent:' : lang === 'uk' ? 'Оренда площ:' : lang === 'de' ? 'Flächenmiete:' : 'Аренда площадей:'}
+              </span>
               <strong className="text-amber-950 font-mono text-xs">-${(report.rentCost ?? 100).toLocaleString()}</strong>
             </div>
             <div className="bg-white/80 p-2 rounded border border-amber-900/10 shadow-2xs">
-              <span className="text-stone-500 block">НИОКР (Лаборатория):</span>
+              <span className="text-stone-500 block">
+                {lang === 'en' ? 'R&D Laboratory:' : lang === 'uk' ? 'НДДКР (Лабораторія):' : lang === 'de' ? 'F&E-Labor:' : 'НИОКР (Лаборатория):'}
+              </span>
               <strong className="text-stone-800 font-mono text-xs">-${(report.researchCost ?? 0).toLocaleString()}</strong>
             </div>
           </div>
@@ -112,22 +155,48 @@ export function MorningGazetteModal(props: Props = {}): React.JSX.Element | null
             <div className="mt-2 text-[11px] bg-amber-100/70 p-2 rounded text-amber-950 flex items-start gap-2 border border-amber-300/80">
               <span className="text-sm">💡</span>
               <div>
-                <strong>Совет казначея:</strong>{' '}
+                <strong>
+                  {lang === 'en' ? 'Treasurer Advisory:' : lang === 'uk' ? 'Порада скарбника:' : lang === 'de' ? 'Rat des Schatzmeisters:' : 'Совет казначея:'}
+                </strong>{' '}
                 {(report.productionCost ?? 0) >= report.revenue ? (
                   <span>
-                    Цена продажи ваших авто близка к себестоимости деталей или ниже нее. Зайдите в <em>Конструктор</em> и увеличьте отпускную цену (здоровая наценка — 35–50% сверху себестоимости).
+                    {lang === 'en'
+                      ? 'Your vehicle sale price is too close to parts cost. Open the Vehicle Design view and raise the price (recommended margin: 35–50% above cost).'
+                      : lang === 'uk'
+                      ? 'Ціна продажу ваших авто близька до собівартості деталей або нижча за неї. Відкрийте Конструктор і збільшіть ціну продажу (здорова націнка: 35–50%).'
+                      : lang === 'de'
+                      ? 'Ihr Verkaufspreis liegt zu nahe an den Bauteilkosten. Öffnen Sie die Fahrzeugentwicklung und erhöhen Sie den Preis (gesunde Marge: 35–50%).'
+                      : 'Цена продажи ваших авто близка к себестоимости деталей или ниже нее. Зайдите в Конструктор и увеличьте отпускную цену (здоровая наценка — 35–50% сверху себестоимости).'}
                   </span>
                 ) : (report.rentCost ?? 0) > report.revenue * 0.4 ? (
                   <span>
-                    Аренда производственных площадей (-${(report.rentCost ?? 0).toLocaleString()}) отнимает львиную долю выручки! Срочно расширяйте мощности на вкладке <em>Завод</em>, чтобы выпускать больше авто и окупать аренду.
+                    {lang === 'en'
+                      ? `Premises rent (-$${(report.rentCost ?? 0).toLocaleString()}) consumes a large share of revenue! Expand factory capacity on the Factory tab to produce more cars and cover rent.`
+                      : lang === 'uk'
+                      ? `Оренда виробничих площ (-$${(report.rentCost ?? 0).toLocaleString()}) забирає левову частку виручки! Розширюйте потужності у вкладці «Завод», щоб випускати більше авто.`
+                      : lang === 'de'
+                      ? `Flächenmiete (-$${(report.rentCost ?? 0).toLocaleString()}) zehrt den Großteil des Umsatzes auf! Erweitern Sie die Kapazität im Tab „Fabrik“.`
+                      : `Аренда производственных площадей (-$${(report.rentCost ?? 0).toLocaleString()}) отнимает львиную долю выручки! Срочно расширяйте мощности на вкладке Завод, чтобы выпускать больше авто.`}
                   </span>
                 ) : (report.researchCost ?? 0) > report.revenue * 0.4 ? (
                   <span>
-                    Лаборатория забирает значительную долю оборота (${report.researchCost ?? 0}). На старте выбирайте экономный бюджет исследований.
+                    {lang === 'en'
+                      ? `R&D expenditure ($${report.researchCost ?? 0}) is high for your current scale. Balance your laboratory budget.`
+                      : lang === 'uk'
+                      ? `Витрати на НДДКР ($${report.researchCost ?? 0}) завеликі для поточного масштабу. Оптимізуйте бюджет досліджень.`
+                      : lang === 'de'
+                      ? `F&E-Ausgaben ($${report.researchCost ?? 0}) sind zu hoch für Ihren derzeitigen Umsatz. Passen Sie das Laborbudget an.`
+                      : `Лаборатория забирает значительную долю оборота ($${report.researchCost ?? 0}). На старте выбирайте экономный бюджет исследований.`}
                   </span>
                 ) : (
                   <span>
-                    Рынку требуется больше машин. Увеличьте план выпуска на вкладке <em>Завод</em> до предела мастерской или спроектируйте новую актуальную модель в Конструкторе.
+                    {lang === 'en'
+                      ? 'The market demands more cars. Increase your annual production plan on the Factory tab or design a fresh model in the Design Studio.'
+                      : lang === 'uk'
+                      ? 'Ринок потребує більше машин. Збільшіть річний план випуску на вкладці «Завод» або спроєктуйте нову модель у Конструкторі.'
+                      : lang === 'de'
+                      ? 'Der Markt verlangt mehr Fahrzeuge. Erhöhen Sie den Jahresproduktionsplan oder entwerfen Sie ein neues Modell.'
+                      : 'Рынку требуется больше машин. Увеличьте план выпуска на вкладке Завод до предела мастерской или спроектируйте новую актуальную модель в Конструкторе.'}
                   </span>
                 )}
               </div>
@@ -140,24 +209,43 @@ export function MorningGazetteModal(props: Props = {}): React.JSX.Element | null
           {/* Column 1: Sales & Markets */}
           <div className="space-y-2 border-r border-stone-300 pr-3">
             <h3 className="font-bold text-xs uppercase tracking-wider text-stone-900 border-b border-stone-300 pb-1">
-              📍 География сбыта
+              {lang === 'en' ? '📍 Sales Geography' : lang === 'uk' ? '📍 Географія збуту' : lang === 'de' ? '📍 Absatzgebiete' : '📍 География сбыта'}
             </h3>
             {report.salesByRegion && Object.keys(report.salesByRegion).length > 0 ? (
               <div className="space-y-1.5 text-[11px]">
                 {Object.entries(report.salesByRegion).map(([reg, count]) => (
                   <div key={reg} className="flex justify-between border-b border-stone-200 pb-0.5">
                     <span>{t.regions[reg as keyof typeof t.regions] ?? reg}:</span>
-                    <strong className="text-stone-900">{count} шт.</strong>
+                    <strong className="text-stone-900">
+                      {count} {lang === 'en' ? 'cars' : lang === 'uk' ? 'авто' : lang === 'de' ? 'Fz.' : 'шт.'}
+                    </strong>
                   </div>
                 ))}
               </div>
             ) : (
-              <p className="text-[11px] text-stone-500 italic">Продаж в отчетном квартале не зафиксировано.</p>
+              <p className="text-[11px] text-stone-500 italic">
+                {lang === 'en'
+                  ? 'No vehicle sales recorded in this annual period.'
+                  : lang === 'uk'
+                  ? 'Продажів у звітному році не зафіксовано.'
+                  : lang === 'de'
+                  ? 'Keine Fahrzeugverkäufe im Berichtsjahr erfasst.'
+                  : 'Продаж в отчетном году не зафиксировано.'}
+              </p>
             )}
 
             {report.shortageOccurred && (
               <div className="bg-rose-100 border border-rose-300 p-2 rounded text-[11px] text-rose-900 mt-2">
-                <strong>⚠️ Дефицит сырья:</strong> Нехватка материалов на складе привела к частичному простою цехов.
+                <strong>
+                  {lang === 'en' ? '⚠️ Material Shortage:' : lang === 'uk' ? '⚠️ Дефіцит сировини:' : lang === 'de' ? '⚠️ Rohstoffmangel:' : '⚠️ Дефицит сырья:'}
+                </strong>{' '}
+                {lang === 'en'
+                  ? 'Lack of warehouse stock caused partial factory downtime.'
+                  : lang === 'uk'
+                  ? 'Брак сировини на складі призвів до часткового простою цехів.'
+                  : lang === 'de'
+                  ? 'Mangel an Lagerbeständen führte zu teilweisem Stillstand.'
+                  : 'Нехватка материалов на складе привела к частичному простою цехов.'}
               </div>
             )}
           </div>
@@ -165,7 +253,7 @@ export function MorningGazetteModal(props: Props = {}): React.JSX.Element | null
           {/* Column 2: Competitor News */}
           <div className="space-y-2 border-r border-stone-300 pr-3">
             <h3 className="font-bold text-xs uppercase tracking-wider text-stone-900 border-b border-stone-300 pb-1">
-              🏭 Сводки конкурентов
+              {lang === 'en' ? '🏭 Competitor Intelligence' : lang === 'uk' ? '🏭 Зведення конкурентів' : lang === 'de' ? '🏭 Konkurrenzberichte' : '🏭 Сводки конкурентов'}
             </h3>
             {report.competitorNews && report.competitorNews.length > 0 ? (
               <div className="space-y-2 text-[11px] text-stone-800">
@@ -178,7 +266,13 @@ export function MorningGazetteModal(props: Props = {}): React.JSX.Element | null
               </div>
             ) : (
               <p className="text-[11px] text-stone-600 leading-snug italic">
-                Концерны Fort и Mercer-Benz ведут плановую модернизацию без громких объявлений в этом квартале.
+                {lang === 'en'
+                  ? 'Major competitors Fort and Mercer-Benz are modernizing their facilities without major announcements.'
+                  : lang === 'uk'
+                  ? 'Концерни Fort та Mercer-Benz ведуть планову модернізацію без гучних заяв цього року.'
+                  : lang === 'de'
+                  ? 'Die Konzerne Fort und Mercer-Benz modernisieren planmäßig ohne größere Ankündigungen.'
+                  : 'Концерны Fort и Mercer-Benz ведут плановую модернизацию без громких объявлений в этом году.'}
               </p>
             )}
           </div>
@@ -186,7 +280,7 @@ export function MorningGazetteModal(props: Props = {}): React.JSX.Element | null
           {/* Column 3: Financial Notes & Telegraph */}
           <div className="space-y-2">
             <h3 className="font-bold text-xs uppercase tracking-wider text-stone-900 border-b border-stone-300 pb-1">
-              📜 Депеши и Казначейство
+              {lang === 'en' ? '📜 Dispatches & Treasury' : lang === 'uk' ? '📜 Депеші та Скарбниця' : lang === 'de' ? '📜 Depeschen & Finanzen' : '📜 Депеши и Казначейство'}
             </h3>
             {report.eventNotes && report.eventNotes.length > 0 ? (
               <div className="space-y-1.5 text-[11px]">
@@ -197,12 +291,21 @@ export function MorningGazetteModal(props: Props = {}): React.JSX.Element | null
                 ))}
               </div>
             ) : (
-              <p className="text-[11px] text-stone-600">Квартал прошел в штатном режиме без чрезвычайных финансовых происшествий.</p>
+              <p className="text-[11px] text-stone-600">
+                {lang === 'en'
+                  ? 'The year concluded in orderly operations without emergency disruptions.'
+                  : lang === 'uk'
+                  ? 'Рік завершився в штатному режимі без надзвичайних фінансових пригод.'
+                  : lang === 'de'
+                  ? 'Das Jahr verlief planmäßig ohne finanzielle Notstände.'
+                  : 'Год прошел в штатном режиме без чрезвычайных происшествий.'}
+              </p>
             )}
 
             {report.loanPayments && report.loanPayments > 0 ? (
               <div className="text-[11px] text-stone-600 border-t border-stone-200 pt-1">
-                Выплаты по банковским займам: <strong className="text-stone-900">${report.loanPayments}</strong>
+                {lang === 'en' ? 'Bank loan amortization:' : lang === 'uk' ? 'Виплати за банківськими позиками:' : lang === 'de' ? 'Kredittilgungen:' : 'Выплаты по банковским займам:'}{' '}
+                <strong className="text-stone-900">${report.loanPayments.toLocaleString()}</strong>
               </div>
             ) : null}
           </div>
@@ -213,17 +316,25 @@ export function MorningGazetteModal(props: Props = {}): React.JSX.Element | null
           <div className="flex items-center gap-2">
             <span className="text-2xl">{eraTheme.icon}</span>
             <div className="text-[10px] text-stone-600 font-sans">
-              <div>{eraTheme.nameRu}</div>
-              <div>Материалы эпохи: <strong>{eraTheme.materialRu}</strong></div>
+              <div className="font-bold font-serif text-xs text-stone-900">
+                {lang === 'en' ? eraTheme.nameEn : lang === 'uk' ? eraTheme.nameUk : lang === 'de' ? eraTheme.nameDe : eraTheme.nameRu}
+              </div>
+              <div>({eraTheme.yearStart}–{eraTheme.yearEnd})</div>
             </div>
           </div>
 
           <button
             type="button"
             onClick={onClose}
-            className="rounded bg-stone-900 px-6 py-2 text-xs font-bold text-stone-100 hover:bg-black font-sans uppercase tracking-wider shadow transition"
+            className="rounded bg-stone-900 px-6 py-2 text-xs font-bold text-stone-100 hover:bg-black font-sans uppercase tracking-wider shadow transition cursor-pointer"
           >
-            Принять к сведению и продолжить →
+            {lang === 'en'
+              ? 'Acknowledge and Continue →'
+              : lang === 'uk'
+              ? 'Взяти до відома та продовжити →'
+              : lang === 'de'
+              ? 'Zur Kenntnis nehmen und fortfahren →'
+              : 'Принять к сведению и продолжить →'}
           </button>
         </div>
       </div>

@@ -48,6 +48,35 @@ const MATERIAL_ICONS: Record<MaterialType, string> = {
   plastic: '🧪',
 };
 
+function getLocalizedFactoryName(factoryName: string, country: string | undefined, lang: string): string {
+  const c = (country || '').toLowerCase();
+  if (c === 'usa' || c === 'us') {
+    if (lang === 'en') return 'Detroit Workshop No. 1';
+    if (lang === 'uk') return 'Детройтська майстерня №1';
+    if (lang === 'de') return 'Detroit Werkstatt Nr. 1';
+    return 'Детройтская мастерская №1';
+  }
+  if (c === 'germany' || c === 'de') {
+    if (lang === 'en') return 'Stuttgart Manufactory No. 1';
+    if (lang === 'uk') return 'Штутгартська мануфактура №1';
+    if (lang === 'de') return 'Stuttgarter Manufaktur Nr. 1';
+    return 'Штутгартская мануфактура №1';
+  }
+  if (c === 'france' || c === 'fr') {
+    if (lang === 'en') return 'Paris Carriage Atelier';
+    if (lang === 'uk') return 'Паризьке екіпажне ательє';
+    if (lang === 'de') return 'Pariser Kutschen-Atelier';
+    return 'Парижское экипажное ателье';
+  }
+  if (c === 'uk' || c === 'gb') {
+    if (lang === 'en') return 'Coventry Mechanical Works';
+    if (lang === 'uk') return 'Ковентрійська механічна фабрика';
+    if (lang === 'de') return 'Coventry Maschinenfabrik';
+    return 'Ковентрийская механическая фабрика';
+  }
+  return factoryName;
+}
+
 export default function DashboardPage(): React.JSX.Element {
   const {
     gameState,
@@ -59,6 +88,7 @@ export default function DashboardPage(): React.JSX.Element {
     takeLoan,
     setHallOfFameOpen,
     setGazetteModalOpen,
+    decommissionVehicleModel,
   } = useGame();
   const { t, lang } = useLanguage();
 
@@ -328,28 +358,28 @@ export default function DashboardPage(): React.JSX.Element {
                 <span className="era-label text-xs leading-relaxed mt-1 block">
                   {latestReport && latestReport.profit < 0
                     ? lang === 'en'
-                      ? `Loss last quarter (-$${Math.abs(latestReport.profit).toLocaleString()})! Check markup and growing plant rent ($${premisesRent.toLocaleString()}/qtr).`
+                      ? `Loss last year (-$${Math.abs(latestReport.profit).toLocaleString()})! Check markup and growing plant rent ($${premisesRent.toLocaleString()}/yr).`
                       : lang === 'uk'
-                      ? `Збиток за минулий кв. (-$${Math.abs(latestReport.profit).toLocaleString()})! Перевірте націнку та оренду цехів ($${premisesRent.toLocaleString()}/кв.).`
+                      ? `Збиток за минулий рік (-$${Math.abs(latestReport.profit).toLocaleString()})! Перевірте націнку та оренду цехів ($${premisesRent.toLocaleString()}/рік).`
                       : lang === 'de'
-                      ? `Verlust im letzten Quartal (-$${Math.abs(latestReport.profit).toLocaleString()})! Prüfen Sie den Aufschlag und Werksmiete (${premisesRent.toLocaleString()} $/Q.).`
-                      : `Убыток в прошлом кв. (-$${Math.abs(latestReport.profit).toLocaleString()})! Проверьте наценку и растущую аренду цехов ($${premisesRent.toLocaleString()}/кв.).`
-                    : premisesRent >= 800 && factory.capacity <= 4
+                      ? `Verlust im letzten Jahr (-$${Math.abs(latestReport.profit).toLocaleString()})! Prüfen Sie den Aufschlag und Werksmiete (${premisesRent.toLocaleString()} $/Jahr).`
+                      : `Убыток в прошлом году (-$${Math.abs(latestReport.profit).toLocaleString()})! Проверьте наценку и растущую аренду цехов ($${premisesRent.toLocaleString()}/год).`
+                    : premisesRent >= 3200 && factory.capacity <= 16
                     ? lang === 'en'
-                      ? `Premises rent has climbed to $${premisesRent.toLocaleString()}/qtr! Small 4-car workshop capacity is becoming unprofitable; expand factory lines.`
+                      ? `Premises rent has climbed to $${premisesRent.toLocaleString()}/yr! Workshop capacity is becoming tight; expand factory lines.`
                       : lang === 'uk'
-                      ? `Оренда площ зросла до $${premisesRent.toLocaleString()}/кв.! Кустарна потужність 4 авто/кв. стає збитковою; розширюйте завод.`
+                      ? `Оренда площ зросла до $${premisesRent.toLocaleString()}/рік! Базова потужність стає замалою; розширюйте заводські лінії.`
                       : lang === 'de'
-                      ? `Flächenmiete ist auf ${premisesRent.toLocaleString()} $/Q. gestiegen! 4-Fahrzeuge-Werk wird unrentabel; erweitern Sie die Kapazität.`
-                      : `Аренда цехов выросла до $${premisesRent.toLocaleString()}/кв.! Кустарная мощность 4 авто/кв. становится нерентабельной; расширяйте завод.`
+                      ? `Flächenmiete ist auf ${premisesRent.toLocaleString()} $/Jahr gestiegen! Erweitern Sie die Werkslinien.`
+                      : `Аренда цехов выросла до $${premisesRent.toLocaleString()}/год! Базовая мощность маловата; расширяйте заводские линии.`
                     : latestReport && latestReport.profit > 0
                     ? lang === 'en'
-                      ? `Great margin! Net profit for the quarter was +$${latestReport.profit.toLocaleString()}. Treasury is growing.`
+                      ? `Great margin! Net profit for the year was +$${latestReport.profit.toLocaleString()}. Treasury is growing.`
                       : lang === 'uk'
-                      ? `Чудова маржа! Чистий прибуток за кв. склав +$${latestReport.profit.toLocaleString()}. Казна зростає.`
+                      ? `Чудова маржа! Чистий прибуток за рік склав +$${latestReport.profit.toLocaleString()}. Казна зростає.`
                       : lang === 'de'
-                      ? `Hervorragende Marge! Quartalsüberschuss: +$${latestReport.profit.toLocaleString()}. Kasse wächst.`
-                      : `Отличная маржа! Чистая прибыль за кв. составила +$${latestReport.profit.toLocaleString()}. Казна растет.`
+                      ? `Hervorragende Marge! Jahresüberschuss: +$${latestReport.profit.toLocaleString()}. Kasse wächst.`
+                      : `Отличная маржа! Чистая прибыль за год составила +$${latestReport.profit.toLocaleString()}. Казна растет.`
                     : company.cash < 2500
                     ? lang === 'en'
                       ? 'Working capital is critical! Consider taking a bank loan.'
@@ -360,12 +390,12 @@ export default function DashboardPage(): React.JSX.Element {
                       : 'Оборотный капитал на минимуме! Рекомендуется привлечь банковский заем.'
                     : activeLoans.length > 0
                     ? lang === 'en'
-                      ? `Servicing ${activeLoans.length} active loan(s) (-$${totalQuarterlyLoanPayment.toLocaleString()} / qtr). Treasury stable.`
+                      ? `Servicing ${activeLoans.length} active loan(s) (-$${(totalQuarterlyLoanPayment * 4).toLocaleString()} / yr). Treasury stable.`
                       : lang === 'uk'
-                      ? `Обслуговуємо ${activeLoans.length} кредит(и) (-$${totalQuarterlyLoanPayment.toLocaleString()} / кв.). Казна стабільна.`
+                      ? `Обслуговуємо ${activeLoans.length} кредит(и) (-$${(totalQuarterlyLoanPayment * 4).toLocaleString()} / рік). Казна стабільна.`
                       : lang === 'de'
-                      ? `Bedienen ${activeLoans.length} Darlehen (-$${totalQuarterlyLoanPayment.toLocaleString()} / Q.). Finanzen stabil.`
-                      : `Обслуживаем ${activeLoans.length} займа (-$${totalQuarterlyLoanPayment.toLocaleString()} / кв.). Казна стабильна.`
+                      ? `Bedienen ${activeLoans.length} Darlehen (-$${(totalQuarterlyLoanPayment * 4).toLocaleString()} / Jahr). Finanzen stabil.`
+                      : `Обслуживаем ${activeLoans.length} займа (-$${(totalQuarterlyLoanPayment * 4).toLocaleString()} / год). Казна стабильна.`
                     : lang === 'en'
                     ? `Capital $${company.cash.toLocaleString()}. Finances in order.`
                     : lang === 'uk'
@@ -387,19 +417,19 @@ export default function DashboardPage(): React.JSX.Element {
                 <span className="era-label text-xs leading-relaxed mt-1 block">
                   {isOverCapacity
                     ? lang === 'en'
-                      ? `Overcapacity! Planned ${totalPlannedUnits} units against factory limit of ${factory.capacity} cars/qtr.`
+                      ? `Overcapacity! Planned ${totalPlannedUnits} units against factory limit of ${factory.capacity} cars/yr.`
                       : lang === 'uk'
-                      ? `Перевантаження! Заплановано ${totalPlannedUnits} при ліміті цеху ${factory.capacity} авто/кв.`
+                      ? `Перевантаження! Заплановано ${totalPlannedUnits} при ліміті цеху ${factory.capacity} авто/рік.`
                       : lang === 'de'
-                      ? `Überlastung! ${totalPlannedUnits} geplant bei Werkskapazität von ${factory.capacity} Autos/Q.`
-                      : `Перегруз! Запланировано ${totalPlannedUnits} при лимите цеха ${factory.capacity} авто/кв.`
+                      ? `Überlastung! ${totalPlannedUnits} geplant bei Werkskapazität von ${factory.capacity} Fz./Jahr.`
+                      : `Перегруз! Запланировано ${totalPlannedUnits} при лимите цеха ${factory.capacity} авто/год.`
                     : lang === 'en'
-                    ? `Line utilization: ${totalPlannedUnits} / ${factory.capacity} cars/qtr (${Math.round((totalPlannedUnits / factory.capacity) * 100)}%).`
+                    ? `Line utilization: ${totalPlannedUnits} / ${factory.capacity} cars/yr (${Math.round((totalPlannedUnits / factory.capacity) * 100)}%).`
                     : lang === 'uk'
-                    ? `Завантаження ліній: ${totalPlannedUnits} / ${factory.capacity} авто/кв. (${Math.round((totalPlannedUnits / factory.capacity) * 100)}%).`
+                    ? `Завантаження ліній: ${totalPlannedUnits} / ${factory.capacity} авто/рік (${Math.round((totalPlannedUnits / factory.capacity) * 100)}%).`
                     : lang === 'de'
-                    ? `Linienauslastung: ${totalPlannedUnits} / ${factory.capacity} Autos/Q. (${Math.round((totalPlannedUnits / factory.capacity) * 100)}%).`
-                    : `Загрузка линий: ${totalPlannedUnits} / ${factory.capacity} авто/кв. (${Math.round((totalPlannedUnits / factory.capacity) * 100)}%).`}
+                    ? `Linienauslastung: ${totalPlannedUnits} / ${factory.capacity} Fz./Jahr (${Math.round((totalPlannedUnits / factory.capacity) * 100)}%).`
+                    : `Загрузка линий: ${totalPlannedUnits} / ${factory.capacity} авто/год (${Math.round((totalPlannedUnits / factory.capacity) * 100)}%).`}
                 </span>
               </div>
             </div>
@@ -426,17 +456,17 @@ export default function DashboardPage(): React.JSX.Element {
                       </span>
                     </h3>
                     <span className="text-xs era-label font-serif">
-                      {factory.name} • {lang === 'en' ? 'Capacity' : lang === 'uk' ? 'Потужність' : lang === 'de' ? 'Kapazität' : 'Мощность'}:{' '}
+                      {getLocalizedFactoryName(factory.name, company.country, lang)} • {lang === 'en' ? 'Capacity' : lang === 'uk' ? 'Потужність' : lang === 'de' ? 'Kapazität' : 'Мощность'}:{' '}
                       <strong className="font-sans era-value">
-                        {factory.capacity} {lang === 'en' ? 'cars/qtr' : lang === 'uk' ? 'авто/кв.' : lang === 'de' ? 'Autos/Q.' : 'авто/кв.'}
+                        {factory.capacity} {lang === 'en' ? 'cars/yr' : lang === 'uk' ? 'авто/рік' : lang === 'de' ? 'Fz./Jahr' : 'авто/год'}
                       </strong>{' '}
                       • {lang === 'en' ? 'Overhead' : lang === 'uk' ? 'Утримання' : lang === 'de' ? 'Unterhalt' : 'Содержание'}:{' '}
                       <strong className="font-sans era-value">
-                        ${factory.monthlyOverhead * 3}/{lang === 'en' ? 'qtr' : lang === 'uk' ? 'кв.' : lang === 'de' ? 'Q.' : 'кв.'}
+                        ${(factory.monthlyOverhead * 12).toLocaleString()}/{lang === 'en' ? 'yr' : lang === 'uk' ? 'рік' : lang === 'de' ? 'Jahr' : 'год'}
                       </strong>{' '}
                       • {lang === 'en' ? 'Premises Rent' : lang === 'uk' ? 'Оренда площ' : lang === 'de' ? 'Flächenmiete' : 'Аренда цехов'}:{' '}
                       <strong className="font-sans era-value font-bold">
-                        ${premisesRent.toLocaleString()}/{lang === 'en' ? 'qtr' : lang === 'uk' ? 'кв.' : lang === 'de' ? 'Q.' : 'кв.'}
+                        ${premisesRent.toLocaleString()}/{lang === 'en' ? 'yr' : lang === 'uk' ? 'рік' : lang === 'de' ? 'Jahr' : 'год'}
                       </strong>
                     </span>
                   </div>
@@ -604,6 +634,21 @@ export default function DashboardPage(): React.JSX.Element {
                                   +
                                 </button>
                               </div>
+                              <button
+                                type="button"
+                                onClick={async () => {
+                                  try {
+                                    await decommissionVehicleModel(model.id);
+                                  } catch (err) {
+                                    console.error(err);
+                                  }
+                                }}
+                                className="mt-2 text-[10px] font-bold text-rose-700 dark:text-rose-400 hover:text-rose-950 dark:hover:text-rose-200 border border-rose-300/80 dark:border-rose-800/60 bg-rose-50/80 dark:bg-rose-950/30 px-2 py-0.5 rounded transition flex items-center gap-1 cursor-pointer shadow-2xs"
+                                title={lang === 'en' ? 'Discontinue from production' : lang === 'uk' ? 'Зняти з виробництва' : lang === 'de' ? 'Aus Produktion nehmen' : 'Снять с производства'}
+                              >
+                                <span>🛑</span>
+                                <span>{lang === 'en' ? 'Discontinue' : lang === 'uk' ? 'Зняти з серії' : lang === 'de' ? 'Einstellen' : 'Снять с серии'}</span>
+                              </button>
                             </div>
                           </div>
 

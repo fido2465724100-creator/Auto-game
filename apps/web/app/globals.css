@@ -59,31 +59,32 @@
   --desk-highlight: #fbbf24;
 }
 
-/* 1920–1939: Ревущие двадцатые, Ар-деко, полированная сталь, хром, черный рояльный лак, золото */
+/* 1920–1939: Ревущие двадцатые, Ар-деко, цвет шампанского, полированная сталь, хром и золото */
 [data-era="era-1920"] {
-  --bg: #070b16;
-  --bg-gradient: radial-gradient(ellipse at 50% 0%, #131d33 0%, #070b16 70%, #020409 100%);
-  --paper: #0e1626;
-  --paper-card: #142036;
-  --surface-nested: rgba(255, 255, 255, 0.05);
-  --ink: #f8fafc;
-  --ink-heading: #ffffff;
-  --ink-secondary: #cbd5e1;
-  --ink-value: #fbbf24;
-  --accent: #f59e0b;
-  --accent-gold: #fbbf24;
-  --border-subtle: #334155;
-  --border-brass: #cbd5e1;
-  --tag-bg: #1e293b;
-  --tag-text: #fbbf24;
-  --era-font: 'Playfair Display', 'Trebuchet MS', sans-serif;
-  --era-heading-font: 'Cinzel', sans-serif;
+  --bg: #f8f5ee;
+  --bg-gradient: radial-gradient(ellipse at 50% 0%, #ffffff 0%, #f7f3e8 55%, #eae3cf 100%);
+  --paper: #ffffff;
+  --paper-card: #fbf8f2;
+  --surface-nested: rgba(197, 155, 39, 0.06);
+  --ink: #14151a;
+  --ink-heading: #090a0d;
+  --ink-secondary: #474b57;
+  --ink-value: #92400e;
+  --accent: #b45309;
+  --accent-gold: #c59b27;
+  --gold-glow: #d97706;
+  --border-subtle: #d8ceba;
+  --border-brass: #c59b27;
+  --tag-bg: #fef3c7;
+  --tag-text: #92400e;
+  --era-font: 'Playfair Display', Georgia, serif;
+  --era-heading-font: 'Cinzel', 'Playfair Display', Georgia, serif;
 
-  --desk-bg: linear-gradient(180deg, #111a2e 0%, #0a1120 50%, #040710 100%);
-  --desk-border: #94a3b8;
+  --desk-bg: linear-gradient(180deg, #26211c 0%, #17130f 60%, #0d0a08 100%);
+  --desk-border: #c59b27;
   --desk-title: #ffffff;
-  --desk-subtext: #cbd5e1;
-  --desk-highlight: #fbbf24;
+  --desk-subtext: #e6dfcf;
+  --desk-highlight: #f59e0b;
 }
 
 /* 1940–1959: Бакелит, слоновая кость, массивный хром, обтекаемый аэростиль */

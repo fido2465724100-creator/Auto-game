@@ -3,7 +3,7 @@
 import { useEffect } from 'react';
 import { useGame } from '../../context/GameContext';
 import { useLanguage } from '../../lib/i18n';
-import { getEraTheme, getEraName, getEraMaterial } from '../../lib/eraTheme';
+import { getEraTheme, getEraName } from '../../lib/eraTheme';
 import { EraEmblem } from '../EraEmblem';
 
 export function TopTimelineBar(): React.JSX.Element {
@@ -249,21 +249,16 @@ export function TopTimelineBar(): React.JSX.Element {
             </span>
           </div>
 
-          {/* Center: Era Identity with Emblem, Name and Materials */}
-          <div className="flex items-center gap-2.5 px-3 py-1 rounded-lg bg-[var(--surface-nested)] border border-[var(--border-brass)] shadow-2xs">
-            <EraEmblem eraId={eraTheme.id} size={24} className="shrink-0 drop-shadow-xs" />
-            <div className="leading-tight">
-              <div className="flex items-center gap-1.5">
-                <span className="font-serif era-heading font-bold text-xs tracking-wide">
-                  {getEraName(eraTheme, lang)}
-                </span>
-                <span className="text-[10px] font-mono era-label opacity-70">
-                  ({eraTheme.yearStart}–{eraTheme.yearEnd})
-                </span>
-              </div>
-              <p className="text-[10px] font-serif italic text-[var(--ink-secondary)] truncate max-w-[260px] sm:max-w-[420px]">
-                {getEraMaterial(eraTheme, lang)}
-              </p>
+          {/* Center: Era Identity with Emblem and Name */}
+          <div className="flex items-center gap-2.5 px-3 py-1.5 rounded-lg bg-[var(--surface-nested)] border border-[var(--border-brass)] shadow-2xs">
+            <EraEmblem eraId={eraTheme.id} size={22} className="shrink-0 drop-shadow-xs" />
+            <div className="flex items-center gap-2">
+              <span className="font-serif era-heading font-bold text-xs tracking-wide">
+                {getEraName(eraTheme, lang)}
+              </span>
+              <span className="text-[10px] font-mono era-label opacity-70">
+                ({eraTheme.yearStart}–{eraTheme.yearEnd})
+              </span>
             </div>
           </div>
 

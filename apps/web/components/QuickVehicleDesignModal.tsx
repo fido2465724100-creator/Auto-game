@@ -158,8 +158,24 @@ export function QuickVehicleDesignModal({ isOpen, onClose, onCreated }: Props): 
           <div className="flex items-center gap-2.5">
             <span className="text-3xl p-1.5 rounded-xl bg-[var(--surface-nested)] border border-[var(--border-subtle)] shadow-2xs select-none">📐</span>
             <div>
-              <h2 className="font-bold text-lg text-[var(--ink-heading)] era-heading tracking-wide">Чертежное бюро: Проектирование автомобиля</h2>
-              <p className="text-xs text-[var(--ink-secondary)] italic">Создание новой модели экипажа с интеграцией в производственный план</p>
+              <h2 className="font-bold text-lg text-[var(--ink-heading)] era-heading tracking-wide">
+                {lang === 'en'
+                  ? 'Design Bureau: Vehicle Blueprint & Engineering'
+                  : lang === 'uk'
+                  ? 'Конструкторське бюро: Проєктування автомобіля'
+                  : lang === 'de'
+                  ? 'Konstruktionsbüro: Fahrzeugentwurf & CAD'
+                  : 'Чертежное бюро: Проектирование автомобиля'}
+              </h2>
+              <p className="text-xs text-[var(--ink-secondary)] italic">
+                {lang === 'en'
+                  ? 'Create a new vehicle chassis and configure initial factory production'
+                  : lang === 'uk'
+                  ? 'Створення нової моделі екіпажу з інтеграцією у виробничий план'
+                  : lang === 'de'
+                  ? 'Neues Fahrzeugmodell entwerfen und Produktionsquote festlegen'
+                  : 'Создание новой модели экипажа с интеграцией в производственный план'}
+              </p>
             </div>
           </div>
           <button
@@ -171,7 +187,15 @@ export function QuickVehicleDesignModal({ isOpen, onClose, onCreated }: Props): 
         </div>
 
         {loading ? (
-          <div className="py-16 text-center text-sm text-[var(--ink-secondary)]">Загрузка патентных чертежей и компонентов...</div>
+          <div className="py-16 text-center text-sm text-[var(--ink-secondary)] font-serif">
+            {lang === 'en'
+              ? 'Loading drafting blueprints and component patents...'
+              : lang === 'uk'
+              ? 'Завантаження креслень та патентних компонентів...'
+              : lang === 'de'
+              ? 'Lade Baupläne und Komponentenpatente...'
+              : 'Загрузка патентных чертежей и компонентов...'}
+          </div>
         ) : (
           <div className="mt-4 space-y-4">
             {errorMsg && (
@@ -185,25 +209,41 @@ export function QuickVehicleDesignModal({ isOpen, onClose, onCreated }: Props): 
               {/* Left: 2D Blueprint */}
               <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-nested)] p-3 space-y-2 shadow-2xs">
                 <div className="flex justify-between items-center text-xs text-[var(--ink-secondary)]">
-                  <span className="font-bold uppercase tracking-wider text-[var(--ink-heading)] era-heading">Чертеж прототипа</span>
-                  <span className="font-mono text-[11px]">Масштаб 1:20</span>
+                  <span className="font-bold uppercase tracking-wider text-[var(--ink-heading)] era-heading">
+                    {lang === 'en' ? 'Prototype Blueprint' : lang === 'uk' ? 'Креслення прототипу' : lang === 'de' ? 'Prototyp-Bauplan' : 'Чертеж прототипа'}
+                  </span>
+                  <span className="font-mono text-[11px]">
+                    {lang === 'en' ? 'Scale 1:20' : lang === 'uk' ? 'Масштаб 1:20' : lang === 'de' ? 'Maßstab 1:20' : 'Масштаб 1:20'}
+                  </span>
                 </div>
                 <CarBlueprintSilhouette
                   segment={segment}
                   powertrain={detectedPowertrain}
                   className="w-full shadow-2xs"
+                  year={currentYear}
                 />
                 <div className="grid grid-cols-3 gap-1 pt-1 text-[11px] text-[var(--ink-secondary)] border-t border-[var(--border-subtle)] font-mono">
-                  <div>Надежность: <strong className="text-emerald-400">{calculatedSpecs.stats.reliability}%</strong></div>
-                  <div>Комфорт: <strong className="text-[var(--ink-value)]">{calculatedSpecs.stats.comfort}</strong></div>
-                  <div>Мощность: <strong className="text-[var(--ink)]">{calculatedSpecs.stats.performance}</strong></div>
+                  <div>
+                    {lang === 'en' ? 'Rel:' : lang === 'uk' ? 'Над:' : lang === 'de' ? 'Zuv:' : 'Надежность:'}{' '}
+                    <strong className="text-emerald-400">{calculatedSpecs.stats.reliability}%</strong>
+                  </div>
+                  <div>
+                    {lang === 'en' ? 'Comf:' : lang === 'uk' ? 'Комф:' : lang === 'de' ? 'Komf:' : 'Комфорт:'}{' '}
+                    <strong className="text-[var(--ink-value)]">{calculatedSpecs.stats.comfort}</strong>
+                  </div>
+                  <div>
+                    {lang === 'en' ? 'Power:' : lang === 'uk' ? 'Потуж:' : lang === 'de' ? 'Leist:' : 'Мощность:'}{' '}
+                    <strong className="text-[var(--ink)]">{calculatedSpecs.stats.performance}</strong>
+                  </div>
                 </div>
               </div>
 
               {/* Right: Model Name & Class */}
               <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-nested)] p-3.5 space-y-3 text-xs shadow-2xs">
                 <div>
-                  <label className="font-bold text-[var(--ink-heading)] block mb-1">Название модели:</label>
+                  <label className="font-bold text-[var(--ink-heading)] block mb-1">
+                    {lang === 'en' ? 'Model Name:' : lang === 'uk' ? 'Назва моделі:' : lang === 'de' ? 'Modellname:' : 'Название модели:'}
+                  </label>
                   <input
                     type="text"
                     value={name}
@@ -213,7 +253,9 @@ export function QuickVehicleDesignModal({ isOpen, onClose, onCreated }: Props): 
                 </div>
 
                 <div>
-                  <label className="font-bold text-[var(--ink-heading)] block mb-1.5">Целевой сегмент рынка:</label>
+                  <label className="font-bold text-[var(--ink-heading)] block mb-1.5">
+                    {lang === 'en' ? 'Target Market Segment:' : lang === 'uk' ? 'Цільовий сегмент ринку:' : lang === 'de' ? 'Zielmarktsegment:' : 'Целевой сегмент рынка:'}
+                  </label>
                   <div className="grid grid-cols-2 gap-2">
                     {(['economy', 'family', 'luxury', 'utility'] as VehicleSegment[]).map((seg) => (
                       <button
@@ -236,9 +278,11 @@ export function QuickVehicleDesignModal({ isOpen, onClose, onCreated }: Props): 
             </div>
 
             {/* Powertrain Filter Tabs */}
-            <div className="flex items-center gap-2 border-b border-[var(--border-subtle)] pb-2 text-xs">
-              <span className="font-bold text-[var(--ink-secondary)]">Силовая установка:</span>
-              <div className="flex gap-1">
+            <div className="flex items-center gap-2 border-b border-[var(--border-subtle)] pb-2 text-xs flex-wrap">
+              <span className="font-bold text-[var(--ink-secondary)]">
+                {lang === 'en' ? 'Powertrain:' : lang === 'uk' ? 'Силова установка:' : lang === 'de' ? 'Antriebsart:' : 'Силовая установка:'}
+              </span>
+              <div className="flex gap-1 flex-wrap">
                 {(['all', 'ice', 'steam', 'electric'] as const).map((p) => (
                   <button
                     key={p}
@@ -250,10 +294,10 @@ export function QuickVehicleDesignModal({ isOpen, onClose, onCreated }: Props): 
                         : 'border border-[var(--border-subtle)] bg-[var(--paper)] text-[var(--ink)] hover:bg-[var(--surface-nested)]'
                     }`}
                   >
-                    {p === 'all' && 'Все типы'}
-                    {p === 'ice' && '⛽ ДВС (Бензин)'}
-                    {p === 'steam' && '💨 Паровые котлы'}
-                    {p === 'electric' && '⚡ Электромоторы'}
+                    {p === 'all' && (lang === 'en' ? 'All Types' : lang === 'uk' ? 'Всі типи' : lang === 'de' ? 'Alle Typen' : 'Все типы')}
+                    {p === 'ice' && (lang === 'en' ? '⛽ ICE (Petrol)' : lang === 'uk' ? '⛽ ДВЗ (Бензин)' : lang === 'de' ? '⛽ Verbrenner' : '⛽ ДВС (Бензин)')}
+                    {p === 'steam' && (lang === 'en' ? '💨 Steam Boilers' : lang === 'uk' ? '💨 Парові котли' : lang === 'de' ? '💨 Dampfkessel' : '💨 Паровые котлы')}
+                    {p === 'electric' && (lang === 'en' ? '⚡ Electric Motors' : lang === 'uk' ? '⚡ Електромотори' : lang === 'de' ? '⚡ Elektromotoren' : '⚡ Электромоторы')}
                   </button>
                 ))}
               </div>
@@ -263,7 +307,9 @@ export function QuickVehicleDesignModal({ isOpen, onClose, onCreated }: Props): 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
               {/* Engine */}
               <div>
-                <label className="font-bold text-[var(--ink-secondary)] block mb-1">1. Двигатель / Силовая часть:</label>
+                <label className="font-bold text-[var(--ink-secondary)] block mb-1">
+                  {lang === 'en' ? '1. Engine / Powertrain:' : lang === 'uk' ? '1. Двигун / Силова частина:' : lang === 'de' ? '1. Motor & Antrieb:' : '1. Двигатель / Силовая часть:'}
+                </label>
                 <select
                   value={selectedComponents.engine}
                   onChange={(e) => setSelectedComponents((prev) => ({ ...prev, engine: e.target.value }))}
@@ -286,7 +332,9 @@ export function QuickVehicleDesignModal({ isOpen, onClose, onCreated }: Props): 
 
               {/* Chassis */}
               <div>
-                <label className="font-bold text-[var(--ink-secondary)] block mb-1">2. Рама и шасси:</label>
+                <label className="font-bold text-[var(--ink-secondary)] block mb-1">
+                  {lang === 'en' ? '2. Chassis & Frame:' : lang === 'uk' ? '2. Рама та шасі:' : lang === 'de' ? '2. Rahmen & Fahrgestell:' : '2. Рама и шасси:'}
+                </label>
                 <select
                   value={selectedComponents.chassis}
                   onChange={(e) => setSelectedComponents((prev) => ({ ...prev, chassis: e.target.value }))}
@@ -302,7 +350,9 @@ export function QuickVehicleDesignModal({ isOpen, onClose, onCreated }: Props): 
 
               {/* Brakes */}
               <div>
-                <label className="font-bold text-[var(--ink-secondary)] block mb-1">3. Тормозная система:</label>
+                <label className="font-bold text-[var(--ink-secondary)] block mb-1">
+                  {lang === 'en' ? '3. Braking System:' : lang === 'uk' ? '3. Гальмівна система:' : lang === 'de' ? '3. Bremssystem:' : '3. Тормозная система:'}
+                </label>
                 <select
                   value={selectedComponents.brakes}
                   onChange={(e) => setSelectedComponents((prev) => ({ ...prev, brakes: e.target.value }))}
@@ -318,7 +368,9 @@ export function QuickVehicleDesignModal({ isOpen, onClose, onCreated }: Props): 
 
               {/* Comfort / Cabin */}
               <div>
-                <label className="font-bold text-[var(--ink-secondary)] block mb-1">4. Кузов и кабина:</label>
+                <label className="font-bold text-[var(--ink-secondary)] block mb-1">
+                  {lang === 'en' ? '4. Body & Coachwork:' : lang === 'uk' ? '4. Кузов та кабіна:' : lang === 'de' ? '4. Karosserie & Aufbau:' : '4. Кузов и кабина:'}
+                </label>
                 <select
                   value={selectedComponents.comfort}
                   onChange={(e) => setSelectedComponents((prev) => ({ ...prev, comfort: e.target.value }))}
@@ -335,7 +387,9 @@ export function QuickVehicleDesignModal({ isOpen, onClose, onCreated }: Props): 
 
             {/* Materials Required Preview */}
             <div className="rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-nested)] p-2.5 text-xs text-[var(--ink)]">
-              <span className="font-bold text-[var(--ink-secondary)] block mb-1">Расход сырья на 1 автомобиль:</span>
+              <span className="font-bold text-[var(--ink-secondary)] block mb-1 font-serif">
+                {lang === 'en' ? 'Materials required per vehicle:' : lang === 'uk' ? 'Витрати сировини на 1 автомобіль:' : lang === 'de' ? 'Materialbedarf pro Fahrzeug:' : 'Расход сырья на 1 автомобиль:'}
+              </span>
               <div className="flex flex-wrap gap-3">
                 {Object.entries(calculatedSpecs.materialsRequired).map(([mat, amount]) => (
                   <span key={mat} className="flex items-center gap-1 font-mono text-[var(--ink)]">
@@ -350,11 +404,15 @@ export function QuickVehicleDesignModal({ isOpen, onClose, onCreated }: Props): 
             {/* Pricing and Quota */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3 border-t border-[var(--border-subtle)] pt-3 text-xs">
               <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-nested)] p-2.5 shadow-2xs">
-                <label className="font-bold text-[var(--ink-secondary)] block">Себестоимость сборки:</label>
+                <label className="font-bold text-[var(--ink-secondary)] block font-serif">
+                  {lang === 'en' ? 'Production Cost:' : lang === 'uk' ? 'Собівартість збірки:' : lang === 'de' ? 'Herstellkosten:' : 'Себестоимость сборки:'}
+                </label>
                 <div className="text-base font-mono font-bold text-[var(--ink)] mt-0.5">${calculatedSpecs.productionCost}</div>
               </div>
               <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-nested)] p-2.5 shadow-2xs">
-                <label className="font-bold text-[var(--ink-secondary)] block">Отпускная цена продажи ($):</label>
+                <label className="font-bold text-[var(--ink-secondary)] block font-serif">
+                  {lang === 'en' ? 'Sale Price ($):' : lang === 'uk' ? 'Відпускна ціна ($):' : lang === 'de' ? 'Verkaufspreis ($):' : 'Отпускная цена продажи ($):'}
+                </label>
                 <input
                   type="number"
                   min={calculatedSpecs.productionCost}
@@ -364,12 +422,12 @@ export function QuickVehicleDesignModal({ isOpen, onClose, onCreated }: Props): 
                   className="mt-1 w-full rounded-lg era-input px-2.5 py-1 font-mono font-bold text-[var(--ink-value)] shadow-inner"
                 />
                 <span className="text-[10px] text-[var(--ink-secondary)] font-mono mt-0.5 block">
-                  Маржа: +${salePrice - calculatedSpecs.productionCost} / авто
+                  {lang === 'en' ? 'Margin' : lang === 'uk' ? 'Маржа' : lang === 'de' ? 'Marge' : 'Маржа'}: +${salePrice - calculatedSpecs.productionCost} / {lang === 'en' ? 'car' : lang === 'uk' ? 'авто' : lang === 'de' ? 'Fz.' : 'авто'}
                 </span>
               </div>
               <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-nested)] p-2.5 shadow-2xs">
-                <label className="font-bold text-[var(--ink-secondary)] block">
-                  Квота выпуска ({t.topbar.unitsQuarter}):
+                <label className="font-bold text-[var(--ink-secondary)] block font-serif">
+                  {lang === 'en' ? 'Production Quota (cars/yr):' : lang === 'uk' ? 'Квота випуску (авто/рік):' : lang === 'de' ? 'Produktionsquote (Fz./Jahr):' : 'Квота выпуска (авто/год):'}
                 </label>
                 <input
                   type="number"
@@ -380,7 +438,7 @@ export function QuickVehicleDesignModal({ isOpen, onClose, onCreated }: Props): 
                   className="mt-1 w-full rounded-lg era-input px-2.5 py-1 font-mono font-bold text-[var(--ink)] shadow-inner"
                 />
                 <span className="text-[10px] text-[var(--ink-secondary)] font-mono mt-0.5 block">
-                  Лимит фабрики: {factoryCapacity} {t.topbar.unitsQuarter}
+                  {lang === 'en' ? 'Factory Limit' : lang === 'uk' ? 'Ліміт фабрики' : lang === 'de' ? 'Werkslimit' : 'Лимит фабрики'}: {factoryCapacity} {lang === 'en' ? 'cars/yr' : lang === 'uk' ? 'авто/рік' : lang === 'de' ? 'Fz./Jahr' : 'авто/год'}
                 </span>
               </div>
             </div>
@@ -390,18 +448,22 @@ export function QuickVehicleDesignModal({ isOpen, onClose, onCreated }: Props): 
               <button
                 type="button"
                 onClick={onClose}
-                className="rounded-xl border border-[var(--border-subtle)] bg-[var(--paper)] px-4 py-2 text-xs font-bold text-[var(--ink)] hover:bg-[var(--surface-nested)] transition cursor-pointer shadow-2xs"
+                className="rounded-xl border border-[var(--border-subtle)] bg-[var(--paper)] px-4 py-2 text-xs font-bold text-[var(--ink)] hover:bg-[var(--surface-nested)] transition cursor-pointer shadow-2xs font-serif"
               >
-                Отмена
+                {lang === 'en' ? 'Cancel' : lang === 'uk' ? 'Скасувати' : lang === 'de' ? 'Abbrechen' : 'Отмена'}
               </button>
               <button
                 type="button"
                 disabled={saving}
                 onClick={handleCreate}
-                className="btn-brass px-6 py-2 text-xs font-bold text-white shadow-lg disabled:opacity-50 cursor-pointer inline-flex items-center gap-1.5"
+                className="btn-brass px-6 py-2 text-xs font-bold text-white shadow-lg disabled:opacity-50 cursor-pointer inline-flex items-center gap-1.5 font-serif"
               >
                 <span>⚡</span>
-                <span>{saving ? 'Сохранение...' : 'Утвердить и запустить модель'}</span>
+                <span>
+                  {saving
+                    ? (lang === 'en' ? 'Commissioning...' : lang === 'uk' ? 'Запуск...' : lang === 'de' ? 'Freigabe...' : 'Сохранение...')
+                    : (lang === 'en' ? 'Approve & Launch Production' : lang === 'uk' ? 'Затвердити та запустити у виробництво' : lang === 'de' ? 'Modell freigeben & starten' : 'Утвердить и запустить модель')}
+                </span>
               </button>
             </div>
           </div>
