@@ -6,7 +6,7 @@ import { useLanguage } from '../../lib/i18n';
 import { getEraTheme } from '../../lib/eraTheme';
 
 export function TopTimelineBar(): React.JSX.Element {
-  const { gameState, endTurn, pendingEndTurn, setSetupModalOpen, setGuideModalOpen } = useGame();
+  const { gameState, endTurn, pendingEndTurn, setSetupModalOpen, setGuideModalOpen, resetGame } = useGame();
   const { lang, setLang, t } = useLanguage();
 
   const year = gameState?.date.year ?? 1900;
@@ -133,6 +133,24 @@ export function TopTimelineBar(): React.JSX.Element {
           >
             <span>📖</span>
             <span className="hidden sm:inline">{lang === 'en' ? 'Guide' : 'Справка'}</span>
+          </button>
+
+          {/* Reset / New Game button */}
+          <button
+            type="button"
+            onClick={async () => {
+              const msg = lang === 'en'
+                ? 'Start a new game from 1900 Q1? All current progress will be reset.'
+                : 'Начать новую кампанию заново с 1900 года (I кв.)? Весь текущий прогресс будет сброшен.';
+              if (window.confirm(msg)) {
+                await resetGame();
+              }
+            }}
+            className="flex items-center gap-1 rounded border border-stone-300 bg-white/70 hover:bg-red-50 hover:border-red-300 hover:text-red-800 px-2 py-1 text-xs font-serif text-stone-600 shadow-2xs transition cursor-pointer"
+            title={lang === 'en' ? 'Restart game from 1900' : 'Перезапустить игру заново с 1900 года'}
+          >
+            <span>🔄</span>
+            <span className="hidden md:inline">{lang === 'en' ? 'Restart' : 'Новая игра'}</span>
           </button>
 
           {/* Big End Quarter Button */}
