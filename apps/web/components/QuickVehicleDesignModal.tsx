@@ -9,16 +9,17 @@ import type {
   ComponentCategory,
   MaterialType,
 } from '@ait/shared-types';
-import { calculateVehicleSpecs, SEGMENT_PROFILES } from '@ait/game-engine';
+import { calculateVehicleSpecs, calculateRecommendedSalePrice, SEGMENT_PROFILES } from '@ait/game-engine';
 import { useGame } from '../context/GameContext';
 import { useLanguage } from '../lib/i18n';
 import { api } from '../lib/api';
 import { CarBlueprintSilhouette } from './CarBlueprintSilhouette';
 
-interface Props {
+interface QuickVehicleDesignModalProps {
   isOpen: boolean;
   onClose: () => void;
   onCreated?: () => void;
+  onSuccess?: () => void;
 }
 
 const MATERIAL_ICONS: Record<MaterialType, string> = {
@@ -30,7 +31,12 @@ const MATERIAL_ICONS: Record<MaterialType, string> = {
   plastic: '🧪',
 };
 
-export function QuickVehicleDesignModal({ isOpen, onClose, onCreated }: Props): React.JSX.Element | null {
+export const QuickVehicleDesignModal: React.FC<QuickVehicleDesignModalProps> = ({
+  isOpen,
+  onClose,
+  onCreated,
+  onSuccess,
+}) => {
   const { gameState, saveVehicleModel, updateProductionPlan } = useGame();
   const { t, lang } = useLanguage();
 
@@ -41,7 +47,7 @@ export function QuickVehicleDesignModal({ isOpen, onClose, onCreated }: Props): 
 
   // Form State
   const currentYear = gameState?.date.year ?? 1900;
-  const [name, setName] = useState(`Model ${currentYear}-N`);
+  const [name, setName] = useState(`Model ${currentYear}-E`);
   const [segment, setSegment] = useState<VehicleSegment>('economy');
   const [quarterlyQuota, setQuarterlyQuota] = useState<number>(2);
   const [powertrainFilter, setPowertrainFilter] = useState<'all' | 'ice' | 'steam' | 'electric'>('all');
@@ -72,8 +78,15 @@ export function QuickVehicleDesignModal({ isOpen, onClose, onCreated }: Props): 
 
   const handleSegmentChange = (newSegment: VehicleSegment): void => {
     setSegment(newSegment);
-    const profile = SEGMENT_PROFILES[newSegment];
-    setSalePrice(profile.baseSalePrice);
+    const specs = calculateVehicleSpecs(
+      newSegment,
+      selectedComponents,
+      availableComponents,
+      currentYear,
+      gameState?.company.founderPerk
+    );
+    const rec = calculateRecommendedSalePrice(newSegment, specs.productionCost);
+    setSalePrice(rec);
     setName(`Model ${currentYear}-${newSegment.slice(0, 1).toUpperCase()}`);
   };
 
@@ -100,6 +113,10 @@ export function QuickVehicleDesignModal({ isOpen, onClose, onCreated }: Props): 
       gameState?.company.founderPerk
     );
   }, [segment, selectedComponents, availableComponents, currentYear, gameState?.company.founderPerk]);
+
+  const recommendedPrice = useMemo(() => {
+    return calculateRecommendedSalePrice(segment, calculatedSpecs.productionCost);
+  }, [segment, calculatedSpecs.productionCost]);
 
   // Determine powertrain type for silhouette
   const detectedPowertrain = useMemo(() => {
@@ -261,21 +278,32 @@ export function QuickVehicleDesignModal({ isOpen, onClose, onCreated }: Props): 
                     {lang === 'en' ? 'Target Market Segment:' : lang === 'uk' ? 'Цільовий сегмент ринку:' : lang === 'de' ? 'Zielmarktsegment:' : 'Целевой сегмент рынка:'}
                   </label>
                   <div className="grid grid-cols-2 gap-2">
-                    {(['economy', 'family', 'luxury', 'utility'] as VehicleSegment[]).map((seg) => (
-                      <button
-                        key={seg}
-                        type="button"
-                        onClick={() => handleSegmentChange(seg)}
-                        className={`rounded-xl border-2 px-2.5 py-2 text-left transition cursor-pointer ${
-                          segment === seg
-                            ? 'border-[var(--border-brass)] bg-[var(--surface-nested)] font-bold text-[var(--ink-heading)] shadow-xs ring-1 ring-[var(--border-brass)]'
-                            : 'border-[var(--border-subtle)] bg-[var(--paper)] text-[var(--ink)] hover:border-[var(--border-brass)]'
-                        }`}
-                      >
-                        <div className="font-bold text-[var(--ink-heading)] era-heading leading-tight">{t.design.segments[seg]?.name ?? seg}</div>
-                        <div className="text-[10px] text-[var(--ink-secondary)] line-clamp-1 mt-0.5">{t.design.segments[seg]?.description ?? ''}</div>
-                      </button>
-                    ))}
+                    {(['economy', 'family', 'luxury', 'utility'] as VehicleSegment[]).map((seg) => {
+                      const demandTag =
+                        seg === 'luxury'
+                          ? (lang === 'en' ? '👑 Niche (~8%)' : lang === 'uk' ? '👑 Елітний (~8%)' : lang === 'de' ? '👑 Nische (~8%)' : '👑 Элитный (~8%)')
+                          : seg === 'utility'
+                          ? (lang === 'en' ? '🚚 Commercial (~15%)' : lang === 'uk' ? '🚚 Комерційний (~15%)' : lang === 'de' ? '🚚 Nutzfahrzeuge (~15%)' : '🚚 Коммерческий (~15%)')
+                          : seg === 'family'
+                          ? (lang === 'en' ? '🏠 Family (~25%)' : lang === 'uk' ? '🏠 Сімейний (~25%)' : lang === 'de' ? '🏠 Familien (~25%)' : '🏠 Семейный (~25%)')
+                          : (lang === 'en' ? '👥 Mass market (~60%)' : lang === 'uk' ? '👥 Масовий (~60%)' : lang === 'de' ? '👥 Massenmarkt (~60%)' : '👥 Массовый (~60%)');
+                      return (
+                        <button
+                          key={seg}
+                          type="button"
+                          onClick={() => handleSegmentChange(seg)}
+                          className={`rounded-xl border-2 px-2.5 py-2 text-left transition cursor-pointer ${
+                            segment === seg
+                              ? 'border-[var(--border-brass)] bg-[var(--surface-nested)] font-bold text-[var(--ink-heading)] shadow-xs ring-1 ring-[var(--border-brass)]'
+                              : 'border-[var(--border-subtle)] bg-[var(--paper)] text-[var(--ink)] hover:border-[var(--border-brass)]'
+                          }`}
+                        >
+                          <div className="font-bold text-[var(--ink-heading)] era-heading leading-tight">{t.design.segments[seg]?.name ?? seg}</div>
+                          <div className="text-[10px] font-bold text-[var(--accent-gold)] mt-0.5">{demandTag}</div>
+                          <div className="text-[10px] text-[var(--ink-secondary)] line-clamp-1 mt-0.5">{t.design.segments[seg]?.description ?? ''}</div>
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
               </div>
@@ -414,9 +442,19 @@ export function QuickVehicleDesignModal({ isOpen, onClose, onCreated }: Props): 
                 <div className="text-base font-mono font-bold text-[var(--ink)] mt-0.5">${calculatedSpecs.productionCost}</div>
               </div>
               <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-nested)] p-2.5 shadow-2xs">
-                <label className="font-bold text-[var(--ink-secondary)] block font-serif">
-                  {lang === 'en' ? 'Sale Price ($):' : lang === 'uk' ? 'Відпускна ціна ($):' : lang === 'de' ? 'Verkaufspreis ($):' : 'Отпускная цена продажи ($):'}
-                </label>
+                <div className="flex items-center justify-between">
+                  <label className="font-bold text-[var(--ink-secondary)] block font-serif">
+                    {lang === 'en' ? 'Sale Price ($):' : lang === 'uk' ? 'Відпускна ціна ($):' : lang === 'de' ? 'Verkaufspreis ($):' : 'Отпускная цена продажи ($):'}
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => setSalePrice(recommendedPrice)}
+                    className="text-[10px] font-bold text-[var(--accent-gold)] hover:underline cursor-pointer"
+                    title={lang === 'en' ? 'Apply recommended market price' : lang === 'uk' ? 'Встановити рекомендовану ціну' : lang === 'de' ? 'Empfohlenen Preis setzen' : 'Применить рекомендованную цену'}
+                  >
+                    💡 {lang === 'en' ? 'Rec:' : lang === 'uk' ? 'Рек:' : lang === 'de' ? 'Empf.:' : 'Рек.:'} ${recommendedPrice}
+                  </button>
+                </div>
                 <input
                   type="number"
                   min={calculatedSpecs.productionCost}
@@ -426,7 +464,7 @@ export function QuickVehicleDesignModal({ isOpen, onClose, onCreated }: Props): 
                   className="mt-1 w-full rounded-lg era-input px-2.5 py-1 font-mono font-bold text-[var(--ink-value)] shadow-inner"
                 />
                 <span className="text-[10px] text-[var(--ink-secondary)] font-mono mt-0.5 block">
-                  {lang === 'en' ? 'Margin' : lang === 'uk' ? 'Маржа' : lang === 'de' ? 'Marge' : 'Маржа'}: +${salePrice - calculatedSpecs.productionCost} / {lang === 'en' ? 'car' : lang === 'uk' ? 'авто' : lang === 'de' ? 'Fz.' : 'авто'}
+                  {lang === 'en' ? 'Margin' : lang === 'uk' ? 'Маржа' : lang === 'de' ? 'Marge' : 'Маржа'}: +${salePrice - calculatedSpecs.productionCost} ({Math.round(((salePrice - calculatedSpecs.productionCost) / (salePrice || 1)) * 100)}%)
                 </span>
               </div>
               <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-nested)] p-2.5 shadow-2xs">

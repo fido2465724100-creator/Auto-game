@@ -9,7 +9,7 @@ import type {
   ComponentCategory,
   MaterialType,
 } from '@ait/shared-types';
-import { calculateVehicleSpecs, SEGMENT_PROFILES } from '@ait/game-engine';
+import { calculateVehicleSpecs, calculateRecommendedSalePrice, SEGMENT_PROFILES } from '@ait/game-engine';
 import { useGame } from '../../context/GameContext';
 import { useLanguage } from '../../lib/i18n';
 import { api } from '../../lib/api';
@@ -26,21 +26,21 @@ const MATERIAL_ICONS: Record<MaterialType, string> = {
 
 const STAT_COLORS: Record<string, string> = {
   reliability: 'bg-emerald-600',
-  comfort: 'bg-amber-600',
-  performance: 'bg-red-600',
-  efficiency: 'bg-blue-600',
+  comfort: 'bg-sky-600',
+  performance: 'bg-rose-600',
+  efficiency: 'bg-amber-600',
   prestige: 'bg-purple-600',
-  complexity: 'bg-stone-600',
+  complexity: 'bg-stone-500',
 };
 
-export default function VehicleDesignPage(): React.JSX.Element {
+export const VehicleDesignView: React.FC = () => {
   const {
     gameState,
     saveVehicleModel,
-    updateProductionPlan,
     decommissionVehicleModel,
     activateVehicleModel,
     deleteVehicleModel,
+    updateProductionPlan,
   } = useGame();
   const { t, lang } = useLanguage();
 
@@ -48,6 +48,10 @@ export default function VehicleDesignPage(): React.JSX.Element {
   const [loading, setLoading] = useState(true);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+
+  // Editing price for existing models
+  const [editingPriceModelId, setEditingPriceModelId] = useState<string | null>(null);
+  const [editingPriceValue, setEditingPriceValue] = useState<number>(0);
 
   // Form State
   const [name, setName] = useState('Model 1900-B');
@@ -77,8 +81,15 @@ export default function VehicleDesignPage(): React.JSX.Element {
 
   const handleSegmentChange = (newSegment: VehicleSegment): void => {
     setSegment(newSegment);
-    const profile = SEGMENT_PROFILES[newSegment];
-    setSalePrice(profile.baseSalePrice);
+    const specs = calculateVehicleSpecs(
+      newSegment,
+      selectedComponents,
+      availableComponents,
+      gameState?.date.year ?? 1900,
+      gameState?.company.founderPerk
+    );
+    const recPrice = calculateRecommendedSalePrice(newSegment, specs.productionCost);
+    setSalePrice(recPrice);
     if (name.startsWith('Model ')) {
       const year = gameState?.date.year ?? 1900;
       setName(`Model ${year}-${newSegment.slice(0, 1).toUpperCase()}`);
@@ -108,6 +119,10 @@ export default function VehicleDesignPage(): React.JSX.Element {
       gameState?.company.founderPerk
     );
   }, [segment, selectedComponents, availableComponents, gameState?.date.year, gameState?.company.founderPerk]);
+
+  const recommendedPrice = useMemo(() => {
+    return calculateRecommendedSalePrice(segment, calculatedSpecs.productionCost);
+  }, [segment, calculatedSpecs.productionCost]);
 
   const selectedEngine = availableComponents.find((c) => c.id === selectedComponents.engine);
   const isCrankPenaltyActive =
@@ -225,6 +240,14 @@ export default function VehicleDesignPage(): React.JSX.Element {
                     const profile = SEGMENT_PROFILES[segKey];
                     const isSelected = segment === segKey;
                     const segInfo = t.design.segments[segKey];
+                    const demandTag =
+                      segKey === 'luxury'
+                        ? (lang === 'en' ? '👑 Niche (~8%)' : lang === 'uk' ? '👑 Елітний (~8%)' : lang === 'de' ? '👑 Nische (~8%)' : '👑 Элитный (~8%)')
+                        : segKey === 'utility'
+                        ? (lang === 'en' ? '🚚 Commercial (~15%)' : lang === 'uk' ? '🚚 Комерційний (~15%)' : lang === 'de' ? '🚚 Nutzfahrzeuge (~15%)' : '🚚 Коммерческий (~15%)')
+                        : segKey === 'family'
+                        ? (lang === 'en' ? '🏠 Family (~25%)' : lang === 'uk' ? '🏠 Сімейний (~25%)' : lang === 'de' ? '🏠 Familien (~25%)' : '🏠 Семейный (~25%)')
+                        : (lang === 'en' ? '👥 Mass market (~60%)' : lang === 'uk' ? '👥 Масовий (~60%)' : lang === 'de' ? '👥 Massenmarkt (~60%)' : '👥 Массовый (~60%)');
                     return (
                       <button
                         type="button"
@@ -237,7 +260,8 @@ export default function VehicleDesignPage(): React.JSX.Element {
                         }`}
                       >
                         <div className="text-sm font-bold text-[var(--ink-heading)] era-heading">{segInfo?.name ?? profile.name}</div>
-                        <div className="text-[11px] text-[var(--ink-secondary)] font-mono mt-0.5">{segInfo?.tag} • ${profile.baseSalePrice}</div>
+                        <div className="text-[11px] font-bold text-[var(--accent-gold)] mt-0.5">{demandTag}</div>
+                        <div className="text-[10px] text-[var(--ink-secondary)] font-mono mt-0.5">{segInfo?.tag}</div>
                       </button>
                     );
                   })}
@@ -502,9 +526,19 @@ export default function VehicleDesignPage(): React.JSX.Element {
               </div>
 
               <div>
-                <label htmlFor="sale-price" className="block text-xs font-bold uppercase tracking-wider text-[var(--ink-secondary)]">
-                  {t.design.salePrice}
-                </label>
+                <div className="flex items-center justify-between">
+                  <label htmlFor="sale-price" className="block text-xs font-bold uppercase tracking-wider text-[var(--ink-secondary)]">
+                    {t.design.salePrice}
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => setSalePrice(recommendedPrice)}
+                    className="text-[11px] font-bold text-[var(--accent-gold)] hover:underline cursor-pointer flex items-center gap-1"
+                    title={lang === 'en' ? 'Apply recommended market price' : lang === 'uk' ? 'Встановити рекомендовану ринкову ціну' : lang === 'de' ? 'Empfohlenen Preis setzen' : 'Применить рекомендованную цену'}
+                  >
+                    <span>💡 {lang === 'en' ? 'Rec:' : lang === 'uk' ? 'Рек:' : lang === 'de' ? 'Empf.:' : 'Рек.:'} ${recommendedPrice.toLocaleString()}</span>
+                  </button>
+                </div>
                 <input
                   id="sale-price"
                   type="number"
@@ -604,52 +638,124 @@ export default function VehicleDesignPage(): React.JSX.Element {
                 <p className="text-sm text-[var(--ink-secondary)] italic">{t.design.noModels}</p>
               ) : (
                 <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                  {activeModelsList.map((m) => (
-                    <article key={m.id} className="rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-nested)] p-4 shadow-sm space-y-2.5 hover:border-[var(--border-brass)] transition">
-                      <div className="flex items-start justify-between">
-                        <h4 className="font-bold text-[var(--ink-heading)] era-heading text-sm">{m.name}</h4>
-                        <span className="rounded-md era-badge-accent px-2 py-0.5 text-xs font-bold">
-                          {t.design.segments[m.targetSegment]?.name ?? m.targetSegment}
-                        </span>
-                      </div>
+                  {activeModelsList.map((m) => {
+                    const modelYear = m.designYear ?? 1900;
+                    const currentYear = gameState?.date.year ?? 1900;
+                    const age = Math.max(0, currentYear - modelYear);
+                    const isObsolete = age >= 20;
+                    const isAging = age >= 9 && age < 20;
 
-                      <div className="my-2 grid grid-cols-3 gap-1 rounded-lg bg-[var(--paper)] p-2 text-center text-xs border border-[var(--border-subtle)] font-mono">
-                        <div>
-                          <span className="block text-[var(--ink-secondary)] text-[10px]">{t.design.stats.reliability.slice(0, 7)}.</span>
-                          <span className="font-bold text-[var(--ink)]">{m.stats.reliability}</span>
-                        </div>
-                        <div>
-                          <span className="block text-[var(--ink-secondary)] text-[10px]">{t.design.stats.comfort.slice(0, 7)}</span>
-                          <span className="font-bold text-[var(--ink)]">{m.stats.comfort}</span>
-                        </div>
-                        <div>
-                          <span className="block text-[var(--ink-secondary)] text-[10px]">{t.design.stats.performance.slice(0, 7)}</span>
-                          <span className="font-bold text-[var(--ink)]">{m.stats.performance}</span>
-                        </div>
-                      </div>
-
-                      <div className="space-y-1 text-xs text-[var(--ink-secondary)]">
-                        <div className="flex justify-between">
-                          <span>{t.design.productionCost}:</span>
-                          <span className="font-mono font-bold text-[var(--ink)]">${m.productionCost}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span>{t.design.salePrice}:</span>
-                          <span className="font-mono font-bold text-[var(--ink-value)]">${m.salePrice}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span>{t.production.plannedUnits}:</span>
-                          <span className="font-mono font-bold text-[var(--ink)]">
-                            {gameState?.productionPlan?.[m.id] ?? 0} {t.topbar.unitsQuarter}
+                    return (
+                      <article key={m.id} className="rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-nested)] p-4 shadow-sm space-y-2.5 hover:border-[var(--border-brass)] transition">
+                        <div className="flex items-start justify-between">
+                          <h4 className="font-bold text-[var(--ink-heading)] era-heading text-sm">{m.name}</h4>
+                          <span className="rounded-md era-badge-accent px-2 py-0.5 text-xs font-bold">
+                            {t.design.segments[m.targetSegment]?.name ?? m.targetSegment}
                           </span>
                         </div>
-                        <div className="flex justify-between border-t border-[var(--border-subtle)] pt-1.5 font-bold">
-                          <span>{t.design.unitProfit}:</span>
-                          <span className="font-mono text-emerald-400">
-                            +${m.salePrice - m.productionCost} ({Math.round(((m.salePrice - m.productionCost) / (m.salePrice || 1)) * 100)}%)
+
+                        {/* Model Age & Status */}
+                        <div className="flex items-center justify-between gap-1 text-[11px]">
+                          <span className="text-[var(--ink-secondary)] font-mono">
+                            {lang === 'en' ? 'Year' : lang === 'uk' ? 'Рік' : lang === 'de' ? 'Jahr' : 'Год'}: <strong>{modelYear}</strong> ({age} {lang === 'en' ? 'yrs' : lang === 'uk' ? 'р.' : lang === 'de' ? 'J.' : 'лет'})
                           </span>
+                          {isObsolete ? (
+                            <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-rose-950/40 text-rose-300 border border-rose-600/50">
+                              🛑 {lang === 'en' ? 'Obsolete (0 demand)' : lang === 'uk' ? 'Застаріла (0 попит)' : lang === 'de' ? 'Veraltet (0 Nachfr.)' : 'Устарела (спрос 0)'}
+                            </span>
+                          ) : isAging ? (
+                            <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-950/40 text-amber-300 border border-amber-600/50">
+                              ⚠️ {lang === 'en' ? 'Aging' : lang === 'uk' ? 'Застаріває' : lang === 'de' ? 'Alternd' : 'Устаревает'}
+                            </span>
+                          ) : (
+                            <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-950/40 text-emerald-300 border border-emerald-600/50">
+                              ✨ {lang === 'en' ? 'Fresh' : lang === 'uk' ? 'Актуальна' : lang === 'de' ? 'Aktuell' : 'Актуальная'}
+                            </span>
+                          )}
                         </div>
-                      </div>
+
+                        <div className="my-2 grid grid-cols-3 gap-1 rounded-lg bg-[var(--paper)] p-2 text-center text-xs border border-[var(--border-subtle)] font-mono">
+                          <div>
+                            <span className="block text-[var(--ink-secondary)] text-[10px]">{t.design.stats.reliability.slice(0, 7)}.</span>
+                            <span className="font-bold text-[var(--ink)]">{m.stats.reliability}</span>
+                          </div>
+                          <div>
+                            <span className="block text-[var(--ink-secondary)] text-[10px]">{t.design.stats.comfort.slice(0, 7)}</span>
+                            <span className="font-bold text-[var(--ink)]">{m.stats.comfort}</span>
+                          </div>
+                          <div>
+                            <span className="block text-[var(--ink-secondary)] text-[10px]">{t.design.stats.performance.slice(0, 7)}</span>
+                            <span className="font-bold text-[var(--ink)]">{m.stats.performance}</span>
+                          </div>
+                        </div>
+
+                        <div className="space-y-1 text-xs text-[var(--ink-secondary)]">
+                          <div className="flex justify-between">
+                            <span>{t.design.productionCost}:</span>
+                            <span className="font-mono font-bold text-[var(--ink)]">${m.productionCost}</span>
+                          </div>
+                          <div className="flex items-center justify-between">
+                            <span>{t.design.salePrice}:</span>
+                            {editingPriceModelId === m.id ? (
+                              <div className="flex items-center gap-1">
+                                <input
+                                  type="number"
+                                  value={editingPriceValue}
+                                  onChange={(e) => setEditingPriceValue(Number(e.target.value))}
+                                  step={50}
+                                  min={m.productionCost}
+                                  className="w-20 rounded era-input px-1.5 py-0.5 text-xs font-mono font-bold text-[var(--ink)] shadow-inner"
+                                />
+                                <button
+                                  type="button"
+                                  onClick={async () => {
+                                    await saveVehicleModel({ ...m, salePrice: editingPriceValue });
+                                    setEditingPriceModelId(null);
+                                  }}
+                                  className="px-2 py-0.5 rounded bg-emerald-700 hover:bg-emerald-600 text-white text-[11px] font-bold cursor-pointer shadow-2xs"
+                                  title="Сохранить цену"
+                                >
+                                  ✓
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => setEditingPriceModelId(null)}
+                                  className="px-1.5 py-0.5 rounded bg-stone-700 text-white text-[11px] cursor-pointer"
+                                  title="Отмена"
+                                >
+                                  ✕
+                                </button>
+                              </div>
+                            ) : (
+                              <div className="flex items-center gap-1.5">
+                                <span className="font-mono font-bold text-[var(--ink-value)]">${m.salePrice}</span>
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setEditingPriceModelId(m.id);
+                                    setEditingPriceValue(m.salePrice);
+                                  }}
+                                  className="text-[10px] font-bold px-1.5 py-0.5 rounded border border-[var(--border-subtle)] bg-[var(--paper)] hover:bg-[var(--surface-nested)] text-[var(--ink-secondary)] hover:text-[var(--ink)] cursor-pointer"
+                                  title={lang === 'en' ? 'Edit retail price' : lang === 'uk' ? 'Змінити ціну продажу' : lang === 'de' ? 'Preis ändern' : 'Изменить цену продажи'}
+                                >
+                                  ✏️
+                                </button>
+                              </div>
+                            )}
+                          </div>
+                          <div className="flex justify-between">
+                            <span>{t.production.plannedUnits}:</span>
+                            <span className="font-mono font-bold text-[var(--ink)]">
+                              {gameState?.productionPlan?.[m.id] ?? 0} {t.topbar.unitsQuarter}
+                            </span>
+                          </div>
+                          <div className="flex justify-between border-t border-[var(--border-subtle)] pt-1.5 font-bold">
+                            <span>{t.design.unitProfit}:</span>
+                            <span className="font-mono text-emerald-400">
+                              +${m.salePrice - m.productionCost} ({Math.round(((m.salePrice - m.productionCost) / (m.salePrice || 1)) * 100)}%)
+                            </span>
+                          </div>
+                        </div>
 
                       {/* DECOMMISSION / DISCONTINUE BUTTON */}
                       <button
@@ -684,7 +790,8 @@ export default function VehicleDesignPage(): React.JSX.Element {
                         </span>
                       </button>
                     </article>
-                  ))}
+                  );
+                })}
                 </div>
               )}
             </section>
@@ -810,4 +917,6 @@ export default function VehicleDesignPage(): React.JSX.Element {
       })()}
     </div>
   );
-}
+};
+
+export default VehicleDesignView;

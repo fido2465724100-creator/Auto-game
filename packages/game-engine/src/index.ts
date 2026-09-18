@@ -130,8 +130,27 @@ export interface SegmentProfile {
   description: string;
   baseProductionCost: number;
   baseSalePrice: number;
+  marketShare: number;
   baseStats: VehicleStats;
   defaultRegionSuitability: Record<RegionId, number>;
+}
+
+export function calculateRecommendedSalePrice(segment: VehicleSegment, productionCost: number): number {
+  switch (segment) {
+    case 'luxury':
+      // High prestige markup: ~2.2x cost -> ~55% gross margin ($2490 cost -> $5500 price)
+      return Math.max(1000, Math.round((productionCost * 2.2) / 50) * 50);
+    case 'family':
+      // Balanced markup: ~1.75x cost -> ~43% margin ($700 cost -> $1250 price)
+      return Math.max(500, Math.round((productionCost * 1.75) / 50) * 50);
+    case 'utility':
+      // Workhorse markup: ~1.65x cost -> ~39% margin ($600 cost -> $1000 price)
+      return Math.max(400, Math.round((productionCost * 1.65) / 50) * 50);
+    case 'economy':
+    default:
+      // Mass-market markup: ~1.5x cost -> ~33% margin ($450 cost -> $680 price)
+      return Math.max(300, Math.round((productionCost * 1.5) / 50) * 50);
+  }
 }
 
 export const SEGMENT_PROFILES: Record<VehicleSegment, SegmentProfile> = {
@@ -139,7 +158,8 @@ export const SEGMENT_PROFILES: Record<VehicleSegment, SegmentProfile> = {
     name: 'Эконом (Ранэбаут)',
     description: 'Доступная и простая самоходная повозка для рабочих семей и малого достатка.',
     baseProductionCost: 450,
-    baseSalePrice: 900,
+    baseSalePrice: 700,
+    marketShare: 0.6,
     baseStats: {
       reliability: 40,
       comfort: 25,
@@ -158,7 +178,8 @@ export const SEGMENT_PROFILES: Record<VehicleSegment, SegmentProfile> = {
     name: 'Семейный (Турер)',
     description: 'Вместительный открытый фаэтон со сбалансированным комфортом и надежностью.',
     baseProductionCost: 700,
-    baseSalePrice: 1400,
+    baseSalePrice: 1250,
+    marketShare: 0.25,
     baseStats: {
       reliability: 50,
       comfort: 45,
@@ -177,7 +198,8 @@ export const SEGMENT_PROFILES: Record<VehicleSegment, SegmentProfile> = {
     name: 'Люкс (Лимузин)',
     description: 'Эксклюзивный каретный экипаж высшего класса для престижа и знатных особ.',
     baseProductionCost: 1500,
-    baseSalePrice: 3200,
+    baseSalePrice: 3300,
+    marketShare: 0.08,
     baseStats: {
       reliability: 45,
       comfort: 70,
@@ -196,7 +218,8 @@ export const SEGMENT_PROFILES: Record<VehicleSegment, SegmentProfile> = {
     name: 'Грузовой / Развозной фургон',
     description: 'Тяговитое прочное шасси для доставки грузов, мастерских и сельского хозяйства.',
     baseProductionCost: 600,
-    baseSalePrice: 1200,
+    baseSalePrice: 1000,
+    marketShare: 0.15,
     baseStats: {
       reliability: 60,
       comfort: 15,
@@ -374,25 +397,25 @@ export function calculatePremisesRent(year: number, factoryLevel: number = 1): n
 /**
  * Returns demand factor based on vehicle model age (years since designYear).
  * Fresh (0-4 yrs): 1.0
- * Maturing (5-7 yrs): 0.95 -> 0.85
- * Outdated (8-12 yrs): 0.77 -> 0.45
- * Archaic (13-20 yrs): 0.40 -> 0.05
- * Obsolete (>20 yrs): 0.05
+ * Maturing (5-8 yrs): 0.95 -> 0.70
+ * Aging (9-14 yrs): 0.60 -> 0.20
+ * Archaic (15-19 yrs): 0.15 -> 0.02
+ * Obsolete (>=20 yrs): 0.0 (Zero demand for 20+ year-old antique relics on new car market)
  */
 export function getModelAgeFactor(modelAge: number): number {
   if (modelAge <= 4) {
     return 1.0;
   }
-  if (modelAge <= 7) {
-    return Math.max(0.7, 1.0 - (modelAge - 4) * 0.05);
+  if (modelAge <= 8) {
+    return Math.max(0.7, 1.0 - (modelAge - 4) * 0.075);
   }
-  if (modelAge <= 12) {
-    return Math.max(0.3, 0.85 - (modelAge - 7) * 0.08);
+  if (modelAge <= 14) {
+    return Math.max(0.2, 0.7 - (modelAge - 8) * 0.08);
   }
-  if (modelAge <= 20) {
-    return Math.max(0.05, 0.45 - (modelAge - 12) * 0.05);
+  if (modelAge <= 19) {
+    return Math.max(0.02, 0.2 - (modelAge - 14) * 0.035);
   }
-  return 0.05;
+  return 0.0;
 }
 
 function simulateRegionDemand(
@@ -403,6 +426,13 @@ function simulateRegionDemand(
   appealBonus: number,
   year: number = 1900
 ): number {
+  // Model age decay: older designs lose consumer appeal against modern competitors
+  const modelAge = Math.max(0, year - (model.designYear ?? 1900));
+  const ageFactor = getModelAgeFactor(modelAge);
+  if (ageFactor <= 0) {
+    return 0; // Completely obsolete model!
+  }
+
   const weightedStats =
     model.stats.comfort * region.preferenceWeights.comfort +
     model.stats.efficiency * region.preferenceWeights.efficiency +
@@ -411,24 +441,25 @@ function simulateRegionDemand(
 
   const normalizedStats = Math.max(0.2, weightedStats / 100);
 
-  // Price competitiveness compared to baseline segment price
-  const basePrice = SEGMENT_PROFILES[model.targetSegment]?.baseSalePrice ?? 1000;
-  const priceRatio = model.salePrice / (basePrice || 1);
+  // Price competitiveness compared to recommended price for this vehicle's cost & segment
+  const expectedPrice = calculateRecommendedSalePrice(model.targetSegment, model.productionCost);
+  const priceRatio = model.salePrice / (expectedPrice || 1);
   const priceFactor = priceRatio <= 1
     ? Math.min(1.35, 1 + (1 - priceRatio) * 0.7)
-    : Math.max(0.1, 1 - (priceRatio - 1) * 1.1);
+    : Math.max(0.05, 1 - (priceRatio - 1) * 1.2);
 
   const reputationFactor = 0.7 + reputation / 200;
 
   // Era scaling: pioneer automobile market in 1900-1905 is healthy enough to support early workshops
   const eraDemandFactor = Math.min(1.0, 0.35 + Math.max(0, year - 1900) * 0.02);
 
-  // Model age decay: older designs lose consumer appeal against modern competitors
-  const modelAge = Math.max(0, year - (model.designYear ?? 1900));
-  const ageFactor = getModelAgeFactor(modelAge);
+  // Segment capacity: luxury (~8%) and utility (~15%) have niche demand ceilings,
+  // while economy (~60%) and family (~25%) support broad mass factory production.
+  const segmentShare = SEGMENT_PROFILES[model.targetSegment]?.marketShare ?? 0.25;
+  const segmentMarketSize = region.marketSize * segmentShare * 3.0;
 
-  const baseDemand = region.marketSize * normalizedStats * priceFactor * reputationFactor * appealBonus * eraDemandFactor * ageFactor;
-  return Math.max(1, Math.floor(baseDemand * eventMultiplier));
+  const baseDemand = segmentMarketSize * normalizedStats * priceFactor * reputationFactor * appealBonus * eraDemandFactor * ageFactor;
+  return Math.max(0, Math.floor(baseDemand * eventMultiplier));
 }
 
 export function runEndTurn(input: EndTurnInput): EndTurnOutput {
@@ -674,7 +705,13 @@ export function runEndTurn(input: EndTurnInput): EndTurnOutput {
       );
       const marketPresence = currentState.company.marketPresence[region.id] ?? 0;
       const suitability = model.regionSuitability[region.id] ?? 0.5;
-      const adjustedDemand = Math.max(1, Math.floor(expectedDemand * marketPresence * suitability));
+      const modelAge = Math.max(0, newDate.year - (model.designYear ?? 1900));
+      const rawDemand = Math.floor(expectedDemand * marketPresence * suitability);
+      // Ensure obsolete models (or zero demand) sell 0. Guarantee 1 sale only for fresh starter models in pioneer years (1900-1902).
+      const adjustedDemand =
+        rawDemand === 0 && expectedDemand > 0 && newDate.year <= 1902 && modelAge <= 2 && marketPresence > 0
+          ? 1
+          : rawDemand;
       const sold = Math.min(modelStock, adjustedDemand);
 
       unitsSold += sold;

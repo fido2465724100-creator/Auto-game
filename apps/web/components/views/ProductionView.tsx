@@ -441,6 +441,13 @@ export default function ProductionPage(): React.JSX.Element {
               const unitCost = model.productionCost;
               const totalCost = unitCost * planned;
               const req = model.materialsRequired ?? {};
+              const modelYear = model.designYear ?? 1900;
+              const currentYear = gameState?.date.year ?? 1900;
+              const age = Math.max(0, currentYear - modelYear);
+              const isObsolete = age >= 20;
+              const isAging = age >= 9 && age < 20;
+              const unitProfit = model.salePrice - unitCost;
+              const marginPct = Math.round((unitProfit / (model.salePrice || 1)) * 100);
 
               return (
                 <div
@@ -449,19 +456,47 @@ export default function ProductionPage(): React.JSX.Element {
                 >
                   <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
                     <div>
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2 flex-wrap">
                         <span className="font-bold text-sm text-[var(--ink-heading)] era-heading">{model.name}</span>
                         <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded era-badge-accent">
                           {t.design.segments[model.targetSegment]?.name ?? model.targetSegment}
                         </span>
+                        <span className="text-[11px] text-[var(--ink-secondary)] font-mono">
+                          {modelYear} ({age} {lang === 'en' ? 'yrs' : lang === 'uk' ? 'р.' : lang === 'de' ? 'J.' : 'лет'})
+                        </span>
+                        {isObsolete ? (
+                          <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-rose-950/40 text-rose-300 border border-rose-600/50">
+                            🛑 {lang === 'en' ? 'Obsolete (0 demand)' : lang === 'uk' ? 'Застаріла (0 попит)' : lang === 'de' ? 'Veraltet (0 Nachfr.)' : 'Устарела (спрос 0)'}
+                          </span>
+                        ) : isAging ? (
+                          <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-950/40 text-amber-300 border border-amber-600/50">
+                            ⚠️ {lang === 'en' ? 'Aging' : lang === 'uk' ? 'Застаріває' : lang === 'de' ? 'Alternd' : 'Устаревает'}
+                          </span>
+                        ) : (
+                          <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-950/40 text-emerald-300 border border-emerald-600/50">
+                            ✨ {lang === 'en' ? 'Fresh' : lang === 'uk' ? 'Актуальна' : lang === 'de' ? 'Aktuell' : 'Актуальная'}
+                          </span>
+                        )}
                       </div>
-                      <div className="flex items-center gap-4 mt-1 text-xs text-[var(--ink-secondary)] font-sans">
+                      <div className="flex items-center gap-4 mt-1 text-xs text-[var(--ink-secondary)] font-sans flex-wrap">
                         <span>{t.production.costPerUnit}: <strong className="text-[var(--ink)]">${unitCost.toLocaleString()}</strong></span>
                         <span>•</span>
                         <span>{t.design.salePrice}: <strong className="text-[var(--ink-value)]">${model.salePrice.toLocaleString()}</strong></span>
                         <span>•</span>
+                        <span>
+                          {lang === 'en' ? 'Margin' : lang === 'uk' ? 'Маржа' : lang === 'de' ? 'Marge' : 'Маржа'}:{' '}
+                          <strong className={unitProfit >= 0 ? 'text-emerald-400 font-mono' : 'text-rose-400 font-mono'}>
+                            {unitProfit >= 0 ? `+$${unitProfit.toLocaleString()}` : `-$${Math.abs(unitProfit).toLocaleString()}`} ({marginPct}%)
+                          </strong>
+                        </span>
+                        <span>•</span>
                         <span>{t.production.totalCost}: <strong className="text-[var(--ink)]">${totalCost.toLocaleString()}</strong> / {lang === 'en' ? 'yr' : lang === 'uk' ? 'рік' : lang === 'de' ? 'Jahr' : 'год'}</span>
                       </div>
+                      {isObsolete ? (
+                        <div className="text-[11px] text-rose-300 font-semibold mt-1">
+                          ⚠️ {lang === 'en' ? 'Model is obsolete (>20 yrs). Market demand for new cars has dropped to 0! Recommended to discontinue.' : lang === 'uk' ? 'Модель застаріла (>20 р.). Попит на нові авто впав до 0! Рекомендовано зняти з виробництва.' : lang === 'de' ? 'Modell veraltet (>20 J.). Nachfrage ist auf 0 gefallen!' : 'Модель морально устарела (>20 лет). Спрос на новые авто упал до 0! Рекомендуется снять с производства.'}
+                        </div>
+                      ) : null}
                     </div>
 
                     {/* QUOTA INPUT & QUICK BUTTONS */}
