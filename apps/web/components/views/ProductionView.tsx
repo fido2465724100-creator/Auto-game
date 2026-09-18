@@ -201,6 +201,57 @@ export default function ProductionPage(): React.JSX.Element {
     persistPlan(newPlan, true);
   };
 
+  // Helper: Distribute factory capacity proportionally to market demand
+  const handleDistributeByDemand = () => {
+    if (activeModels.length === 0) return;
+
+    // Calculate annual demand for each active model
+    const modelDemands: Record<string, number> = {};
+    let totalDemand = 0;
+    for (const model of activeModels) {
+      const demandEst = regions.length > 0 && gameState
+        ? estimateVehicleAnnualDemand(model, gameState, regions)
+        : { totalDemand: 35, demandByRegion: {} as Record<RegionId, number> };
+      const d = Math.max(0, demandEst.totalDemand);
+      modelDemands[model.id] = d;
+      totalDemand += d;
+    }
+
+    if (totalDemand <= 0) {
+      handleDistributeEqually();
+      return;
+    }
+
+    const newPlan: Record<string, number> = {};
+    if (totalDemand <= factory.capacity) {
+      // Demand is within factory capacity: produce strictly what the market demands
+      for (const model of activeModels) {
+        newPlan[model.id] = modelDemands[model.id] ?? 0;
+      }
+    } else {
+      // Demand exceeds capacity: distribute factory capacity proportionally using Largest Remainder Method
+      let allocated = 0;
+      const remainders: { id: string; remainder: number }[] = [];
+      for (const model of activeModels) {
+        const exactShare = (factory.capacity * (modelDemands[model.id] ?? 0)) / totalDemand;
+        const floorShare = Math.floor(exactShare);
+        newPlan[model.id] = floorShare;
+        allocated += floorShare;
+        remainders.push({ id: model.id, remainder: exactShare - floorShare });
+      }
+      remainders.sort((a, b) => b.remainder - a.remainder);
+      let extra = factory.capacity - allocated;
+      for (const item of remainders) {
+        if (extra <= 0) break;
+        newPlan[item.id] = (newPlan[item.id] ?? 0) + 1;
+        extra--;
+      }
+    }
+    persistPlan(newPlan, true);
+    setStatusMsg(t.production.planDistributedByDemand);
+  };
+
+
   // Helper: Proportionally scale existing plan to exactly fit factory capacity
   const handleBalancePlan = () => {
     if (totalPlannedUnits <= 0 || activeModels.length === 0) {
@@ -575,12 +626,12 @@ export default function ProductionPage(): React.JSX.Element {
             )}
             <button
               type="button"
-              onClick={handleDistributeEqually}
-              className="px-2.5 py-1.5 rounded-lg text-xs font-bold bg-[var(--paper)] text-[var(--ink)] border border-[var(--border-subtle)] hover:bg-[var(--surface-nested)] transition shadow-xs cursor-pointer flex items-center gap-1"
-              title={lang === 'en' ? 'Divide factory capacity equally among all models' : 'Разделить всю мощность цеха поровну между всеми моделями'}
+              onClick={handleDistributeByDemand}
+              className="px-2.5 py-1.5 rounded-lg text-xs font-bold bg-[var(--paper)] text-[var(--ink)] border border-[var(--border-subtle)] hover:bg-[var(--surface-nested)] transition shadow-xs cursor-pointer flex items-center gap-1.5"
+              title={t.production.distributeByDemandHint}
             >
-              <span>⚖️</span>
-              <span>{lang === 'en' ? 'Equal Share' : lang === 'uk' ? 'Порівну' : lang === 'de' ? 'Gleichmäßig' : 'Поровну'}</span>
+              <span>📊</span>
+              <span>{t.production.distributeByDemand}</span>
             </button>
             {saveStatus === 'saving' ? (
               <span className="text-[11px] font-mono text-amber-500 flex items-center gap-1 animate-pulse px-2 py-1 bg-amber-500/10 rounded-md border border-amber-500/20">
