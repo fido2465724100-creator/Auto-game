@@ -3,6 +3,7 @@ import {
   LOAN_TEMPLATES,
   MATERIALS_CATALOG,
   calculateMaterialRequirements,
+  scrapWarehouseVehicles,
 } from '@ait/game-engine';
 import type {
   GameState,
@@ -577,6 +578,18 @@ class BrowserGameEngineClass {
           upgradeCost: nextUpgradeCost,
         },
       },
+    }));
+  }
+
+  scrapVehicles(modelId: string, count: number): GameState {
+    const state = this.getState();
+    const model = state.vehicleModels.find((m) => m.id === modelId);
+    if (!model) return state;
+
+    const result = scrapWarehouseVehicles(state.company, model, count);
+    return this.updateState((s) => ({
+      ...s,
+      company: result.updatedCompany,
     }));
   }
 

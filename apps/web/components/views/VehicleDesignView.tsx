@@ -14,6 +14,7 @@ import { useGame } from '../../context/GameContext';
 import { useLanguage } from '../../lib/i18n';
 import { api } from '../../lib/api';
 import { CarBlueprintSilhouette } from '../CarBlueprintSilhouette';
+import { CarVisualThumbnail } from '../CarVisualThumbnail';
 import { evaluateVehiclePrice } from '../../lib/pricingHelper';
 
 const MATERIAL_ICONS: Record<MaterialType, string> = {
@@ -53,6 +54,7 @@ export const VehicleDesignView: React.FC = () => {
   // Editing price for existing models
   const [editingPriceModelId, setEditingPriceModelId] = useState<string | null>(null);
   const [editingPriceValue, setEditingPriceValue] = useState<number>(0);
+  const [previewMode, setPreviewMode] = useState<'render' | 'blueprint'>('render');
 
   // Form State
   const [name, setName] = useState('Model 1900-B');
@@ -498,12 +500,53 @@ export const VehicleDesignView: React.FC = () => {
 
         {/* RIGHT: SPECS & FINANCIAL PREVIEW (5 cols) */}
         <div className="space-y-6 lg:col-span-5">
-          {/* 2D RETRO BLUEPRINT SCHEMATIC */}
-          <CarBlueprintSilhouette
-            segment={segment}
-            powertrain={selectedEngine?.powertrainType ?? 'ice'}
-            className="shadow-md w-full"
-          />
+          {/* VEHICLE PREVIEW: RENDER OR BLUEPRINT */}
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold uppercase tracking-wider text-[var(--ink-secondary)]">
+                {lang === 'en' ? 'Prototype Preview' : lang === 'uk' ? 'Перегляд прототипу' : 'Предпросмотр прототипа'}
+              </span>
+              <div className="flex items-center gap-1 bg-[var(--surface-nested)] p-0.5 rounded-lg border border-[var(--border-subtle)]">
+                <button
+                  type="button"
+                  onClick={() => setPreviewMode('render')}
+                  className={`px-2.5 py-1 rounded-md text-xs font-bold transition cursor-pointer ${
+                    previewMode === 'render'
+                      ? 'btn-brass text-white shadow-xs'
+                      : 'text-[var(--ink-secondary)] hover:text-[var(--ink)]'
+                  }`}
+                >
+                  🎨 {lang === 'en' ? 'Artwork' : 'Рендер'}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setPreviewMode('blueprint')}
+                  className={`px-2.5 py-1 rounded-md text-xs font-bold transition cursor-pointer ${
+                    previewMode === 'blueprint'
+                      ? 'btn-brass text-white shadow-xs'
+                      : 'text-[var(--ink-secondary)] hover:text-[var(--ink)]'
+                  }`}
+                >
+                  📐 {lang === 'en' ? 'Blueprint' : 'Чертёж'}
+                </button>
+              </div>
+            </div>
+
+            {previewMode === 'render' ? (
+              <CarVisualThumbnail
+                segment={segment}
+                designYear={gameState?.date.year ?? 1900}
+                className="w-full h-36 shadow-md"
+                badge={name}
+              />
+            ) : (
+              <CarBlueprintSilhouette
+                segment={segment}
+                powertrain={selectedEngine?.powertrainType ?? 'ice'}
+                className="shadow-md w-full"
+              />
+            )}
+          </div>
 
           {/* SPECS PANEL */}
           <div className="era-card p-5 space-y-3">
@@ -690,6 +733,13 @@ export const VehicleDesignView: React.FC = () => {
                             {t.design.segments[m.targetSegment]?.name ?? m.targetSegment}
                           </span>
                         </div>
+
+                        {/* CAR VISUAL ART */}
+                        <CarVisualThumbnail
+                          segment={m.targetSegment}
+                          designYear={modelYear}
+                          className="w-full h-24 my-1"
+                        />
 
                         {/* Model Age & Status */}
                         <div className="flex items-center justify-between gap-1 text-[11px]">

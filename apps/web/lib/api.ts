@@ -141,6 +141,18 @@ export const api = {
     }
   },
 
+  scrapVehicles: async (modelId: string, count: number): Promise<GameState> => {
+    if (isBrowserOnlyMode()) return browserGameEngine.scrapVehicles(modelId, count);
+    try {
+      return await request<GameState>(`/game/vehicles/${modelId}/scrap`, {
+        method: 'POST',
+        body: JSON.stringify({ count }),
+      });
+    } catch {
+      return browserGameEngine.scrapVehicles(modelId, count);
+    }
+  },
+
   getRegions: async (): Promise<Region[]> => {
     if (isBrowserOnlyMode()) return browserGameEngine.getRegions();
     try {

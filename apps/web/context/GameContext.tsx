@@ -25,6 +25,7 @@ interface GameContextType {
   decommissionVehicleModel: (modelId: string) => Promise<void>;
   activateVehicleModel: (modelId: string) => Promise<void>;
   deleteVehicleModel: (modelId: string) => Promise<void>;
+  scrapVehicles: (modelId: string, count: number) => Promise<void>;
   startResearch: (technologyId: string, budget: number) => Promise<void>;
   updateProductionPlan: (plan: Record<string, number>) => Promise<void>;
   buyMaterial: (materialId: MaterialType, amount: number) => Promise<void>;
@@ -57,6 +58,7 @@ const GameContext = createContext<GameContextType>({
   decommissionVehicleModel: async () => {},
   activateVehicleModel: async () => {},
   deleteVehicleModel: async () => {},
+  scrapVehicles: async () => {},
   startResearch: async () => {},
   updateProductionPlan: async () => {},
   buyMaterial: async () => {},
@@ -178,6 +180,11 @@ export function GameProvider({ children }: { children: ReactNode }): React.JSX.E
     setGameState(updated);
   };
 
+  const scrapVehicles = async (modelId: string, count: number): Promise<void> => {
+    const updated = await api.scrapVehicles(modelId, count);
+    setGameState(updated);
+  };
+
   const setupCompany = async (dto: {
     name: string;
     country: CountryId;
@@ -226,6 +233,7 @@ export function GameProvider({ children }: { children: ReactNode }): React.JSX.E
         buyMaterial,
         setAutoProcurement,
         expandFactory,
+        scrapVehicles,
         setupCompany,
         resetGame,
         exportSave,

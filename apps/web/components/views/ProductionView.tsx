@@ -1,12 +1,15 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import type { MaterialMarketItem, MaterialType } from '@ait/shared-types';
+import type { MaterialMarketItem, MaterialType, VehicleModel } from '@ait/shared-types';
 import { calculatePremisesRent, calculateRecommendedSalePrice } from '@ait/game-engine';
 import { useGame } from '../../context/GameContext';
 import { useLanguage } from '../../lib/i18n';
 import { api } from '../../lib/api';
 import { evaluateVehiclePrice } from '../../lib/pricingHelper';
+import { MaterialsColumn } from '../production/MaterialsColumn';
+import { VehicleWarehouseColumn } from '../production/VehicleWarehouseColumn';
+import { CarVisualThumbnail } from '../CarVisualThumbnail';
 
 const MATERIAL_ICONS: Record<MaterialType, string> = {
   wood: '🪵',
@@ -24,6 +27,7 @@ export default function ProductionPage(): React.JSX.Element {
     buyMaterial,
     setAutoProcurement,
     expandFactory,
+    scrapVehicles,
     decommissionVehicleModel,
     saveVehicleModel,
   } = useGame();
@@ -73,6 +77,7 @@ export default function ProductionPage(): React.JSX.Element {
     aluminum: 0,
     plastic: 0,
   };
+  const inventoryVehicles = gameState.company.inventoryVehicles ?? {};
 
   const activeModels = gameState.vehicleModels.filter((m) => m.active);
 
@@ -238,6 +243,62 @@ export default function ProductionPage(): React.JSX.Element {
     }
   };
 
+  const handleBuyAllShortages = async () => {
+    setActionPending(true);
+    setStatusMsg(null);
+    try {
+      for (const [matKey, reqAmount] of Object.entries(materialDemand)) {
+        const mat = matKey as MaterialType;
+        const inStock = inventory[mat] ?? 0;
+        const diff = (reqAmount ?? 0) - inStock;
+        if (diff > 0) {
+          await buyMaterial(mat, diff);
+        }
+      }
+      setStatusMsg(
+        lang === 'en'
+          ? 'All shortage materials purchased successfully'
+          : lang === 'uk'
+          ? 'Всі дефіцитні матеріали успішно закуплено'
+          : 'Все недостающие материалы успешно закуплены'
+      );
+    } catch (err) {
+      setStatusMsg(`Ошибка: ${String(err)}`);
+    } finally {
+      setActionPending(false);
+    }
+  };
+
+  const handleUpdateModelPrice = async (model: VehicleModel, newPrice: number) => {
+    try {
+      await saveVehicleModel({ ...model, salePrice: newPrice });
+      setStatusMsg(
+        lang === 'en'
+          ? `Price for "${model.name}" updated to $${newPrice.toLocaleString()}`
+          : lang === 'uk'
+          ? `Ціну для «${model.name}» оновлено до $${newPrice.toLocaleString()}`
+          : `Цена для «${model.name}» обновлена до $${newPrice.toLocaleString()}`
+      );
+    } catch (err) {
+      setStatusMsg(`Ошибка: ${String(err)}`);
+    }
+  };
+
+  const handleScrapVehicles = async (model: VehicleModel, count: number) => {
+    try {
+      await scrapVehicles(model.id, count);
+      setStatusMsg(
+        lang === 'en'
+          ? `Scrapped ${count} units of "${model.name}" for salvage metal`
+          : lang === 'uk'
+          ? `Утилізовано ${count} шт. «${model.name}» на металобрухт`
+          : `Утилизировано ${count} шт. «${model.name}» на металлолом`
+      );
+    } catch (err) {
+      setStatusMsg(`Ошибка: ${String(err)}`);
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* HEADER */}
@@ -311,8 +372,31 @@ export default function ProductionPage(): React.JSX.Element {
         </div>
       )}
 
-      {/* FACTORY CARD */}
-      <div className="era-card p-5">
+      {/* 3-COLUMN INDUSTRIAL COCKPIT */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+        {/* LEFT COLUMN (3/12): RAW MATERIALS & PROCUREMENT */}
+        <div className="lg:col-span-3">
+          <MaterialsColumn
+            marketMaterials={marketMaterials}
+            inventory={inventory}
+            materialDemand={materialDemand}
+            hasShortage={hasShortage}
+            totalProcureCost={totalProcureCost}
+            currentCash={currentCash}
+            isAutoProcure={isAutoProcure}
+            actionPending={actionPending}
+            onBuyMaterial={handleBuyMaterial}
+            onToggleAutoProcure={handleToggleAutoProcure}
+            onBuyAllShortages={handleBuyAllShortages}
+            lang={lang}
+            t={t}
+          />
+        </div>
+
+        {/* CENTER COLUMN (6/12): WORKSHOP & ASSEMBLY LINES */}
+        <div className="lg:col-span-6 space-y-5">
+          {/* FACTORY CARD */}
+          <div className="era-card p-5">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[var(--border-subtle)] pb-4">
           <div>
             <div className="flex items-center gap-2">
@@ -456,9 +540,20 @@ export default function ProductionPage(): React.JSX.Element {
               return (
                 <div
                   key={model.id}
-                  className="rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-nested)] p-4 transition hover:border-[var(--border-brass)]"
+                  className="rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-nested)] p-4 transition hover:border-[var(--border-brass)] space-y-3"
                 >
-                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
+                  <div className="flex flex-col sm:flex-row gap-3 items-start">
+                    {/* VEHICLE ART RENDER */}
+                    <div className="w-full sm:w-36 shrink-0">
+                      <CarVisualThumbnail
+                        segment={model.targetSegment}
+                        designYear={modelYear}
+                        className="w-full h-24"
+                      />
+                    </div>
+
+                    <div className="flex-1 min-w-0">
+                      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
                     <div>
                       <div className="flex items-center gap-2 flex-wrap">
                         <span className="font-bold text-sm text-[var(--ink-heading)] era-heading">{model.name}</span>
@@ -671,8 +766,10 @@ export default function ProductionPage(): React.JSX.Element {
                       </button>
                     </div>
                   </div>
+                </div>
+              </div>
 
-                  {/* MATERIAL REQUIREMENTS PER UNIT */}
+              {/* MATERIAL REQUIREMENTS PER UNIT */}
                   <div className="mt-3 pt-2.5 border-t border-[var(--border-subtle)]">
                     <span className="text-[10px] text-[var(--ink-secondary)] uppercase block font-semibold mb-1.5">
                       {t.production.materialsRequiredPerUnit}:
@@ -705,127 +802,18 @@ export default function ProductionPage(): React.JSX.Element {
         )}
       </div>
 
-      {/* MATERIALS WAREHOUSE & COMMODITY MARKET */}
-      <div className="era-card p-5">
-        <div className="flex flex-col md:flex-row md:items-center justify-between border-b border-[var(--border-subtle)] pb-3 mb-4 gap-3">
-          <div>
-            <h2 className="text-base font-bold text-[var(--ink-heading)] era-heading flex items-center gap-2">
-              <span>🪵</span> {t.production.warehouseTitle}
-            </h2>
-            <p className="text-xs text-[var(--ink-secondary)] font-sans">
-              {t.production.warehouseSubtitle}
-            </p>
-          </div>
-
-          {/* AUTO-PROCUREMENT TOGGLE */}
-          <div className="flex items-center gap-3 bg-[var(--surface-nested)] border border-[var(--border-subtle)] px-3 py-2 rounded-lg">
-            <input
-              type="checkbox"
-              id="autoProcure"
-              checked={isAutoProcure}
-              onChange={handleToggleAutoProcure}
-              disabled={actionPending}
-              className="h-4 w-4 rounded border-[var(--border-subtle)] text-[var(--accent)] focus:ring-[var(--accent-gold)] cursor-pointer"
-            />
-            <label htmlFor="autoProcure" className="cursor-pointer text-xs font-bold text-[var(--ink)] select-none">
-              {t.production.autoProcurement}
-            </label>
-          </div>
         </div>
 
-        <p className="text-[11px] text-[var(--ink-secondary)] italic mb-4">
-          {t.production.autoProcurementHint}
-        </p>
-
-        {/* MATERIAL CARDS GRID */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {marketMaterials.map((item) => {
-            const inStock = inventory[item.id] ?? 0;
-            const demand = materialDemand[item.id] ?? 0;
-            const isShort = demand > inStock;
-            const icon = MATERIAL_ICONS[item.id] ?? '📦';
-            const name = t.materials[item.id] ?? item.name;
-            const unit = t.materials.units[item.id] ?? item.unit;
-
-            return (
-              <div
-                key={item.id}
-                className={`rounded-lg border p-4 flex flex-col justify-between transition ${
-                  isShort
-                    ? inStock === 0
-                      ? 'border-rose-500/60 bg-rose-950/20'
-                      : 'border-amber-500/50 bg-amber-950/15'
-                    : 'border-[var(--border-subtle)] bg-[var(--surface-nested)] hover:border-[var(--border-brass)]'
-                }`}
-              >
-                <div>
-                  <div className="flex items-start justify-between">
-                    <div className="flex items-center gap-2">
-                      <span className="text-2xl">{icon}</span>
-                      <div>
-                        <h3 className="font-bold text-sm text-[var(--ink-heading)] leading-tight">{name}</h3>
-                        <span className="text-[10px] text-[var(--ink-secondary)] font-sans">
-                          {t.production.yearAvailable}: {item.yearAvailable} г.
-                        </span>
-                      </div>
-                    </div>
-                    <span className="text-xs font-bold px-2 py-0.5 rounded era-badge-accent">
-                      ${item.basePrice} / {unit}
-                    </span>
-                  </div>
-
-                  <p className="text-[11px] text-[var(--ink-secondary)] font-sans mt-2 line-clamp-2">
-                    {item.description}
-                  </p>
-
-                  <div className="mt-3 pt-2.5 border-t border-[var(--border-subtle)] space-y-1 text-xs">
-                    <div className="flex justify-between">
-                      <span className="text-[var(--ink-secondary)] font-sans">{t.production.inStock}:</span>
-                      <span className={`font-bold ${isShort ? 'text-rose-400' : 'text-[var(--ink)]'}`}>
-                        {inStock.toLocaleString()} {unit}
-                      </span>
-                    </div>
-
-                    <div className="flex justify-between">
-                      <span className="text-[var(--ink-secondary)] font-sans">{t.production.needNextMonth}:</span>
-                      <span className="font-bold text-[var(--ink-value)]">
-                        {demand.toLocaleString()} {unit}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* PURCHASE BATCH BUTTONS */}
-                <div className="mt-4 pt-3 border-t border-[var(--border-subtle)]">
-                  <span className="block text-[10px] text-[var(--ink-secondary)] uppercase font-semibold mb-1.5">
-                    {t.production.buyBatchBtn}:
-                  </span>
-                  <div className="grid grid-cols-3 gap-1.5">
-                    {[50, 200, 500].map((batch) => {
-                      const cost = batch * item.basePrice;
-                      const canAfford = currentCash >= cost;
-
-                      return (
-                        <button
-                          key={batch}
-                          onClick={() => handleBuyMaterial(item.id, batch)}
-                          disabled={actionPending || !canAfford}
-                          className={`px-1.5 py-1 rounded text-[10px] font-bold transition flex flex-col items-center cursor-pointer ${
-                            canAfford
-                              ? 'bg-[var(--paper)] text-[var(--ink)] border border-[var(--border-subtle)] hover:border-[var(--border-brass)] hover:text-[var(--accent-gold)]'
-                              : 'bg-transparent text-[var(--ink-secondary)] opacity-40 border border-[var(--border-subtle)] cursor-not-allowed'
-                          }`}
-                        >
-                          <span>+{batch} {unit}</span>
-                          <span className="text-[9px] opacity-80 font-normal">${cost.toLocaleString()}</span>
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-              </div>
-            );
-          })}
+        {/* RIGHT COLUMN (3/12): VEHICLE WAREHOUSE STORAGE & CLEARANCE */}
+        <div className="lg:col-span-3">
+          <VehicleWarehouseColumn
+            models={gameState.vehicleModels}
+            inventoryVehicles={inventoryVehicles}
+            onUpdatePrice={handleUpdateModelPrice}
+            onScrapVehicles={handleScrapVehicles}
+            lang={lang}
+            t={t}
+          />
         </div>
       </div>
     </div>

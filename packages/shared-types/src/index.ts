@@ -122,6 +122,7 @@ export interface Company {
   marketPresence: Record<RegionId, number>;
   loans?: BankLoan[];
   inventoryMaterials?: Record<MaterialType, number>;
+  inventoryVehicles?: Record<string, number>;
   autoProcurement?: boolean;
   factory?: FactoryInfo;
   worldRank?: number;

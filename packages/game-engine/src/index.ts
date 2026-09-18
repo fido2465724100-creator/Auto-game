@@ -1,6 +1,7 @@
 import type {
   EndTurnInput,
   EndTurnOutput,
+  Company,
   GameDate,
   HistoricalEvent,
   MonthlyReport,
@@ -686,10 +687,19 @@ export function runEndTurn(input: EndTurnInput): EndTurnOutput {
   let unitsSold = 0;
   let revenue = 0;
   const salesByModel: Record<string, ModelSalesRecord> = {};
+  const currentWarehouse = { ...(currentState.company.inventoryVehicles ?? {}) };
+  const newInventoryVehicles: Record<string, number> = {};
 
-  for (const model of currentState.vehicleModels.filter((item) => item.active)) {
-    const initialStock = producedByModel[model.id] ?? 0;
-    let modelStock = initialStock;
+  // All models that were either produced this year OR have unsold units in the warehouse
+  const modelsInMarket = currentState.vehicleModels.filter(
+    (m) => (producedByModel[m.id] ?? 0) > 0 || (currentWarehouse[m.id] ?? 0) > 0
+  );
+
+  for (const model of modelsInMarket) {
+    const newlyProduced = producedByModel[model.id] ?? 0;
+    const initialWarehouseStock = currentWarehouse[model.id] ?? 0;
+    const totalAvailable = initialWarehouseStock + newlyProduced;
+    let modelStock = totalAvailable;
     let modelUnitsSold = 0;
     let modelRevenue = 0;
 
@@ -726,14 +736,19 @@ export function runEndTurn(input: EndTurnInput): EndTurnOutput {
       revenue += sold * model.salePrice;
     }
 
-    if (initialStock > 0 || modelUnitsSold > 0) {
+    const remainingStock = modelStock;
+    if (remainingStock > 0) {
+      newInventoryVehicles[model.id] = remainingStock;
+    }
+
+    if (totalAvailable > 0 || modelUnitsSold > 0) {
       salesByModel[model.id] = {
         modelId: model.id,
         modelName: model.name,
         segment: model.targetSegment,
-        produced: initialStock,
+        produced: newlyProduced,
         sold: modelUnitsSold,
-        unsold: Math.max(0, initialStock - modelUnitsSold),
+        unsold: remainingStock,
         revenue: modelRevenue,
         unitPrice: model.salePrice,
         unitCost: model.productionCost,
@@ -919,9 +934,44 @@ export function runEndTurn(input: EndTurnInput): EndTurnOutput {
         worldRank: playerRank,
         loans: updatedLoans,
         inventoryMaterials: inventory,
+        inventoryVehicles: newInventoryVehicles,
       },
       reportHistory: [report, ...currentState.reportHistory].slice(0, 48),
     },
     report,
+  };
+}
+
+export function scrapWarehouseVehicles(
+  company: Company,
+  model: VehicleModel,
+  countToScrap: number
+): { updatedCompany: Company; cashEarned: number; scrappedCount: number } {
+  const currentStock = company.inventoryVehicles?.[model.id] ?? 0;
+  const actualCount = Math.min(currentStock, Math.max(0, countToScrap));
+  if (actualCount <= 0) {
+    return { updatedCompany: company, cashEarned: 0, scrappedCount: 0 };
+  }
+
+  // Scrap recovery value: 18% of unit production cost
+  const scrapValuePerUnit = Math.max(25, Math.round(model.productionCost * 0.18));
+  const totalCashEarned = actualCount * scrapValuePerUnit;
+
+  const newInventory = { ...(company.inventoryVehicles ?? {}) };
+  const remaining = currentStock - actualCount;
+  if (remaining > 0) {
+    newInventory[model.id] = remaining;
+  } else {
+    delete newInventory[model.id];
+  }
+
+  return {
+    updatedCompany: {
+      ...company,
+      cash: company.cash + totalCashEarned,
+      inventoryVehicles: newInventory,
+    },
+    cashEarned: totalCashEarned,
+    scrappedCount: actualCount,
   };
 }
