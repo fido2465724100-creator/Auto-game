@@ -5,6 +5,7 @@ import type { MonthlyReport } from '@ait/shared-types';
 import { useGame } from '../context/GameContext';
 import { useLanguage } from '../lib/i18n';
 import { getEraTheme } from '../lib/eraTheme';
+import { localizeEventNote, localizeCompetitorNews } from '../lib/newsLocalizer';
 
 interface Props {
   isOpen?: boolean;
@@ -249,17 +250,17 @@ export function MorningGazetteModal(props: Props = {}): React.JSX.Element | null
                       </div>
                       <div className="flex flex-wrap items-center justify-between text-stone-700 text-[10px] mt-1 gap-1 border-t border-stone-100 pt-1">
                         <span className="inline-flex items-center gap-1">
-                          <span>⚙️ {lang === 'en' ? 'Built' : lang === 'uk' ? 'Випуск' : 'Выпуск'}:</span>
+                          <span>⚙️ {lang === 'en' ? 'Built' : lang === 'uk' ? 'Випуск' : lang === 'de' ? 'Bau' : 'Выпуск'}:</span>
                           <strong className="font-mono text-stone-900">{sm.produced}</strong>
                         </span>
                         <span>•</span>
                         <span className="inline-flex items-center gap-1">
-                          <span>🤝 {lang === 'en' ? 'Sold' : lang === 'uk' ? 'Продаж' : 'Продано'}:</span>
+                          <span>🤝 {lang === 'en' ? 'Sold' : lang === 'uk' ? 'Продаж' : lang === 'de' ? 'Verkauf' : 'Продано'}:</span>
                           <strong className="font-mono text-emerald-700">{sm.sold}</strong>
                         </span>
                         <span>•</span>
                         <span className="inline-flex items-center gap-1">
-                          <span>📦 {lang === 'en' ? 'Stock' : lang === 'uk' ? 'Склад' : 'Склад'}:</span>
+                          <span>📦 {lang === 'en' ? 'Stock' : lang === 'uk' ? 'Склад' : lang === 'de' ? 'Lager' : 'Склад'}:</span>
                           <strong className={`font-mono ${sm.unsold > 0 ? 'text-amber-800 font-bold' : 'text-stone-500'}`}>
                             {sm.unsold}
                           </strong>
@@ -271,6 +272,8 @@ export function MorningGazetteModal(props: Props = {}): React.JSX.Element | null
                             ? `${sm.unsold} units remained unsold in warehouse`
                             : lang === 'uk'
                             ? `${sm.unsold} авто залишилось на складі`
+                            : lang === 'de'
+                            ? `${sm.unsold} Fz. unverkauft auf Lager`
                             : `${sm.unsold} авто осталось на складе`}
                         </div>
                       )}
@@ -306,7 +309,7 @@ export function MorningGazetteModal(props: Props = {}): React.JSX.Element | null
                 {report.competitorNews.map((news, i) => (
                   <div key={i} className="flex items-start gap-1.5 leading-snug">
                     <span>•</span>
-                    <span>{news}</span>
+                    <span>{localizeCompetitorNews(news, t, lang)}</span>
                   </div>
                 ))}
               </div>
@@ -332,7 +335,7 @@ export function MorningGazetteModal(props: Props = {}): React.JSX.Element | null
               <div className="space-y-1.5 text-[11px]">
                 {report.eventNotes.map((note, i) => (
                   <div key={i} className="bg-amber-100/70 border border-amber-300/80 p-1.5 rounded text-amber-950">
-                    {note}
+                    {localizeEventNote(note, t, lang)}
                   </div>
                 ))}
               </div>

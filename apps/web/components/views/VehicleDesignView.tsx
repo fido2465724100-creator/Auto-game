@@ -720,18 +720,24 @@ export const VehicleDesignView: React.FC = () => {
                           )}
                         </div>
 
-                        <div className="my-2 grid grid-cols-3 gap-1 rounded-lg bg-[var(--paper)] p-2 text-center text-xs border border-[var(--border-subtle)] font-mono">
-                          <div>
-                            <span className="block text-[var(--ink-secondary)] text-[10px]">{t.design.stats.reliability.slice(0, 7)}.</span>
-                            <span className="font-bold text-[var(--ink)]">{m.stats.reliability}</span>
+                        <div className="my-2 grid grid-cols-3 gap-1 rounded-lg bg-[var(--paper)] p-1.5 text-center text-xs border border-[var(--border-subtle)]">
+                          <div className="flex flex-col items-center">
+                            <span className="text-[10px] text-[var(--ink-secondary)] truncate max-w-full">
+                              🛡️ {t.design.stats.reliability}
+                            </span>
+                            <span className="font-bold text-[var(--ink)] font-mono">{m.stats.reliability}</span>
                           </div>
-                          <div>
-                            <span className="block text-[var(--ink-secondary)] text-[10px]">{t.design.stats.comfort.slice(0, 7)}</span>
-                            <span className="font-bold text-[var(--ink)]">{m.stats.comfort}</span>
+                          <div className="flex flex-col items-center">
+                            <span className="text-[10px] text-[var(--ink-secondary)] truncate max-w-full">
+                              🛋️ {t.design.stats.comfort}
+                            </span>
+                            <span className="font-bold text-[var(--ink)] font-mono">{m.stats.comfort}</span>
                           </div>
-                          <div>
-                            <span className="block text-[var(--ink-secondary)] text-[10px]">{t.design.stats.performance.slice(0, 7)}</span>
-                            <span className="font-bold text-[var(--ink)]">{m.stats.performance}</span>
+                          <div className="flex flex-col items-center">
+                            <span className="text-[10px] text-[var(--ink-secondary)] truncate max-w-full">
+                              ⚡ {t.design.stats.performance}
+                            </span>
+                            <span className="font-bold text-[var(--ink)] font-mono">{m.stats.performance}</span>
                           </div>
                         </div>
 
@@ -817,7 +823,7 @@ export const VehicleDesignView: React.FC = () => {
                               <div className="space-y-1 pt-0.5">
                                 <div className="flex items-center justify-between text-[11px]">
                                   <span className="text-[var(--ink-secondary)]">
-                                    💡 {lang === 'en' ? 'Rec:' : lang === 'uk' ? 'Рек:' : 'Рек:'} <strong className="text-[var(--accent-gold)]">${rec.toLocaleString()}</strong>
+                                    💡 {lang === 'en' ? 'Rec:' : lang === 'uk' ? 'Рек:' : lang === 'de' ? 'Empf.:' : 'Рек.:'} <strong className="text-[var(--accent-gold)]">${rec.toLocaleString()}</strong>
                                   </span>
                                   <span className={`text-[10px] px-1.5 py-0.2 rounded font-semibold ${evalTag.badgeClass}`}>
                                     {evalTag.shortLabel}
@@ -833,11 +839,21 @@ export const VehicleDesignView: React.FC = () => {
                                           ? `Price for "${m.name}" updated to recommended market price $${rec.toLocaleString()}`
                                           : lang === 'uk'
                                           ? `Ціну на «${m.name}» виправлено на рекомендовану $${rec.toLocaleString()}`
+                                          : lang === 'de'
+                                          ? `Preis für «${m.name}» auf empfohlenen Marktpreis $${rec.toLocaleString()} korrigiert`
                                           : `Цена на «${m.name}» исправлена на рыночную $${rec.toLocaleString()}`
                                       );
                                     }}
                                     className="w-full mt-1 py-1 px-2 rounded bg-amber-500/20 hover:bg-amber-500/30 text-amber-950 dark:text-amber-200 border border-amber-500/60 text-[11px] font-bold flex items-center justify-center gap-1 cursor-pointer transition animate-pulse shadow-xs"
-                                    title={lang === 'en' ? 'Click to fix price to recommended market price' : 'Нажмите, чтобы исправить цену на рекомендованную'}
+                                    title={
+                                      lang === 'en'
+                                        ? 'Click to fix price to recommended market price'
+                                        : lang === 'uk'
+                                        ? 'Встановити рекомендовану ринкову ціну'
+                                        : lang === 'de'
+                                        ? 'Auf empfohlenen Marktpreis anpassen'
+                                        : 'Нажмите, чтобы исправить цену на рекомендованную'
+                                    }
                                   >
                                     <span>💡</span>
                                     <span>
@@ -845,6 +861,8 @@ export const VehicleDesignView: React.FC = () => {
                                         ? `Set to market price ($${rec.toLocaleString()})`
                                         : lang === 'uk'
                                         ? `Встановити ринкову ціну ($${rec.toLocaleString()})`
+                                        : lang === 'de'
+                                        ? `Marktpreis setzen ($${rec.toLocaleString()})`
                                         : `Установить рыночную цену ($${rec.toLocaleString()})`}
                                     </span>
                                   </button>
@@ -883,15 +901,36 @@ export const VehicleDesignView: React.FC = () => {
                               <div className="flex items-center justify-between font-bold text-[var(--ink-heading)]">
                                 <span className="flex items-center gap-1">
                                   <span>📦</span>
-                                  <span>{lang === 'en' ? 'Stock & Sales (Last Year):' : lang === 'uk' ? 'Склад та продажі (за рік):' : 'Склад и продажи (за прошлый год):'}</span>
+                                  <span>
+                                    {lang === 'en'
+                                      ? 'Stock & Sales (Last Year):'
+                                      : lang === 'uk'
+                                      ? 'Склад та продажі (за рік):'
+                                      : lang === 'de'
+                                      ? 'Lager & Absatz (Vorjahr):'
+                                      : 'Склад и продажи (за прошлый год):'}
+                                  </span>
                                 </span>
                                 {modelSales && modelSales.unsold > 0 ? (
-                                  <span className="text-[10px] px-1.5 py-0.2 rounded bg-amber-950/60 text-amber-300 border border-amber-600/40">
-                                    {lang === 'en' ? `${modelSales.unsold} in stock` : lang === 'uk' ? `${modelSales.unsold} на складі` : `${modelSales.unsold} на складе`}
+                                  <span className="text-[10px] px-1.5 py-0.2 rounded bg-amber-950/60 text-amber-300 border border-amber-600/40 font-mono">
+                                    {modelSales.unsold}{' '}
+                                    {lang === 'en'
+                                      ? 'in stock'
+                                      : lang === 'uk'
+                                      ? 'на складі'
+                                      : lang === 'de'
+                                      ? 'auf Lager'
+                                      : 'на складе'}
                                   </span>
                                 ) : modelSales && modelSales.produced > 0 ? (
                                   <span className="text-[10px] px-1.5 py-0.2 rounded bg-emerald-950/60 text-emerald-300 border border-emerald-600/40">
-                                    {lang === 'en' ? '100% Sold' : lang === 'uk' ? '100% Продано' : '100% Продано'}
+                                    {lang === 'en'
+                                      ? '100% Sold'
+                                      : lang === 'uk'
+                                      ? '100% Продано'
+                                      : lang === 'de'
+                                      ? '100% Verkauft'
+                                      : '100% Продано'}
                                   </span>
                                 ) : null}
                               </div>
@@ -899,21 +938,33 @@ export const VehicleDesignView: React.FC = () => {
                               {modelSales ? (
                                 <div className="grid grid-cols-3 gap-1 text-center pt-1 border-t border-[var(--border-subtle)] text-[11px]">
                                   <div className="bg-[var(--paper)]/60 rounded p-1">
-                                    <span className="block text-[10px] text-[var(--ink-secondary)]">{lang === 'en' ? 'Produced' : lang === 'uk' ? 'Випущено' : 'Выпущено'}</span>
+                                    <span className="block text-[10px] text-[var(--ink-secondary)]">
+                                      {lang === 'en' ? 'Produced' : lang === 'uk' ? 'Випущено' : lang === 'de' ? 'Gebaut' : 'Выпущено'}
+                                    </span>
                                     <span className="font-mono font-bold text-[var(--ink)]">{modelSales.produced}</span>
                                   </div>
                                   <div className="bg-[var(--paper)]/60 rounded p-1">
-                                    <span className="block text-[10px] text-emerald-400">{lang === 'en' ? 'Sold' : lang === 'uk' ? 'Продано' : 'Продано'}</span>
+                                    <span className="block text-[10px] text-emerald-400">
+                                      {lang === 'en' ? 'Sold' : lang === 'uk' ? 'Продано' : lang === 'de' ? 'Verkauft' : 'Продано'}
+                                    </span>
                                     <span className="font-mono font-bold text-emerald-400">{modelSales.sold}</span>
                                   </div>
                                   <div className={`rounded p-1 ${modelSales.unsold > 0 ? 'bg-amber-950/30 text-amber-400 font-bold border border-amber-800/40' : 'bg-[var(--paper)]/60 text-[var(--ink-secondary)]'}`}>
-                                    <span className="block text-[10px]">{lang === 'en' ? 'In Stock' : lang === 'uk' ? 'На складі' : 'Остаток на складе'}</span>
+                                    <span className="block text-[10px]">
+                                      {lang === 'en' ? 'In Stock' : lang === 'uk' ? 'На складі' : lang === 'de' ? 'Auf Lager' : 'Остаток на складе'}
+                                    </span>
                                     <span className="font-mono font-bold">{modelSales.unsold}</span>
                                   </div>
                                 </div>
                               ) : (
                                 <div className="text-[10px] text-[var(--ink-secondary)] italic">
-                                  {lang === 'en' ? 'No sales data yet for this model' : lang === 'uk' ? 'Ще немає даних про продажі цієї моделі' : 'Нет данных за прошлый год (новая модель)'}
+                                  {lang === 'en'
+                                    ? 'No sales data yet for this model'
+                                    : lang === 'uk'
+                                    ? 'Ще немає даних про продажі цієї моделі'
+                                    : lang === 'de'
+                                    ? 'Noch keine Verkaufsdaten für dieses Modell'
+                                    : 'Нет данных за прошлый год (новая модель)'}
                                 </div>
                               )}
                             </div>

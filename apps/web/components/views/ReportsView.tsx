@@ -2,12 +2,25 @@
 
 import { useGame } from '../../context/GameContext';
 import { useLanguage } from '../../lib/i18n';
+import { localizeEventNote, localizeCompetitorNews } from '../../lib/newsLocalizer';
 
 export default function ReportsPage(): React.JSX.Element {
   const { gameState, loading } = useGame();
   const { t, lang } = useLanguage();
 
-  if (loading) return <p className="py-8 text-center text-stone-600">Загрузка архива отчетов...</p>;
+  if (loading) {
+    return (
+      <p className="py-8 text-center text-stone-600">
+        {lang === 'en'
+          ? 'Loading report archive...'
+          : lang === 'uk'
+          ? 'Завантаження архіву звітів...'
+          : lang === 'de'
+          ? 'Lade Berichtsarchiv...'
+          : 'Загрузка архива отчетов...'}
+      </p>
+    );
+  }
 
   const reports = gameState?.reportHistory ?? [];
 
@@ -40,7 +53,7 @@ export default function ReportsPage(): React.JSX.Element {
             >
               <div className="flex justify-between items-center border-b border-[var(--border-subtle)] pb-2">
                 <h3 className="font-bold text-[var(--ink-heading)] era-heading text-base">
-                  {quarterName} {report.date.year} г.
+                  {quarterName} {report.date.year} {lang === 'en' || lang === 'de' ? '' : lang === 'uk' ? 'р.' : 'г.'}
                 </h3>
                 <span
                   className={`font-bold text-sm px-2.5 py-0.5 rounded font-mono ${
@@ -75,17 +88,40 @@ export default function ReportsPage(): React.JSX.Element {
               {/* Detailed Cost Breakdown */}
               <div className="rounded-lg bg-[var(--surface-nested)] p-3 border border-[var(--border-subtle)] text-[11px] space-y-1.5 font-sans">
                 <div className="font-bold text-[var(--ink-heading)] flex justify-between border-b border-[var(--border-subtle)] pb-1.5">
-                  <span>Статьи расходов и выручка:</span>
+                  <span>
+                    {lang === 'en'
+                      ? 'Revenue & Cost Breakdown:'
+                      : lang === 'uk'
+                      ? 'Статті доходів та витрат:'
+                      : lang === 'de'
+                      ? 'Ertrags- und Kostenposten:'
+                      : 'Статьи расходов и выручка:'}
+                  </span>
                   <span className={report.profit >= 0 ? 'text-emerald-400 font-mono font-bold' : 'text-rose-400 font-mono font-bold'}>
                     {report.profit >= 0 ? '+' : ''}${report.profit.toLocaleString()}
                   </span>
                 </div>
                 <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 pt-1 text-[var(--ink)]">
-                  <div>• Выручка: <strong className="text-emerald-400 font-mono">+${report.revenue.toLocaleString()}</strong></div>
-                  <div>• Сборка (детали): <strong className="text-rose-400 font-mono">-${(report.productionCost ?? 0).toLocaleString()}</strong></div>
-                  <div>• Содержание цеха: <strong className="font-mono">-${(report.overheadCost ?? 0).toLocaleString()}</strong></div>
-                  <div>• Аренда площадей: <strong className="text-[var(--ink-value)] font-mono">-${(report.rentCost ?? 100).toLocaleString()}</strong></div>
-                  <div>• Лаборатория: <strong className="font-mono">-${(report.researchCost ?? 0).toLocaleString()}</strong></div>
+                  <div>
+                    • {lang === 'en' ? 'Revenue' : lang === 'uk' ? 'Виручка' : lang === 'de' ? 'Umsatz' : 'Выручка'}:{' '}
+                    <strong className="text-emerald-400 font-mono">+${report.revenue.toLocaleString()}</strong>
+                  </div>
+                  <div>
+                    • {lang === 'en' ? 'Parts assembly' : lang === 'uk' ? 'Складання' : lang === 'de' ? 'Montage' : 'Сборка'}:{' '}
+                    <strong className="text-rose-400 font-mono">-${(report.productionCost ?? 0).toLocaleString()}</strong>
+                  </div>
+                  <div>
+                    • {lang === 'en' ? 'Factory overhead' : lang === 'uk' ? 'Цех' : lang === 'de' ? 'Betrieb' : 'Цех'}:{' '}
+                    <strong className="font-mono">-${(report.overheadCost ?? 0).toLocaleString()}</strong>
+                  </div>
+                  <div>
+                    • {lang === 'en' ? 'Rent' : lang === 'uk' ? 'Оренда' : lang === 'de' ? 'Miete' : 'Аренда'}:{' '}
+                    <strong className="text-[var(--ink-value)] font-mono">-${(report.rentCost ?? 100).toLocaleString()}</strong>
+                  </div>
+                  <div>
+                    • {lang === 'en' ? 'R&D Lab' : lang === 'uk' ? 'НДДКР' : lang === 'de' ? 'F&E' : 'Лаборатория'}:{' '}
+                    <strong className="font-mono">-${(report.researchCost ?? 0).toLocaleString()}</strong>
+                  </div>
                 </div>
               </div>
 
@@ -95,7 +131,7 @@ export default function ReportsPage(): React.JSX.Element {
                   {report.eventNotes.map((note, i) => (
                     <div key={i} className="flex items-start gap-1.5">
                       <span className="font-bold text-[var(--accent-gold)]">📜</span>
-                      <span>{note}</span>
+                      <span>{localizeEventNote(note, t, lang)}</span>
                     </div>
                   ))}
                 </div>
@@ -110,7 +146,7 @@ export default function ReportsPage(): React.JSX.Element {
                   {report.competitorNews.map((news, i) => (
                     <div key={i} className="flex items-start gap-1.5">
                       <span className="text-[var(--accent)] font-bold">🏭</span>
-                      <span>{news}</span>
+                      <span>{localizeCompetitorNews(news, t, lang)}</span>
                     </div>
                   ))}
                 </div>
@@ -141,7 +177,15 @@ export default function ReportsPage(): React.JSX.Element {
                 <div className="text-[11px] border-t border-[var(--border-subtle)] pt-2 space-y-1.5 font-sans">
                   <div className="font-bold text-[var(--ink-heading)] flex items-center gap-1.5">
                     <span>📦</span>
-                    <span>{lang === 'en' ? 'Sales & Inventory by Model:' : lang === 'uk' ? 'Продажі та залишки за моделями:' : 'Продажи и остатки по моделям:'}</span>
+                    <span>
+                      {lang === 'en'
+                        ? 'Sales & Inventory by Model:'
+                        : lang === 'uk'
+                        ? 'Продажі та залишки за моделями:'
+                        : lang === 'de'
+                        ? 'Absatz & Lager nach Modellen:'
+                        : 'Продажи и остатки по моделям:'}
+                    </span>
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
                     {Object.values(report.salesByModel).map((sm) => (
@@ -151,11 +195,21 @@ export default function ReportsPage(): React.JSX.Element {
                           <span className="font-mono text-emerald-400">+${sm.revenue.toLocaleString()}</span>
                         </div>
                         <div className="text-[11px] flex justify-between text-[var(--ink-secondary)]">
-                          <span>{lang === 'en' ? 'Sold' : lang === 'uk' ? 'Продано' : 'Продано'}:</span>
+                          <span>
+                            {lang === 'en' ? 'Sold' : lang === 'uk' ? 'Продано' : lang === 'de' ? 'Verkauft' : 'Продано'}:
+                          </span>
                           <span className="font-mono font-bold text-[var(--ink)]">{sm.sold} / {sm.produced}</span>
                         </div>
                         <div className="text-[11px] flex justify-between">
-                          <span className="text-[var(--ink-secondary)]">{lang === 'en' ? 'In Stock (Unsold)' : lang === 'uk' ? 'Залишок на складі' : 'Осталось на складе'}:</span>
+                          <span className="text-[var(--ink-secondary)]">
+                            {lang === 'en'
+                              ? 'In Stock (Unsold)'
+                              : lang === 'uk'
+                              ? 'Залишок на складі'
+                              : lang === 'de'
+                              ? 'Auf Lager (Rest)'
+                              : 'Осталось на складе'}:
+                          </span>
                           <span className={`font-mono font-bold ${sm.unsold > 0 ? 'text-amber-400' : 'text-stone-400'}`}>
                             {sm.unsold}
                           </span>

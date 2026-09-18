@@ -61,16 +61,16 @@ export function MaterialsColumn({
         <div className="flex items-center justify-between gap-2">
           <h2 className="text-sm font-bold uppercase tracking-wider text-[var(--ink-heading)] era-heading flex items-center gap-1.5">
             <span>🪵</span>
-            <span>{lang === 'en' ? 'Raw Materials' : lang === 'uk' ? 'Склад сировини' : 'Сырьё и склад'}</span>
+            <span>{lang === 'en' ? 'Raw Materials' : lang === 'uk' ? 'Склад сировини' : lang === 'de' ? 'Rohstofflager' : 'Сырьё и склад'}</span>
           </h2>
           {hasShortage && (
             <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-rose-950/60 text-rose-300 border border-rose-600/60 animate-pulse">
-              ⚠️ {lang === 'en' ? 'Shortage' : lang === 'uk' ? 'Дефіцит' : 'Дефицит'}
+              ⚠️ {lang === 'en' ? 'Shortage' : lang === 'uk' ? 'Дефіцит' : lang === 'de' ? 'Mangel' : 'Дефицит'}
             </span>
           )}
         </div>
         <p className="text-[11px] text-[var(--ink-secondary)] font-sans mt-0.5">
-          {lang === 'en' ? 'Procurement & factory supplies' : lang === 'uk' ? 'Забезпечення цехів матеріалами' : 'Обеспечение цеха материалами'}
+          {lang === 'en' ? 'Procurement & factory supplies' : lang === 'uk' ? 'Забезпечення цехів матеріалами' : lang === 'de' ? 'Materialbeschaffung & Werksversorgung' : 'Обеспечение цеха материалами'}
         </p>
       </div>
 
@@ -89,11 +89,17 @@ export function MaterialsColumn({
             <span>{t.production.autoProcurement}</span>
           </label>
           <span className={`text-[10px] font-bold px-1.5 py-0.2 rounded ${isAutoProcure ? 'bg-emerald-950/50 text-emerald-300 border border-emerald-600/40' : 'bg-stone-800 text-stone-400'}`}>
-            {isAutoProcure ? (lang === 'en' ? 'ON' : 'ВКЛ') : (lang === 'en' ? 'OFF' : 'ВЫКЛ')}
+            {isAutoProcure ? (lang === 'en' ? 'ON' : lang === 'de' ? 'EIN' : 'ВКЛ') : (lang === 'en' ? 'OFF' : lang === 'de' ? 'AUS' : 'ВЫКЛ')}
           </span>
         </div>
         <p className="text-[10px] text-[var(--ink-secondary)] leading-tight">
-          {lang === 'en' ? 'Auto-buys required parts at end of year if funds allow.' : lang === 'uk' ? 'Автоматично закуповує сировину в кінці року.' : 'Автоматически докупает сырье в конце года при наличии средств.'}
+          {lang === 'en'
+            ? 'Auto-buys required parts at end of year if funds allow.'
+            : lang === 'uk'
+            ? 'Автоматично закуповує сировину в кінці року.'
+            : lang === 'de'
+            ? 'Kauft bei Jahresende automatisch Fehlbestände, falls Budget reicht.'
+            : 'Автоматически докупает сырье в конце года при наличии средств.'}
         </p>
       </div>
 
@@ -111,6 +117,8 @@ export function MaterialsColumn({
               ? `Buy Missing ($${totalProcureCost.toLocaleString()})`
               : lang === 'uk'
               ? `Докупити дефіцит ($${totalProcureCost.toLocaleString()})`
+              : lang === 'de'
+              ? `Fehlendes kaufen ($${totalProcureCost.toLocaleString()})`
               : `Докупить нехватку ($${totalProcureCost.toLocaleString()})`}
           </span>
         </button>
@@ -150,11 +158,11 @@ export function MaterialsColumn({
               {/* IN STOCK vs DEMAND */}
               <div className="flex items-center justify-between text-[11px] font-sans">
                 <span className="text-[var(--ink-secondary)]">
-                  {lang === 'en' ? 'Stock:' : lang === 'uk' ? 'Склад:' : 'Склад:'}{' '}
+                  {lang === 'en' ? 'Stock:' : lang === 'uk' ? 'Склад:' : lang === 'de' ? 'Bestand:' : 'Склад:'}{' '}
                   <strong className="text-[var(--ink)] font-mono">{inStock}</strong>
                 </span>
                 <span className={isShort ? 'text-rose-300 font-bold' : 'text-[var(--ink-secondary)]'}>
-                  {lang === 'en' ? 'Need:' : lang === 'uk' ? 'Потрібно:' : 'Нужно:'}{' '}
+                  {lang === 'en' ? 'Need:' : lang === 'uk' ? 'Потрібно:' : lang === 'de' ? 'Bedarf:' : 'Нужно:'}{' '}
                   <strong className="font-mono">{demand}</strong> {unit}
                 </span>
               </div>
@@ -175,7 +183,7 @@ export function MaterialsColumn({
                     onClick={() => handleBuy(item.id, deficit)}
                     disabled={actionPending || isBuying || currentCash < deficit * item.basePrice}
                     className="px-2 py-0.5 rounded text-[10px] font-bold bg-rose-500/20 hover:bg-rose-500/30 text-rose-200 border border-rose-500/50 cursor-pointer disabled:opacity-30 transition"
-                    title={lang === 'en' ? `Buy missing ${deficit} units` : `Докупить нехватку ${deficit} ${unit}`}
+                    title={lang === 'en' ? `Buy missing ${deficit} units` : lang === 'uk' ? `Докупити нестачу ${deficit} ${unit}` : lang === 'de' ? `Fehlende ${deficit} ${unit} kaufen` : `Докупить нехватку ${deficit} ${unit}`}
                   >
                     +{deficit}
                   </button>

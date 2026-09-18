@@ -72,7 +72,17 @@ export default function ProductionPage(): React.JSX.Element {
   }, [gameState?.productionPlan]);
 
   if (loading || !gameState) {
-    return <p className="py-8 text-center text-stone-600">Загрузка данных завода и склада...</p>;
+    return (
+      <p className="py-8 text-center text-stone-600">
+        {lang === 'en'
+          ? 'Loading factory and warehouse data...'
+          : lang === 'uk'
+          ? 'Завантаження даних заводу та складу...'
+          : lang === 'de'
+          ? 'Lade Fabrik- und Lagerdaten...'
+          : 'Загрузка данных завода и склада...'}
+      </p>
+    );
   }
 
   const factory = gameState.company.factory ?? {
@@ -377,10 +387,23 @@ export default function ProductionPage(): React.JSX.Element {
       {hasShortage && isAutoProcure && currentCash < totalProcureCost && (
         <div className="rounded-lg border border-amber-500/60 bg-amber-950/20 p-4 text-amber-200 text-xs shadow-xs">
           <div className="flex items-center gap-2 font-bold mb-1 text-amber-100">
-            <span className="text-base">⚠️</span> Внимание: для автозакупки недостающего сырья требуется ${totalProcureCost.toLocaleString()}, а в кассе только ${currentCash.toLocaleString()}!
+            <span className="text-base">⚠️</span>{' '}
+            {lang === 'en'
+              ? `Warning: Auto-procurement requires $${totalProcureCost.toLocaleString()}, but company treasury has only $${currentCash.toLocaleString()}!`
+              : lang === 'uk'
+              ? `Увага: для автозакупівлі бракує коштів! Потрібно $${totalProcureCost.toLocaleString()}, а в касі лише $${currentCash.toLocaleString()}!`
+              : lang === 'de'
+              ? `Achtung: Automatische Beschaffung erfordert $${totalProcureCost.toLocaleString()}, Kassenbestand beträgt nur $${currentCash.toLocaleString()}!`
+              : `Внимание: для автозакупки недостающего сырья требуется $${totalProcureCost.toLocaleString()}, а в кассе только $${currentCash.toLocaleString()}!`}
           </div>
           <p className="text-[11px] text-amber-200/90">
-            Из-за дефицита оборотных средств цех сможет закупить материалы лишь частично. Чтобы избежать простоя сборки, пополните баланс кредитом в Банке или оптимизируйте квоты выпуска под доступный бюджет.
+            {lang === 'en'
+              ? 'Due to cash shortage, the factory will only partially purchase materials. To prevent plant downtime, take a credit line from the Bank or optimize your production quotas.'
+              : lang === 'uk'
+              ? 'Через дефіцит обігових коштів цех зможе закупити сировину лише частково. Щоб уникнути простою ліній, візьміть кредит у Банку або оптимізуйте квоти.'
+              : lang === 'de'
+              ? 'Aufgrund des Liquiditätsengpasses können Materialien nur teilweise erworben werden. Nehmen Sie einen Bankkredit auf oder optimieren Sie die Quoten.'
+              : 'Из-за дефицита оборотных средств цех сможет закупить материалы лишь частично. Чтобы избежать простоя сборки, пополните баланс кредитом в Банке или оптимизируйте квоты выпуска под доступный бюджет.'}
           </p>
         </div>
       )}
@@ -402,7 +425,19 @@ export default function ProductionPage(): React.JSX.Element {
             <span className="text-base">🏦</span>
             <span>
               {(gameState.company.loans?.length ?? 0) > 0
-                ? `У компании открыто банковских кредитов: ${gameState.company.loans?.length}. Платежи списываются ежеквартально.`
+                ? lang === 'en'
+                  ? `Active bank loans: ${gameState.company.loans?.length}. Payments are deducted annually.`
+                  : lang === 'uk'
+                  ? `У компанії відкрито банківських кредитів: ${gameState.company.loans?.length}. Платежі списуються щорічно.`
+                  : lang === 'de'
+                  ? `Laufende Bankkredite: ${gameState.company.loans?.length}. Raten werden jährlich abgebucht.`
+                  : `У компании открыто банковских кредитов: ${gameState.company.loans?.length}. Платежи списываются ежегодно.`
+                : lang === 'en'
+                ? 'Working capital is running low. Secure credit facilities at the Commercial Bank if needed.'
+                : lang === 'uk'
+                ? 'Залишок капіталу знижений. За потреби поповніть обігові кошти в Комерційному банку.'
+                : lang === 'de'
+                ? 'Betriebskapital ist knapp. Nutzen Sie bei Bedarf Kreditlinien der Geschäftsbank.'
                 : 'Остаток капитала снижен. При необходимости пополните оборотные средства в Коммерческом банке.'}
             </span>
           </div>
@@ -410,7 +445,7 @@ export default function ProductionPage(): React.JSX.Element {
             href="/bank"
             className="rounded-lg btn-brass px-3 py-1 font-bold text-xs transition shadow-xs"
           >
-            Банк и кредиты →
+            {lang === 'en' ? 'Bank & Credits →' : lang === 'uk' ? 'Банк та кредити →' : lang === 'de' ? 'Bank & Kredite →' : 'Банк и кредиты →'}
           </a>
         </div>
       )}
@@ -635,15 +670,15 @@ export default function ProductionPage(): React.JSX.Element {
                       </span>
                       {isObsolete ? (
                         <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-rose-950/80 text-rose-300 border border-rose-500/60 shadow-xs">
-                          🛑 {lang === 'en' ? 'Obsolete (0 demand)' : lang === 'uk' ? 'Застаріла (попит 0)' : 'Устарела (спрос 0)'}
+                          🛑 {lang === 'en' ? 'Obsolete (0 demand)' : lang === 'uk' ? 'Застаріла (попит 0)' : lang === 'de' ? 'Veraltet (0 Nachfrage)' : 'Устарела (спрос 0)'}
                         </span>
                       ) : isAging ? (
                         <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-950/80 text-amber-300 border border-amber-500/60 shadow-xs">
-                          ⚠️ {lang === 'en' ? 'Aging' : lang === 'uk' ? 'Застаріває' : 'Устаревает'}
+                          ⚠️ {lang === 'en' ? 'Aging' : lang === 'uk' ? 'Застаріває' : lang === 'de' ? 'Alternd' : 'Устаревает'}
                         </span>
                       ) : (
                         <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-950/80 text-emerald-300 border border-emerald-500/60 shadow-xs">
-                          ✨ {lang === 'en' ? 'Fresh' : lang === 'uk' ? 'Актуальна' : 'Актуальная'}
+                          ✨ {lang === 'en' ? 'Fresh' : lang === 'uk' ? 'Актуальна' : lang === 'de' ? 'Aktuell' : 'Актуальная'}
                         </span>
                       )}
                     </div>
@@ -660,6 +695,8 @@ export default function ProductionPage(): React.JSX.Element {
                                 ? `Model "${model.name}" has been decommissioned`
                                 : lang === 'uk'
                                 ? `Модель «${model.name}» знята з виробництва`
+                                : lang === 'de'
+                                ? `Modell „${model.name}“ wurde stillgelegt`
                                 : `Модель «${model.name}» снята с производства`
                             );
                           } catch (err) {
@@ -667,10 +704,10 @@ export default function ProductionPage(): React.JSX.Element {
                           }
                         }}
                         className="backdrop-blur-md bg-black/60 hover:bg-rose-950/80 text-stone-300 hover:text-rose-200 border border-white/15 hover:border-rose-500/60 text-xs font-semibold px-2.5 py-1 rounded-lg transition flex items-center gap-1.5 cursor-pointer shadow-md"
-                        title={lang === 'en' ? 'Discontinue from production' : lang === 'uk' ? 'Зняти з виробництва' : 'Снять с производства'}
+                        title={lang === 'en' ? 'Discontinue from production' : lang === 'uk' ? 'Зняти з виробництва' : lang === 'de' ? 'Aus Produktion nehmen' : 'Снять с производства'}
                       >
                         <span>🛑</span>
-                        <span className="text-[11px]">{lang === 'en' ? 'Discontinue' : lang === 'uk' ? 'Зняти' : 'Снять'}</span>
+                        <span className="text-[11px]">{lang === 'en' ? 'Discontinue' : lang === 'uk' ? 'Зняти' : lang === 'de' ? 'Einstellen' : 'Снять'}</span>
                       </button>
                     </div>
                   </div>
@@ -683,7 +720,7 @@ export default function ProductionPage(): React.JSX.Element {
                         <div className="flex items-center justify-between border-b border-[var(--border-subtle)] pb-1">
                           <span className="font-bold text-[var(--ink-heading)] flex items-center gap-1">
                             <span>🏷️</span>
-                            <span>{lang === 'en' ? 'Price & Profit' : lang === 'uk' ? 'Ціна та маржа' : 'Цена и маржа'}</span>
+                            <span>{lang === 'en' ? 'Price & Profit' : lang === 'uk' ? 'Ціна та маржа' : lang === 'de' ? 'Preis & Marge' : 'Цена и маржа'}</span>
                           </span>
                           <span className={`text-[10px] px-1.5 py-0.2 rounded font-semibold ${priceEval.badgeClass}`}>
                             {priceEval.shortLabel}
@@ -699,7 +736,7 @@ export default function ProductionPage(): React.JSX.Element {
                             <span className="font-mono text-[var(--ink)]">${unitCost.toLocaleString()}</span>
                           </div>
                           <div className="flex justify-between items-baseline pt-0.5 border-t border-[var(--border-subtle)]">
-                            <span className="text-[var(--ink-secondary)]">{lang === 'en' ? 'Margin' : lang === 'uk' ? 'Маржа' : 'Маржа'}:</span>
+                            <span className="text-[var(--ink-secondary)]">{lang === 'en' ? 'Margin' : lang === 'uk' ? 'Маржа' : lang === 'de' ? 'Marge' : 'Маржа'}:</span>
                             <strong className={`font-mono text-xs ${unitProfit >= 0 ? 'text-emerald-500' : 'text-rose-500'}`}>
                               {unitProfit >= 0 ? `+$${unitProfit.toLocaleString()}` : `-$${Math.abs(unitProfit).toLocaleString()}`} ({marginPct}%)
                             </strong>
@@ -711,18 +748,26 @@ export default function ProductionPage(): React.JSX.Element {
                             onClick={async () => {
                               try {
                                 await saveVehicleModel({ ...model, salePrice: recPrice });
-                                setStatusMsg(lang === 'en' ? `Price updated to $${recPrice}` : `Ціну оновлено на $${recPrice}`);
+                                setStatusMsg(
+                                  lang === 'en'
+                                    ? `Price updated to $${recPrice}`
+                                    : lang === 'uk'
+                                    ? `Ціну оновлено на $${recPrice}`
+                                    : lang === 'de'
+                                    ? `Preis auf $${recPrice} aktualisiert`
+                                    : `Цена обновлена на $${recPrice}`
+                                );
                               } catch (err) {
                                 setStatusMsg(String(err));
                               }
                             }}
                             className="w-full mt-1 py-1 px-2 rounded bg-amber-500/20 hover:bg-amber-500/30 text-amber-950 dark:text-amber-200 border border-amber-500/50 text-[10px] font-bold text-center animate-pulse cursor-pointer"
                           >
-                            💡 {lang === 'en' ? `Fix Price ($${recPrice.toLocaleString()})` : `Виправити ціну ($${recPrice.toLocaleString()})`}
+                            💡 {lang === 'en' ? `Fix Price ($${recPrice.toLocaleString()})` : lang === 'uk' ? `Виправити ціну ($${recPrice.toLocaleString()})` : lang === 'de' ? `Preis anpassen ($${recPrice.toLocaleString()})` : `Исправить цену ($${recPrice.toLocaleString()})`}
                           </button>
                         ) : (
                           <span className="text-[10px] text-[var(--ink-secondary)] opacity-70 block text-right font-mono">
-                            💡 {lang === 'en' ? 'Rec:' : 'Рек:'} ${recPrice.toLocaleString()}
+                            💡 {lang === 'en' ? 'Rec:' : lang === 'uk' ? 'Рек:' : lang === 'de' ? 'Empf:' : 'Рек:'} ${recPrice.toLocaleString()}
                           </span>
                         )}
                       </div>
@@ -732,10 +777,10 @@ export default function ProductionPage(): React.JSX.Element {
                         <div className="flex items-center justify-between border-b border-[var(--border-subtle)] pb-1">
                           <span className="font-bold text-[var(--ink-heading)] flex items-center gap-1">
                             <span>📊</span>
-                            <span>{lang === 'en' ? 'Market Capacity' : lang === 'uk' ? 'Попит ринку' : 'Емкость рынка'}</span>
+                            <span>{lang === 'en' ? 'Market Capacity' : lang === 'uk' ? 'Попит ринку' : lang === 'de' ? 'Marktkapazität' : 'Емкость рынка'}</span>
                           </span>
                           <span className="font-mono text-xs font-bold text-[var(--ink-value)]">
-                            ~{annualDemand} {lang === 'en' ? 'cars/yr' : lang === 'uk' ? 'авто/рік' : 'авто/год'}
+                            ~{annualDemand} {lang === 'en' ? 'cars/yr' : lang === 'uk' ? 'авто/рік' : lang === 'de' ? 'Fz./Jahr' : 'авто/год'}
                           </span>
                         </div>
 
@@ -744,10 +789,10 @@ export default function ProductionPage(): React.JSX.Element {
                             <div className="p-1.5 rounded bg-rose-500/15 border border-rose-500/40 text-rose-800 dark:text-rose-300 text-[11px] leading-tight">
                               <div className="font-bold flex items-center gap-1">
                                 <span>⚠️</span>
-                                <span>{lang === 'en' ? 'Overproduction Risk!' : lang === 'uk' ? 'Ризик перевиробництва!' : 'Риск перепроизводства!'}</span>
+                                <span>{lang === 'en' ? 'Overproduction Risk!' : lang === 'uk' ? 'Ризик перевиробництва!' : lang === 'de' ? 'Überproduktionsrisiko!' : 'Риск перепроизводства!'}</span>
                               </div>
                               <div className="mt-0.5 opacity-90">
-                                +{excessUnits} {lang === 'en' ? 'cars will stall in warehouse' : lang === 'uk' ? 'авто ляжуть на склад' : 'авто лягут на склад'}
+                                +{excessUnits} {lang === 'en' ? 'cars will stall in warehouse' : lang === 'uk' ? 'авто ляжуть на склад' : lang === 'de' ? 'Fz. bleiben im Lager liegen' : 'авто лягут на склад'}
                                 {frozenCapital > 0 ? ` (-$${frozenCapital.toLocaleString()})` : ''}
                               </div>
                             </div>
@@ -755,13 +800,13 @@ export default function ProductionPage(): React.JSX.Element {
                             <div className="p-1.5 rounded bg-emerald-500/15 border border-emerald-500/40 text-emerald-800 dark:text-emerald-300 text-[11px] leading-tight flex items-center gap-1.5">
                               <span>✅</span>
                               <div>
-                                <strong className="block">{lang === 'en' ? 'Healthy Demand' : lang === 'uk' ? '100% Збут' : '100% Сбыт'}</strong>
-                                <span className="text-[10px] opacity-80">{lang === 'en' ? 'Quota fits market appetite' : lang === 'uk' ? 'План повністю покривається ринком' : 'Квота в пределах спроса'}</span>
+                                <strong className="block">{lang === 'en' ? 'Healthy Demand' : lang === 'uk' ? '100% Збут' : lang === 'de' ? 'Gesunde Nachfrage' : '100% Сбыт'}</strong>
+                                <span className="text-[10px] opacity-80">{lang === 'en' ? 'Quota fits market appetite' : lang === 'uk' ? 'План повністю покривається ринком' : lang === 'de' ? 'Quote deckt Marktnachfrage' : 'Квота в пределах спроса'}</span>
                               </div>
                             </div>
                           ) : (
                             <p className="text-[11px] text-[var(--ink-secondary)] italic py-1">
-                              {lang === 'en' ? 'Line is paused (0 units planned)' : lang === 'uk' ? 'Виробництво зупинено (квота 0)' : 'Линия на паузе (квота 0)'}
+                              {lang === 'en' ? 'Line is paused (0 units planned)' : lang === 'uk' ? 'Виробництво зупинено (квота 0)' : lang === 'de' ? 'Linie pausiert (0 Fz. geplant)' : 'Линия на паузе (квота 0)'}
                             </p>
                           )}
                         </div>
@@ -769,7 +814,7 @@ export default function ProductionPage(): React.JSX.Element {
                         {/* Demand Saturation Bar */}
                         <div className="space-y-0.5">
                           <div className="flex justify-between text-[10px] text-[var(--ink-secondary)] font-mono">
-                            <span>{lang === 'en' ? 'Market load:' : lang === 'uk' ? 'Навантаження:' : 'Нагрузка:'}</span>
+                            <span>{lang === 'en' ? 'Market load:' : lang === 'uk' ? 'Навантаження:' : lang === 'de' ? 'Auslastung:' : 'Нагрузка:'}</span>
                             <span className={isOverproducing ? 'text-rose-500 font-bold' : 'text-[var(--ink)]'}>
                               {annualDemand > 0 ? Math.round((planned / annualDemand) * 100) : 0}%
                             </span>
@@ -790,10 +835,10 @@ export default function ProductionPage(): React.JSX.Element {
                         <div className="flex items-center justify-between border-b border-[var(--border-subtle)] pb-1">
                           <span className="font-bold text-[var(--ink-heading)] flex items-center gap-1">
                             <span>📦</span>
-                            <span>{lang === 'en' ? 'Warehouse & History' : lang === 'uk' ? 'Склад і історія' : 'Склад и история'}</span>
+                            <span>{lang === 'en' ? 'Warehouse & History' : lang === 'uk' ? 'Склад і історія' : lang === 'de' ? 'Lager & Historie' : 'Склад и история'}</span>
                           </span>
                           <span className="text-[10px] text-[var(--ink-secondary)]">
-                            {warehouseStock} {lang === 'en' ? 'in stock' : lang === 'uk' ? 'на складі' : 'на складе'}
+                            {warehouseStock} {lang === 'en' ? 'in stock' : lang === 'uk' ? 'на складі' : lang === 'de' ? 'auf Lager' : 'на складе'}
                           </span>
                         </div>
 
@@ -801,15 +846,15 @@ export default function ProductionPage(): React.JSX.Element {
                           {modelSales ? (
                             <div className="space-y-1">
                               <div className="flex justify-between">
-                                <span className="text-[var(--ink-secondary)]">{lang === 'en' ? 'Last year built:' : lang === 'uk' ? 'Випущено торік:' : 'Выпуск торік:'}</span>
+                                <span className="text-[var(--ink-secondary)]">{lang === 'en' ? 'Last year built:' : lang === 'uk' ? 'Випущено торік:' : lang === 'de' ? 'Vorjahr gebaut:' : 'Выпуск в прошлом году:'}</span>
                                 <strong className="font-mono text-[var(--ink)]">{modelSales.produced}</strong>
                               </div>
                               <div className="flex justify-between">
-                                <span className="text-[var(--ink-secondary)]">{lang === 'en' ? 'Last year sold:' : lang === 'uk' ? 'Продано торік:' : 'Продано торік:'}</span>
+                                <span className="text-[var(--ink-secondary)]">{lang === 'en' ? 'Last year sold:' : lang === 'uk' ? 'Продано торік:' : lang === 'de' ? 'Vorjahr verkauft:' : 'Продано в прошлом году:'}</span>
                                 <strong className="font-mono text-emerald-500">{modelSales.sold}</strong>
                               </div>
                               <div className="flex justify-between border-t border-[var(--border-subtle)] pt-0.5">
-                                <span className="text-[var(--ink-secondary)]">{lang === 'en' ? 'Left in stock:' : lang === 'uk' ? 'Залишок на складі:' : 'Остаток склада:'}</span>
+                                <span className="text-[var(--ink-secondary)]">{lang === 'en' ? 'Left in stock:' : lang === 'uk' ? 'Залишок на складі:' : lang === 'de' ? 'Lagerbestand:' : 'Остаток склада:'}</span>
                                 <strong className={`font-mono ${modelSales.unsold > 0 ? 'text-amber-500' : 'text-[var(--ink-secondary)]'}`}>
                                   {modelSales.unsold} {modelSales.unsold > 0 ? '⚠️' : '✓'}
                                 </strong>
@@ -817,13 +862,13 @@ export default function ProductionPage(): React.JSX.Element {
                             </div>
                           ) : (
                             <p className="text-[11px] text-[var(--ink-secondary)] italic py-2">
-                              {lang === 'en' ? 'New model — no prior year history' : lang === 'uk' ? 'Нова модель — немає історії продажів' : 'Новая модель — нет истории'}
+                              {lang === 'en' ? 'New model — no prior year history' : lang === 'uk' ? 'Нова модель — немає історії продажів' : lang === 'de' ? 'Neues Modell — keine Vorjahreshistorie' : 'Новая модель — нет истории'}
                             </p>
                           )}
                         </div>
 
                         <div className="text-[10px] text-[var(--ink-secondary)] opacity-80 pt-1 border-t border-[var(--border-subtle)]">
-                          {lang === 'en' ? 'Warehouse cars sell alongside new ones.' : lang === 'uk' ? 'Авто зі складу продаються першими.' : 'Авто со склада продаются первыми.'}
+                          {lang === 'en' ? 'Warehouse cars sell alongside new ones.' : lang === 'uk' ? 'Авто зі складу продаються першими.' : lang === 'de' ? 'Lagerfahrzeuge werden parallel verkauft.' : 'Авто со склада продаются первыми.'}
                         </div>
                       </div>
                     </div>
@@ -833,7 +878,7 @@ export default function ProductionPage(): React.JSX.Element {
                       {/* Materials required badges */}
                       <div className="flex flex-wrap items-center gap-1.5">
                         <span className="text-[10px] text-[var(--ink-secondary)] uppercase font-semibold mr-1">
-                          {lang === 'en' ? 'Per unit:' : lang === 'uk' ? 'На 1 авто:' : 'На 1 авто:'}
+                          {lang === 'en' ? 'Per unit:' : lang === 'uk' ? 'На 1 авто:' : lang === 'de' ? 'Pro Fz.:' : 'На 1 авто:'}
                         </span>
                         {Object.entries(req).map(([matKey, amount]) => {
                           if (!amount || amount <= 0) return null;
@@ -859,7 +904,7 @@ export default function ProductionPage(): React.JSX.Element {
                       <div className="flex items-center gap-3 self-end lg:self-auto flex-wrap">
                         <div className="text-right">
                           <span className="text-[10px] text-[var(--ink-secondary)] font-mono block">
-                            {lang === 'en' ? 'Annual cost:' : lang === 'uk' ? 'Витрати на випуск:' : 'Затраты:'}{' '}
+                            {lang === 'en' ? 'Annual cost:' : lang === 'uk' ? 'Витрати на випуск:' : lang === 'de' ? 'Jahreskosten:' : 'Затраты:'}{' '}
                             <strong className="text-[var(--ink)] font-bold">${totalCost.toLocaleString()}</strong>
                           </span>
                         </div>
@@ -907,9 +952,9 @@ export default function ProductionPage(): React.JSX.Element {
                             onClick={() => handlePlanChange(model.id, maxForThisModel, true)}
                             disabled={planned >= maxForThisModel}
                             className="px-2 py-1 rounded-md bg-[var(--paper)] hover:bg-[var(--surface-nested)] disabled:opacity-30 border border-[var(--border-subtle)] text-[10px] font-bold era-label cursor-pointer shadow-2xs transition"
-                            title={lang === 'en' ? 'Take all remaining factory capacity' : lang === 'uk' ? 'Зайняти всю вільну потужність' : 'Занять весь резерв'}
+                            title={lang === 'en' ? 'Take all remaining factory capacity' : lang === 'uk' ? 'Зайняти всю вільну потужність' : lang === 'de' ? 'Gesamte freie Kapazität belegen' : 'Занять весь резерв'}
                           >
-                            {lang === 'en' ? 'Max' : lang === 'uk' ? 'Макс' : 'Макс'}
+                            {lang === 'en' ? 'Max' : lang === 'uk' ? 'Макс' : lang === 'de' ? 'Max' : 'Макс'}
                           </button>
                           <button
                             type="button"

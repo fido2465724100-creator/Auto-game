@@ -438,6 +438,158 @@ export const de: TranslationSchema = {
       name: 'Repräsentativer V8-OHV-Motor',
       description: 'Seidenweicher und leiser V8-Motor mit hängenden Ventilen für Luxusfahrzeuge der Spitzenklasse.',
     },
+    'unibody-monocoque': {
+      name: 'Selbsttragende Karosserie (Monocoque)',
+      description: 'Integrierte Struktur ohne schweres separates Chassis senkt Fahrzeuggewicht und Schwerpunkt.',
+    },
+    'passenger-diesel-engine': {
+      name: 'Pkw-Dieselmotor',
+      description: 'Selbstzündender Dieselmotor bietet herausragende Kraftstoffeffizienz und hohes Drehmoment.',
+    },
+    'automatic-transmission': {
+      name: 'Hydromechanisches Automatikgetriebe',
+      description: 'Planetengetriebe mit Drehmomentwandler machen das Kupplungspedal überflüssig und erleichtern das Fahren.',
+    },
+    'power-steering': {
+      name: 'Hydraulische Servolenkung',
+      description: 'Servounterstützung macht Rangiervorgänge schwerer Limousinen leichtgängig und präzise.',
+    },
+    'crumple-zones': {
+      name: 'Knautschzonen',
+      description: 'Energieabsorbierende Verformungszonen an Front und Heck dämpfen Aufprallkräfte und schützen die Fahrgastzelle.',
+    },
+    'disc-brakes': {
+      name: 'Belüftete Scheibenbremsen',
+      description: 'Bremssättel auf offenen Drehscheiben widerstehen Überhitzung bei starken Bremsungen.',
+    },
+    'three-point-seatbelt': {
+      name: 'Dreipunkt-Sicherheitsgurt',
+      description: 'Nils-Bohlin-Konstruktion fixiert Brust und Becken und senkt tödliche Unfallrisiken um 50%.',
+    },
+    'turbocharger-powertrain': {
+      name: 'Abgasturbolader',
+      description: 'Abgasturbine presst verdichtete Luft in die Zylinder für spürbaren Leistungszuwachs.',
+    },
+    'catalytic-converter': {
+      name: 'Geregelter Abgaskatalysator',
+      description: 'Keramischer Wabenkörper mit Edelmetallen wandelt giftige Abgase und Kohlenwasserstoffe um.',
+    },
+    'electronic-fuel-injection': {
+      name: 'Elektronische Saugrohreinspritzung (EFI)',
+      description: 'Elektromagnetische Einspritzventile dosieren Kraftstoff präzise und lösen den Vergaser endgültig ab.',
+    },
+    'antilock-brakes-abs': {
+      name: 'Antiblockiersystem (ABS)',
+      description: 'Mikroprozessorgesteuerte Ventile modulieren den Bremsdruck bis zu 15 Mal pro Sekunde, um Blockieren zu verhindern.',
+    },
+    'digital-ecu-dashboard': {
+      name: 'Elektronisches Steuergerät (ECU) & Digitaltacho',
+      description: 'Mikroprozessor steuert Zündung und Gemischaufbereitung, Digitale Instrumente zeigen Diagnosewerte an.',
+    },
+    'dual-front-airbags': {
+      name: 'Front-Airbags (SRS)',
+      description: 'Pyrotechnische Treibladungen füllen Nylongewebe-Kissen in 30 Millisekunden bei Frontalzusammenstößen.',
+    },
+    'electronic-stability-control': {
+      name: 'Elektronisches Stabilitätsprogramm (ESP)',
+      description: 'Giersensoren bremsen gezielt einzelne Räder ab und stabilisieren das Fahrzeug bei Ausrutschern.',
+    },
+    'hybrid-synergy-drive': {
+      name: 'Vollhybrid-Antrieb (Synergy Drive)',
+      description: 'Atkinson-Verbrennungsmotor kombiniert mit Elektromotor und Bremsenergierückgewinnung.',
+    },
+    'satellite-gps-navigation': {
+      name: 'Integrierte Satelliten-GPS-Navigation',
+      description: 'Satellitengestützte Routenführung mit hochauflösender Kartendarstellung auf Farbdisplay.',
+    },
+    'li-ion-high-density-battery': {
+      name: 'Lithium-Ionen-Traktionsbatterie hoher Dichte',
+      description: 'Flaches Skateboard-Batteriepaket bietet über 500 km emissionsfreie Reichweite.',
+    },
+    'autopilot-level2-adas': {
+      name: 'Autobahn-Autopilot (Level 2 ADAS)',
+      description: 'Kamera- und Radarsysteme halten Spur und Geschwindigkeit adaptiv im Verkehrsfluss.',
+    },
+    'carbon-fiber-monocoque': {
+      name: 'Kohlefaser-Monocoque (CFK)',
+      description: 'Autoklav-gebackenes Kohlefaserchassis garantiert Formel-1-Steifigkeit bei minimalem Eigengewicht.',
+    },
+    'solid-state-battery': {
+      name: 'Feststoffbatterie mit Schnellladung',
+      description: 'Nicht brennbarer Festkörperelektrolyt erlaubt Vollladung in 10 Minuten und über 800 km Reichweite.',
+    },
+    'neural-autonomy-level4': {
+      name: 'Neuronale Vollautonomie (Level 4+)',
+      description: 'Ende-zu-Ende trainierte neuronale Netze steuern das Fahrzeug vollständig ohne Fahrereingriff.',
+    },
+  },
+
+  // Historical Events
+  events: {
+    'post-horse-transition': {
+      name: 'Wandel von Pferdekutschen zu Automobilen',
+      description: 'Großstädte öffnen ihre Straßen für motorisierte Kutschen.',
+    },
+    ww1: {
+      name: 'Erster Weltkrieg',
+      description: 'Zivile Nachfrage bricht ein, Rohstoffe fließen an die Front.',
+    },
+    'great-depression': {
+      name: 'Große Weltwirtschaftskrise',
+      description: 'Massenarbeitslosigkeit und Bankencrash senken den Fahrzeugabsatz um 35%.',
+    },
+    ww2: {
+      name: 'Zweiter Weltkrieg',
+      description: 'Rationierung von Stahl und Kautschuk stoppt die zivile Pkw-Produktion.',
+    },
+    'post-war-boom': {
+      name: 'Nachkriegsboom & Autobahnbau',
+      description: 'Autobahnausbau und Vorortwachstum schaffen die Kultur des Familienautos.',
+    },
+    'oil-shock-1973': {
+      name: 'Ölkrise 1973',
+      description: 'Benzinpreise vervierfachen sich, Nachfrage nach sparsamen Kleinwagen schnellt hoch.',
+    },
+    'globalization-boom': {
+      name: 'Fall des Eisernen Vorhangs & Globalisierung',
+      description: 'Öffnung der Grenzen und Freihandel bringen hunderte Millionen neue Autofahrer.',
+    },
+    'gfc-2008': {
+      name: 'Weltfinanzkrise 2008',
+      description: 'Immobilienkrise friert Autokredite ein und gefährdet Vertragshändler.',
+    },
+    'green-electrification-era': {
+      name: 'Klimaneutralität & Elektro-Revolution',
+      description: 'Emissionsgesetze und Subventionen entfachen einen weltweiten Boom für E-Fahrzeuge.',
+    },
+  },
+
+  // Competitor Descriptions
+  competitorDescriptions: {
+    fort: 'Amerikanischer Industriegigant aus Detroit. Setzt auf rigorose Standardisierung, austauschbare Teile und Massenerschwinglichkeit.',
+    'mercer-benz': 'Deutsche Bastion fortschrittlicher Ingenieurskunst. Hochwertige Materialien, Zuverlässigkeit und Prestige für Europas Elite.',
+    renard: 'Pariser Vorreiter. Französische Eleganz, wendige Leichtbaufahrzeuge und berühmte Stadttaxis.',
+    'austin-morris': 'Britisches Industriekombinat von den Ufern der Themse. Robuste Blattfeder-Chassis für Straßen des Empires.',
+  },
+
+  // Competitor Milestones
+  milestones: {
+    'mercer-benz-1901': {
+      title: 'Debüt des Mercer-Benz 35 PS in Deutschland',
+      description: 'Ein deutsches Meisterwerk setzt neue Maßstäbe für Geschwindigkeit und Zuverlässigkeit in der Oberklasse.',
+    },
+    'renard-1902': {
+      title: 'Triumph der Pariser Renard Voiturettes',
+      description: 'Französische Renard-Leichtfahrzeuge erobern Paris und London und verdrängen Manufakturbetriebe.',
+    },
+    'fort-1908': {
+      title: 'Historischer Durchbruch: Fort Model T ("Tin Lizzie")',
+      description: 'Henry Fort bringt ein Universalauto für nur $825 heraus. Dies revolutioniert den Markt der Einstiegsklasse!',
+    },
+    'fort-1914': {
+      title: 'Fort-Fließbandfertigung & 5-Dollar-Tagelohn',
+      description: 'Fertigungskosten sinken dramatisch. Der Model-T-Preis fällt unter $500 und setzt weltweit den Maßstab.',
+    },
   },
 
   // Vehicle Components

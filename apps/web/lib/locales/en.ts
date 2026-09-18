@@ -438,6 +438,158 @@ export const en: TranslationSchema = {
       name: 'Luxury V8 Overhead Valve Engine',
       description: 'Smooth and whisper-quiet V8 power defines the golden age of luxury automobiles.',
     },
+    'unibody-monocoque': {
+      name: 'Monocoque Steel Unibody',
+      description: 'Unitized structural body eliminates separate heavy frame, reducing weight and lowering center of gravity.',
+    },
+    'passenger-diesel-engine': {
+      name: 'Passenger Diesel Engine',
+      description: 'Compression-ignition diesel engine offers unmatched fuel economy and exceptional commercial torque.',
+    },
+    'automatic-transmission': {
+      name: 'Hydramatic Automatic Transmission',
+      description: 'Eliminates clutch pedal with planetary gears and fluid coupling, revolutionizing driving ease.',
+    },
+    'power-steering': {
+      name: 'Hydraulic Power Steering',
+      description: 'Hydraulic assistance makes parking and high-speed maneuvers effortless on large luxury saloons.',
+    },
+    'crumple-zones': {
+      name: 'Safety Crumple Zones',
+      description: 'Deformable front and rear sections absorb impact energy to shield passenger cabin.',
+    },
+    'disc-brakes': {
+      name: 'Ventilated Disc Brakes',
+      description: 'Caliper pads clamped onto spinning discs resist thermal fade during repeated high-speed braking.',
+    },
+    'three-point-seatbelt': {
+      name: 'Three-Point Safety Seatbelt',
+      description: 'Nils Bohlin design restrains both chest and pelvis, cutting severe collision injuries in half.',
+    },
+    'turbocharger-powertrain': {
+      name: 'Exhaust Gas Turbocharging',
+      description: 'Turbine driven by hot exhaust gases forces compressed air into cylinders for explosive horsepower gains.',
+    },
+    'catalytic-converter': {
+      name: 'Catalytic Exhaust Converter',
+      description: 'Noble metal substrate neutralizes harmful carbon monoxide and unburnt hydrocarbons.',
+    },
+    'electronic-fuel-injection': {
+      name: 'Electronic Multi-Point Fuel Injection',
+      description: 'Micro-solenoids squirt precise fuel shots directly into intake ports, obsoleting carburetors forever.',
+    },
+    'antilock-brakes-abs': {
+      name: 'Anti-Lock Braking System (ABS)',
+      description: 'Computerized hydraulic valves pulse pressure 15 times per second to prevent tire lockup on ice.',
+    },
+    'digital-ecu-dashboard': {
+      name: 'Microprocessor ECU & Digital Cluster',
+      description: 'Central computer orchestrates engine timing while vacuum-fluorescent displays show real-time diagnostics.',
+    },
+    'dual-front-airbags': {
+      name: 'Dual Front SRS Airbags',
+      description: 'Explosive pyrotechnic propellant inflates nylon cushions in 30 milliseconds upon front impact.',
+    },
+    'electronic-stability-control': {
+      name: 'Electronic Stability Program (ESP)',
+      description: 'Yaw sensors brake individual wheels to pull vehicle back in line during sudden evasive swerves.',
+    },
+    'hybrid-synergy-drive': {
+      name: 'Dual Hybrid Synergy Powertrain',
+      description: 'Atkinson-cycle gasoline engine paired with high-torque electric motor and regenerative braking.',
+    },
+    'satellite-gps-navigation': {
+      name: 'In-Dash Satellite GPS Navigation',
+      description: 'Orbital satellite constellation plots turn-by-turn route guidance on central color LCD screen.',
+    },
+    'li-ion-high-density-battery': {
+      name: 'High-Density Li-Ion Traction Battery',
+      description: 'Thousands of cylindrical lithium cells in skateboard floor pack provide 500+ km zero-emission range.',
+    },
+    'autopilot-level2-adas': {
+      name: 'Level 2 ADAS Highway Autopilot',
+      description: 'Camera and radar fusion manages lane centering and adaptive stop-and-go cruise control.',
+    },
+    'carbon-fiber-monocoque': {
+      name: 'Carbon Fiber Composite Monocoque',
+      description: 'Autoclave-baked carbon composite tub provides Formula-1 stiffness at fraction of steel weight.',
+    },
+    'solid-state-battery': {
+      name: 'Solid-State Fast-Charge Battery',
+      description: 'Non-flammable solid ceramic electrolyte enables 10-minute full charge and 800+ km range.',
+    },
+    'neural-autonomy-level4': {
+      name: 'Full Neural Self-Driving Autonomy',
+      description: 'End-to-end vision neural network operates vehicle without human driver intervention.',
+    },
+  },
+
+  // Historical Events
+  events: {
+    'post-horse-transition': {
+      name: 'Urban Shift From Horse Carriages',
+      description: 'Cities become more open to automotive transport.',
+    },
+    ww1: {
+      name: 'World War I',
+      description: 'Civilian demand drops and logistics become unstable.',
+    },
+    'great-depression': {
+      name: 'The Great Wall Street Depression',
+      description: 'Mass unemployment and bank panics cause consumer vehicle sales to collapse by 35%.',
+    },
+    ww2: {
+      name: 'World War II',
+      description: 'Rationing of steel and rubber halts civilian production while military contracts surge.',
+    },
+    'post-war-boom': {
+      name: 'Post-War Suburban & Highway Boom',
+      description: 'Interstate highway construction and suburban expansion drive two-car family culture.',
+    },
+    'oil-shock-1973': {
+      name: '1973 Global Oil Embargo & Energy Crisis',
+      description: 'Gasoline prices quadruple overnight, sparking panic buyers toward compact fuel-sippers.',
+    },
+    'globalization-boom': {
+      name: 'Fall of the Iron Curtain & Globalization',
+      description: 'Newly opened borders and free trade agreements create hundreds of millions of new motorists.',
+    },
+    'gfc-2008': {
+      name: 'Global Financial Crisis',
+      description: 'Subprime mortgage collapse freezes automotive credit and dealer floorplans.',
+    },
+    'green-electrification-era': {
+      name: 'Carbon Neutrality & EV Revolution',
+      description: 'Zero-emission mandates and clean energy tax credits create explosive demand for electric drive.',
+    },
+  },
+
+  // Competitor Descriptions
+  competitorDescriptions: {
+    fort: 'American industrial giant from Detroit. Focuses on relentless standardization, interchangeable parts, and mass affordability.',
+    'mercer-benz': 'German bastion of cutting-edge mechanical engineering. Premium materials, unmatched reliability and prestige for European elites.',
+    renard: 'Parisian trendsetter. French coachbuilding elegance, nimble lightweight carriages, and renowned city taxicabs.',
+    'austin-morris': 'British industrial combine from the banks of the Thames. Rugged leaf-spring chassis tailored for the roads of the British Empire.',
+  },
+
+  // Competitor Milestones
+  milestones: {
+    'mercer-benz-1901': {
+      title: 'Launch of Mercer-Benz 35 PS in Germany',
+      description: 'A German engineering masterpiece sets a new global benchmark for speed and reliability in the luxury class.',
+    },
+    'renard-1902': {
+      title: 'Triumph of Parisian Renard Voiturettes',
+      description: 'French lightweight Renard runabouts fill the boulevards of Paris and London, putting pressure on artisanal workshops.',
+    },
+    'fort-1908': {
+      title: 'Historic Milestone: Fort Model T Launch ("Tin Lizzie")',
+      description: 'Henry Fort announces an affordable universal motor car for only $825, disrupting the entire Economy market.',
+    },
+    'fort-1914': {
+      title: 'Fort Moving Assembly Line & $5 Workday',
+      description: 'Assembly costs plummet. Model T price drops under $500, setting an unprecedented pace for global automotive industry.',
+    },
   },
 
   // Vehicle Components

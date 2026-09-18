@@ -150,21 +150,21 @@ export default function MarketsPage(): React.JSX.Element {
                       <h4 className="font-serif font-bold era-heading text-sm">{comp.name}</h4>
                     </div>
                     <span className="text-xs font-mono font-bold px-2 py-0.5 rounded bg-[var(--tag-bg)] text-[var(--tag-text)] border border-[var(--border-brass)]/40 shadow-2xs">
-                      ★ Репутация {comp.reputation}
+                      ★ {t.topbar.reputation} {comp.reputation}
                     </span>
                   </div>
 
                   <p className="text-xs era-label mb-3 leading-relaxed">
-                    {comp.description}
+                    {t.competitorDescriptions?.[comp.id] ?? comp.description}
                   </p>
 
                   {/* Market Shares */}
                   <div className="era-stat-box p-3 mb-3 text-[11px] space-y-1.5">
                     <div className="font-semibold era-heading">{t.competitors.marketShare}:</div>
                     <div className="grid grid-cols-3 gap-2 era-label">
-                      <div>🇺🇸 США: <strong className="era-value">{Math.round((comp.marketShares['north-america'] ?? 0) * 100)}%</strong></div>
-                      <div>🇪🇺 Европа: <strong className="era-value">{Math.round((comp.marketShares['europe'] ?? 0) * 100)}%</strong></div>
-                      <div>🌍 Восток: <strong className="era-value">{Math.round((comp.marketShares['middle-east'] ?? 0) * 100)}%</strong></div>
+                      <div>🇺🇸 {t.countries.usa.name}: <strong className="era-value">{Math.round((comp.marketShares['north-america'] ?? 0) * 100)}%</strong></div>
+                      <div>🇪🇺 {t.regions['europe'] ?? 'Europe'}: <strong className="era-value">{Math.round((comp.marketShares['europe'] ?? 0) * 100)}%</strong></div>
+                      <div>🌍 {t.regions['middle-east'] ?? 'Middle East'}: <strong className="era-value">{Math.round((comp.marketShares['middle-east'] ?? 0) * 100)}%</strong></div>
                     </div>
                   </div>
 
@@ -225,14 +225,18 @@ export default function MarketsPage(): React.JSX.Element {
                     <span className="text-xs px-2 py-0.5 rounded font-mono bg-[var(--tag-bg)] text-[var(--tag-text)] border border-[var(--border-brass)]/40">
                       {ms.year} Q{ms.quarter}
                     </span>
-                    <span className="era-heading">{ms.title}</span>
+                    <span className="era-heading">
+                      {t.milestones?.[`${ms.competitorId}-${ms.year}`]?.title ?? ms.title}
+                    </span>
                   </span>
                   <span className="text-[11px] font-medium era-label">
-                    {hasPassed ? '✅ Свершилось' : '⏳ Ожидается'}
+                    {hasPassed
+                      ? (lang === 'en' ? '✅ Completed' : lang === 'uk' ? '✅ Відбулося' : lang === 'de' ? '✅ Eingetreten' : '✅ Свершилось')
+                      : (lang === 'en' ? '⏳ Upcoming' : lang === 'uk' ? '⏳ Очікується' : lang === 'de' ? '⏳ Ausstehend' : '⏳ Ожидается')}
                   </span>
                 </div>
                 <p className="text-[11px] era-label leading-relaxed pl-1">
-                  {ms.description}
+                  {t.milestones?.[`${ms.competitorId}-${ms.year}`]?.description ?? ms.description}
                 </p>
               </div>
             );

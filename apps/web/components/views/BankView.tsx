@@ -8,7 +8,7 @@ import { api } from '../../lib/api';
 
 export default function BankPage(): React.JSX.Element {
   const { gameState, takeLoan, repayLoan } = useGame();
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   const [templates, setTemplates] = useState<LoanTemplate[]>([]);
   const [loading, setLoading] = useState(true);
   const [statusMsg, setStatusMsg] = useState<string | null>(null);
@@ -31,7 +31,7 @@ export default function BankPage(): React.JSX.Element {
       await takeLoan(templateId);
       setStatusMsg(t.bank.loanTaken);
     } catch (err) {
-      setStatusMsg(`Ошибка: ${String(err)}`);
+      setStatusMsg(`${lang === 'en' ? 'Error' : lang === 'uk' ? 'Помилка' : lang === 'de' ? 'Fehler' : 'Ошибка'}: ${String(err)}`);
     } finally {
       setActionPending(false);
     }
@@ -49,14 +49,24 @@ export default function BankPage(): React.JSX.Element {
       await repayLoan(loanId);
       setStatusMsg(t.bank.loanRepaid);
     } catch (err) {
-      setStatusMsg(`Ошибка: ${String(err)}`);
+      setStatusMsg(`${lang === 'en' ? 'Error' : lang === 'uk' ? 'Помилка' : lang === 'de' ? 'Fehler' : 'Ошибка'}: ${String(err)}`);
     } finally {
       setActionPending(false);
     }
   };
 
   if (loading) {
-    return <p className="py-8 text-center text-stone-600">Загрузка банковских программ...</p>;
+    return (
+      <p className="py-8 text-center text-stone-600">
+        {lang === 'en'
+          ? 'Loading banking offers...'
+          : lang === 'uk'
+          ? 'Завантаження банківських програм...'
+          : lang === 'de'
+          ? 'Lade Kreditprogramme...'
+          : 'Загрузка банковских программ...'}
+      </p>
+    );
   }
 
   return (
@@ -102,7 +112,7 @@ export default function BankPage(): React.JSX.Element {
                 <div className="flex justify-between items-start border-b border-[var(--border-subtle)] pb-2">
                   <h4 className="font-bold text-[var(--ink-heading)] text-sm">{loan.name}</h4>
                   <span className="text-[10px] font-semibold era-badge-accent px-1.5 py-0.5 rounded">
-                    {Math.round(loan.interestRate * 100 * 10) / 10}% / мес.
+                    {Math.round(loan.interestRate * 100 * 10) / 10}% / {lang === 'en' ? 'mo.' : lang === 'uk' ? 'міс.' : lang === 'de' ? 'Monat' : 'мес.'}
                   </span>
                 </div>
 

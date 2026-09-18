@@ -208,93 +208,213 @@ export function CarVisualThumbnail({
         {/* --- ERA 2: ART DECO & 1930s (STREAMLINE) --- */}
         {era === 'art_deco' && (
           <g id="artDecoBody">
-            {/* Aerodynamic Teardrop Roofline */}
-            <path
-              d="M 52 86 Q 58 55 105 40 Q 170 32 205 46 L 225 64 L 278 68 Q 284 76 280 88 L 52 88 Z"
-              fill={`url(#body-${uid})`}
-              stroke={`url(#chrome-${uid})`}
-              strokeWidth="1.5"
-            />
-            {/* Streamline Split Windows */}
-            <path d="M 112 45 L 152 42 L 152 64 L 105 64 Z" fill={`url(#glass-${uid})`} stroke={`url(#chrome-${uid})`} strokeWidth="1" />
-            <path d="M 158 42 L 202 46 L 216 64 L 158 64 Z" fill={`url(#glass-${uid})`} stroke={`url(#chrome-${uid})`} strokeWidth="1" />
-            {/* Massive Waterfall Chrome Grille */}
-            <path d="M 276 66 Q 285 75 282 90 L 273 90 Z" fill={`url(#chrome-${uid})`} stroke="#334155" strokeWidth="1.5" />
-            <line x1="277" y1="70" x2="277" y2="88" stroke="#1e293b" strokeWidth="1" />
-            <line x1="280" y1="72" x2="280" y2="88" stroke="#1e293b" strokeWidth="1" />
-            {/* Streamlined Bullet Headlight */}
-            <ellipse cx="270" cy="65" rx="6" ry="4" fill="#fef08a" stroke={`url(#chrome-${uid})`} strokeWidth="1.5" />
-            {/* Chrome Beltline Waist Trim */}
-            <line x1="60" y1="65" x2="273" y2="67" stroke={`url(#chrome-${uid})`} strokeWidth="1.5" />
-            {/* Heavy Bulbous Pontoon Fenders */}
-            <path d="M 46 88 Q 55 58 95 64 Q 120 72 135 90" stroke="#09090b" strokeWidth="4" fill="none" />
-            <path d="M 195 90 Q 215 62 255 64 Q 280 72 286 90" stroke="#09090b" strokeWidth="4" fill="none" />
+            {segment === 'utility' ? (
+              // 1930s-1940s Classic Workhorse Truck / Pickup (Flatbed with Stake-Sides)
+              <>
+                {/* Heavy Steel Chassis Rail */}
+                <rect x="48" y="84" width="232" height="6" rx="1.5" fill="#1e293b" stroke="#0f172a" strokeWidth="1" />
+
+                {/* Cargo Flatbed & Wooden Stake Racks */}
+                <rect x="48" y="62" width="112" height="22" rx="2" fill={`url(#body-${uid})`} stroke="#1c1917" strokeWidth="1.5" />
+                {/* Wooden / Steel Side Planks */}
+                <line x1="48" y1="69" x2="160" y2="69" stroke="#78350f" strokeWidth="2" />
+                <line x1="48" y1="76" x2="160" y2="76" stroke="#78350f" strokeWidth="2" />
+                {/* Vertical Stakes */}
+                <line x1="56" y1="56" x2="56" y2="84" stroke="#451a03" strokeWidth="3" />
+                <line x1="88" y1="56" x2="88" y2="84" stroke="#451a03" strokeWidth="3" />
+                <line x1="120" y1="56" x2="120" y2="84" stroke="#451a03" strokeWidth="3" />
+                <line x1="152" y1="56" x2="152" y2="84" stroke="#451a03" strokeWidth="3" />
+                <line x1="52" y1="56" x2="156" y2="56" stroke="#451a03" strokeWidth="2.5" />
+
+                {/* Heavy Rear Mudguard / Fender */}
+                <path d="M 68 86 Q 74 68 92 68 Q 110 68 116 86" stroke="#09090b" strokeWidth="4.5" fill="none" />
+
+                {/* Enclosed Truck Cab (Upright & Sturdy) */}
+                <path
+                  d="M 160 86 L 160 42 Q 166 40 188 40 Q 208 40 216 54 L 230 68 L 278 70 Q 284 76 280 88 L 160 88 Z"
+                  fill={`url(#body-${uid})`}
+                  stroke={`url(#chrome-${uid})`}
+                  strokeWidth="1.5"
+                />
+                {/* Cab Side Window & Windshield with Sunvisor */}
+                <path d="M 166 46 L 202 46 L 214 66 L 166 66 Z" fill={`url(#glass-${uid})`} stroke={`url(#chrome-${uid})`} strokeWidth="1" />
+                {/* Metal Sunvisor over Windshield */}
+                <line x1="200" y1="44" x2="220" y2="52" stroke={`url(#chrome-${uid})`} strokeWidth="2" />
+
+                {/* Tall Vertical Commercial Truck Grille */}
+                <path d="M 276 66 Q 284 76 280 90 L 270 90 Z" fill={`url(#chrome-${uid})`} stroke="#334155" strokeWidth="1.5" />
+                <line x1="276" y1="70" x2="276" y2="88" stroke="#1e293b" strokeWidth="1" />
+                <line x1="279" y1="72" x2="279" y2="88" stroke="#1e293b" strokeWidth="1" />
+
+                {/* Bullet Headlight & Running Board */}
+                <ellipse cx="270" cy="67" rx="6" ry="4.5" fill="#fef08a" stroke={`url(#chrome-${uid})`} strokeWidth="1.5" />
+                <line x1="120" y1="90" x2="200" y2="90" stroke="#1e293b" strokeWidth="3" />
+                {/* Sweeping Front Truck Fender */}
+                <path d="M 195 90 Q 215 64 255 65 Q 280 72 286 90" stroke="#09090b" strokeWidth="4.5" fill="none" />
+              </>
+            ) : (
+              // Passenger Car (Economy, Family, Luxury)
+              <>
+                <path
+                  d="M 52 86 Q 58 55 105 40 Q 170 32 205 46 L 225 64 L 278 68 Q 284 76 280 88 L 52 88 Z"
+                  fill={`url(#body-${uid})`}
+                  stroke={`url(#chrome-${uid})`}
+                  strokeWidth="1.5"
+                />
+                <path d="M 112 45 L 152 42 L 152 64 L 105 64 Z" fill={`url(#glass-${uid})`} stroke={`url(#chrome-${uid})`} strokeWidth="1" />
+                <path d="M 158 42 L 202 46 L 216 64 L 158 64 Z" fill={`url(#glass-${uid})`} stroke={`url(#chrome-${uid})`} strokeWidth="1" />
+                <path d="M 276 66 Q 285 75 282 90 L 273 90 Z" fill={`url(#chrome-${uid})`} stroke="#334155" strokeWidth="1.5" />
+                <line x1="277" y1="70" x2="277" y2="88" stroke="#1e293b" strokeWidth="1" />
+                <line x1="280" y1="72" x2="280" y2="88" stroke="#1e293b" strokeWidth="1" />
+                <ellipse cx="270" cy="65" rx="6" ry="4" fill="#fef08a" stroke={`url(#chrome-${uid})`} strokeWidth="1.5" />
+                <line x1="60" y1="65" x2="273" y2="67" stroke={`url(#chrome-${uid})`} strokeWidth="1.5" />
+                <path d="M 46 88 Q 55 58 95 64 Q 120 72 135 90" stroke="#09090b" strokeWidth="4" fill="none" />
+                <path d="M 195 90 Q 215 62 255 64 Q 280 72 286 90" stroke="#09090b" strokeWidth="4" fill="none" />
+              </>
+            )}
           </g>
         )}
 
         {/* --- ERA 3: CLASSIC FINS & CHROME (1945-1974) --- */}
         {era === 'classic_fins' && (
           <g id="classicFinsBody">
-            {/* Low-slung Cruiser with Prominent Tailfin */}
-            <path
-              d="M 45 60 Q 55 68 62 88 L 285 88 Q 288 78 285 70 L 245 68 L 215 46 L 125 46 L 95 64 L 45 60 Z"
-              fill={`url(#body-${uid})`}
-              stroke={`url(#chrome-${uid})`}
-              strokeWidth="1.6"
-            />
-            {/* Panoramic Wrap-around Windshield */}
-            <polygon points="100,64 128,48 212,48 238,64 100,64" fill={`url(#glass-${uid})`} stroke={`url(#chrome-${uid})`} strokeWidth="1" />
-            {/* Rocket Tailfin Chrome Tip */}
-            <polygon points="45,60 56,66 48,72" fill={`url(#chrome-${uid})`} />
-            <circle cx="46" cy="62" r="2.5" fill="#ef4444" />
-            {/* Dazzling Chrome Grille & Double Headlights */}
-            <rect x="280" y="70" width="8" height="18" rx="2" fill={`url(#chrome-${uid})`} stroke="#475569" strokeWidth="1" />
-            <circle cx="282" cy="74" r="3" fill="#fef08a" stroke="#fff" strokeWidth="1" />
-            <circle cx="282" cy="82" r="3" fill="#fef08a" stroke="#fff" strokeWidth="1" />
-            {/* Side Chrome Spear Moulding */}
-            <path d="M 52 74 L 140 74 L 200 78 L 282 78" stroke={`url(#chrome-${uid})`} strokeWidth="2" fill="none" />
+            {segment === 'utility' ? (
+              // 1950s Classic Stepside Pickup (Chevy 3100 / Ford F-100 style)
+              <>
+                {/* Open Pickup Bed with Stepside */}
+                <rect x="48" y="64" width="115" height="24" rx="2" fill={`url(#body-${uid})`} stroke={`url(#chrome-${uid})`} strokeWidth="1.5" />
+                {/* Flared Stepside Rear Fender */}
+                <path d="M 68 88 Q 72 68 92 68 Q 112 68 116 88" stroke="#09090b" strokeWidth="5" fill="none" />
+                {/* Cab Stepside Footplate */}
+                <rect x="142" y="84" width="18" height="4" rx="1" fill={`url(#chrome-${uid})`} />
+
+                {/* Rounded 1950s Truck Cab */}
+                <path
+                  d="M 160 88 L 160 48 Q 166 44 195 44 Q 212 44 222 58 L 238 68 L 285 70 Q 288 78 285 88 L 160 88 Z"
+                  fill={`url(#body-${uid})`}
+                  stroke={`url(#chrome-${uid})`}
+                  strokeWidth="1.6"
+                />
+                {/* Panoramic Curved Cab Window */}
+                <path d="M 166 50 L 198 48 L 220 66 L 166 66 Z" fill={`url(#glass-${uid})`} stroke={`url(#chrome-${uid})`} strokeWidth="1" />
+                {/* Cab Rear Small Window */}
+                <rect x="162" y="52" width="2" height="10" fill={`url(#glass-${uid})`} />
+
+                {/* Bold 1950s Chrome Bumper & Horizontal Grille Bar */}
+                <rect x="280" y="72" width="8" height="16" rx="2" fill={`url(#chrome-${uid})`} stroke="#475569" strokeWidth="1" />
+                <circle cx="282" cy="76" r="3.5" fill="#fef08a" stroke="#fff" strokeWidth="1" />
+                <line x1="240" y1="78" x2="284" y2="78" stroke={`url(#chrome-${uid})`} strokeWidth="2" />
+                <path d="M 195 88 Q 215 64 255 64 Q 280 72 286 88" stroke="#09090b" strokeWidth="4.5" fill="none" />
+              </>
+            ) : (
+              // Passenger Cruiser with Tailfins
+              <>
+                <path
+                  d="M 45 60 Q 55 68 62 88 L 285 88 Q 288 78 285 70 L 245 68 L 215 46 L 125 46 L 95 64 L 45 60 Z"
+                  fill={`url(#body-${uid})`}
+                  stroke={`url(#chrome-${uid})`}
+                  strokeWidth="1.6"
+                />
+                <polygon points="100,64 128,48 212,48 238,64 100,64" fill={`url(#glass-${uid})`} stroke={`url(#chrome-${uid})`} strokeWidth="1" />
+                <polygon points="45,60 56,66 48,72" fill={`url(#chrome-${uid})`} />
+                <circle cx="46" cy="62" r="2.5" fill="#ef4444" />
+                <rect x="280" y="70" width="8" height="18" rx="2" fill={`url(#chrome-${uid})`} stroke="#475569" strokeWidth="1" />
+                <circle cx="282" cy="74" r="3" fill="#fef08a" stroke="#fff" strokeWidth="1" />
+                <circle cx="282" cy="82" r="3" fill="#fef08a" stroke="#fff" strokeWidth="1" />
+                <path d="M 52 74 L 140 74 L 200 78 L 282 78" stroke={`url(#chrome-${uid})`} strokeWidth="2" fill="none" />
+              </>
+            )}
           </g>
         )}
 
         {/* --- ERA 4: AERO WEDGE & INNOVATION (1975-2004) --- */}
         {era === 'aero_wedge' && (
           <g id="aeroWedgeBody">
-            {/* Geometric Sharp Wedge Silhouette */}
-            <path
-              d="M 50 86 L 50 68 L 105 66 L 145 46 L 220 46 L 265 68 L 290 76 L 290 88 Z"
-              fill={`url(#body-${uid})`}
-              stroke="#334155"
-              strokeWidth="1.5"
-            />
-            {/* Aerodynamic Green-Tinted Glasshouse */}
-            <polygon points="110,65 147,48 217,48 258,65" fill={`url(#glass-${uid})`} stroke="#0f172a" strokeWidth="1.2" />
-            {/* Pop-up Headlight Covers or Rectangular Composite Lenses */}
-            <polygon points="268,69 285,73 285,78 268,76" fill="#f8fafc" stroke="#64748b" strokeWidth="1" />
-            {/* Matte Black Impact Bumper & Side Trim Strip */}
-            <rect x="46" y="80" width="10" height="8" rx="1.5" fill="#09090b" />
-            <rect x="284" y="80" width="8" height="8" rx="1.5" fill="#09090b" />
-            <line x1="56" y1="80" x2="284" y2="80" stroke="#09090b" strokeWidth="2.5" />
+            {segment === 'utility' ? (
+              // 1980s Squarebody Heavy-Duty Pickup / Van
+              <>
+                {/* Boxy Steel Cargo Bed */}
+                <rect x="48" y="64" width="120" height="24" rx="1.5" fill={`url(#body-${uid})`} stroke="#334155" strokeWidth="1.5" />
+                <line x1="48" y1="74" x2="168" y2="74" stroke="#0f172a" strokeWidth="1.5" />
+                {/* Rubber Rear Mudflap */}
+                <rect x="52" y="86" width="6" height="12" fill="#09090b" />
+
+                {/* Boxy Square Cab */}
+                <path
+                  d="M 166 88 L 166 46 L 215 46 L 235 66 L 290 70 L 290 88 L 166 88 Z"
+                  fill={`url(#body-${uid})`}
+                  stroke="#334155"
+                  strokeWidth="1.5"
+                />
+                <polygon points="172,64 172,48 212,48 230,64" fill={`url(#glass-${uid})`} stroke="#0f172a" strokeWidth="1.2" />
+
+                {/* Rectangular Dual Headlights & Chrome Grille */}
+                <rect x="282" y="70" width="8" height="14" rx="1" fill={`url(#chrome-${uid})`} stroke="#334155" strokeWidth="1" />
+                <rect x="284" y="72" width="5" height="4" fill="#f8fafc" />
+                <rect x="284" y="78" width="5" height="4" fill="#f8fafc" />
+                {/* Heavy Impact Bumper */}
+                <rect x="46" y="82" width="10" height="6" rx="1" fill="#09090b" />
+                <rect x="284" y="82" width="8" height="6" rx="1" fill="#09090b" />
+              </>
+            ) : (
+              // Passenger Wedge
+              <>
+                <path
+                  d="M 50 86 L 50 68 L 105 66 L 145 46 L 220 46 L 265 68 L 290 76 L 290 88 Z"
+                  fill={`url(#body-${uid})`}
+                  stroke="#334155"
+                  strokeWidth="1.5"
+                />
+                <polygon points="110,65 147,48 217,48 258,65" fill={`url(#glass-${uid})`} stroke="#0f172a" strokeWidth="1.2" />
+                <polygon points="268,69 285,73 285,78 268,76" fill="#f8fafc" stroke="#64748b" strokeWidth="1" />
+                <rect x="46" y="80" width="10" height="8" rx="1.5" fill="#09090b" />
+                <rect x="284" y="80" width="8" height="8" rx="1.5" fill="#09090b" />
+                <line x1="56" y1="80" x2="284" y2="80" stroke="#09090b" strokeWidth="2.5" />
+              </>
+            )}
           </g>
         )}
 
         {/* --- ERA 5: MODERN & ELECTRIC (2005-2026+) --- */}
         {era === 'modern' && (
           <g id="modernBody">
-            {/* Fastback Coupe/Sedan Fluid Aerodynamics */}
-            <path
-              d="M 48 84 Q 52 64 95 56 Q 155 36 215 48 L 268 64 Q 288 72 290 84 L 48 84 Z"
-              fill={`url(#body-${uid})`}
-              stroke={`url(#chrome-${uid})`}
-              strokeWidth="1.2"
-            />
-            {/* Panoramic Canopy */}
-            <path d="M 105 56 Q 160 40 212 50 L 252 65 L 100 65 Z" fill={`url(#glass-${uid})`} stroke="#0f172a" strokeWidth="1" />
-            {/* Modern LED Matrix Projector Lightbar */}
-            <path d="M 265 66 Q 285 72 288 74 L 284 78 Z" fill="#38bdf8" stroke="#e0f2fe" strokeWidth="1" />
-            {/* Rear LED Halo Strip */}
-            <path d="M 50 68 Q 48 74 52 78" stroke="#ef4444" strokeWidth="2" fill="none" />
-            {/* Sculpted Bottom Aero Skirt */}
-            <line x1="125" y1="84" x2="215" y2="84" stroke="#09090b" strokeWidth="3" />
+            {segment === 'utility' ? (
+              // Modern Heavy-Duty Commercial Pickup Truck
+              <>
+                {/* High Cargo Bed with Bedrails & Integrated Tail-lamp */}
+                <path d="M 48 84 L 48 60 L 165 60 L 165 84 Z" fill={`url(#body-${uid})`} stroke={`url(#chrome-${uid})`} strokeWidth="1.2" />
+                <rect x="48" y="60" width="4" height="18" rx="1" fill="#ef4444" />
+                <rect x="52" y="58" width="110" height="3" rx="1" fill="#0f172a" />
+
+                {/* Imposing Modern Truck Cab */}
+                <path
+                  d="M 165 84 L 165 44 Q 170 42 215 42 L 255 60 L 290 64 L 290 84 L 165 84 Z"
+                  fill={`url(#body-${uid})`}
+                  stroke={`url(#chrome-${uid})`}
+                  strokeWidth="1.2"
+                />
+                <polygon points="172,62 172,46 212,46 246,62" fill={`url(#glass-${uid})`} stroke="#0f172a" strokeWidth="1" />
+
+                {/* C-Clamp Signature LED Headlights */}
+                <path d="M 284 64 L 288 64 L 288 78 L 284 78 Z" fill="#38bdf8" stroke="#e0f2fe" strokeWidth="1" />
+                <rect x="280" y="68" width="8" height="8" rx="1" fill="#0f172a" />
+                <line x1="125" y1="86" x2="225" y2="86" stroke="#09090b" strokeWidth="4" />
+              </>
+            ) : (
+              // Passenger Fluid Sedan/Coupe
+              <>
+                <path
+                  d="M 48 84 Q 52 64 95 56 Q 155 36 215 48 L 268 64 Q 288 72 290 84 L 48 84 Z"
+                  fill={`url(#body-${uid})`}
+                  stroke={`url(#chrome-${uid})`}
+                  strokeWidth="1.2"
+                />
+                <path d="M 105 56 Q 160 40 212 50 L 252 65 L 100 65 Z" fill={`url(#glass-${uid})`} stroke="#0f172a" strokeWidth="1" />
+                <path d="M 265 66 Q 285 72 288 74 L 284 78 Z" fill="#38bdf8" stroke="#e0f2fe" strokeWidth="1" />
+                <path d="M 50 68 Q 48 74 52 78" stroke="#ef4444" strokeWidth="2" fill="none" />
+                <line x1="125" y1="84" x2="215" y2="84" stroke="#09090b" strokeWidth="3" />
+              </>
+            )}
           </g>
         )}
 
