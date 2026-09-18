@@ -121,13 +121,13 @@ export function MorningGazetteModal(props: Props = {}): React.JSX.Element | null
           <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 text-[11px]">
             <div className="bg-white/80 p-2 rounded border border-amber-900/10 shadow-2xs">
               <span className="text-stone-500 block">
-                {lang === 'en' ? `Revenue (${report.unitsSold} cars):` : lang === 'uk' ? `Виручка (${report.unitsSold} авто):` : lang === 'de' ? `Umsatz (${report.unitsSold} Fz.):` : `Выручка (${report.unitsSold} авто):`}
+                {lang === 'en' ? `Revenue (${report.unitsSold} sold):` : lang === 'uk' ? `Виручка (${report.unitsSold} продано):` : lang === 'de' ? `Umsatz (${report.unitsSold} Fz.):` : `Выручка (${report.unitsSold} продано):`}
               </span>
               <strong className="text-emerald-800 font-mono text-xs">+${report.revenue.toLocaleString()}</strong>
             </div>
             <div className="bg-white/80 p-2 rounded border border-amber-900/10 shadow-2xs">
               <span className="text-stone-500 block">
-                {lang === 'en' ? 'Assembly Cost:' : lang === 'uk' ? 'Собівартість складання:' : lang === 'de' ? 'Montage-Kosten:' : 'Себестоимость сборки:'}
+                {lang === 'en' ? `Assembly (${report.unitsProduced} built):` : lang === 'uk' ? `Собівартість (${report.unitsProduced} випущено):` : lang === 'de' ? 'Montage-Kosten:' : `Себестоимость (${report.unitsProduced} выпущено):`}
               </span>
               <strong className="text-rose-850 font-mono text-xs">-${(report.productionCost ?? 0).toLocaleString()}</strong>
             </div>
@@ -240,24 +240,40 @@ export function MorningGazetteModal(props: Props = {}): React.JSX.Element | null
                 <h4 className="font-bold text-[11px] uppercase tracking-wider text-stone-900 flex items-center justify-between">
                   <span>{lang === 'en' ? '📦 Models & Inventory' : lang === 'uk' ? '📦 Моделі та склад' : lang === 'de' ? '📦 Modelle & Lager' : '📦 Модели и склад'}</span>
                 </h4>
-                <div className="space-y-1 text-[11px]">
+                <div className="space-y-1.5 text-[11px]">
                   {Object.values(report.salesByModel).map((sm) => (
-                    <div key={sm.modelId} className="bg-white/80 p-1.5 rounded border border-stone-200">
+                    <div key={sm.modelId} className="bg-white/80 p-2 rounded border border-stone-200 shadow-2xs">
                       <div className="flex justify-between font-semibold text-stone-900">
                         <span>{sm.modelName}</span>
-                        <span className="font-mono text-emerald-800">${sm.revenue.toLocaleString()}</span>
+                        <span className="font-mono text-emerald-800 font-bold">${sm.revenue.toLocaleString()}</span>
                       </div>
-                      <div className="flex justify-between text-stone-600 text-[10px] mt-0.5">
-                        <span>
-                          {lang === 'en' ? 'Sold' : lang === 'uk' ? 'Продано' : 'Продано'}: <strong className="text-emerald-700">{sm.sold}</strong> / {sm.produced}
+                      <div className="flex flex-wrap items-center justify-between text-stone-700 text-[10px] mt-1 gap-1 border-t border-stone-100 pt-1">
+                        <span className="inline-flex items-center gap-1">
+                          <span>⚙️ {lang === 'en' ? 'Built' : lang === 'uk' ? 'Випуск' : 'Выпуск'}:</span>
+                          <strong className="font-mono text-stone-900">{sm.produced}</strong>
                         </span>
-                        <span>
-                          {lang === 'en' ? 'Stock' : lang === 'uk' ? 'Склад' : 'Склад'}:{' '}
-                          <strong className={sm.unsold > 0 ? 'text-amber-800 font-bold' : 'text-stone-500'}>
-                            {sm.unsold} {lang === 'en' ? 'unsold' : lang === 'uk' ? 'залишок' : 'не продано'}
+                        <span>•</span>
+                        <span className="inline-flex items-center gap-1">
+                          <span>🤝 {lang === 'en' ? 'Sold' : lang === 'uk' ? 'Продаж' : 'Продано'}:</span>
+                          <strong className="font-mono text-emerald-700">{sm.sold}</strong>
+                        </span>
+                        <span>•</span>
+                        <span className="inline-flex items-center gap-1">
+                          <span>📦 {lang === 'en' ? 'Stock' : lang === 'uk' ? 'Склад' : 'Склад'}:</span>
+                          <strong className={`font-mono ${sm.unsold > 0 ? 'text-amber-800 font-bold' : 'text-stone-500'}`}>
+                            {sm.unsold}
                           </strong>
                         </span>
                       </div>
+                      {sm.unsold > 0 && (
+                        <div className="mt-1 text-[9px] text-amber-800 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200">
+                          ⚠️ {lang === 'en'
+                            ? `${sm.unsold} units remained unsold in warehouse`
+                            : lang === 'uk'
+                            ? `${sm.unsold} авто залишилось на складі`
+                            : `${sm.unsold} авто осталось на складе`}
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>

@@ -23,6 +23,7 @@ import type {
   CompetitorMilestone,
   GlobalManufacturerRanking,
   ModelSalesRecord,
+  GameState,
 } from '@ait/shared-types';
 
 export const MATERIALS_CATALOG: MaterialMarketItem[] = [
@@ -420,7 +421,7 @@ export function getModelAgeFactor(modelAge: number): number {
   return 0.0;
 }
 
-function simulateRegionDemand(
+export function simulateRegionDemand(
   model: VehicleModel,
   region: Region,
   reputation: number,
@@ -462,6 +463,51 @@ function simulateRegionDemand(
 
   const baseDemand = segmentMarketSize * normalizedStats * priceFactor * reputationFactor * appealBonus * eraDemandFactor * ageFactor;
   return Math.max(0, Math.floor(baseDemand * eventMultiplier));
+}
+
+/**
+ * Estimates realistic annual market demand for a vehicle model across all regions,
+ * accounting for consumer segment size, region suitability, pricing, technology appeal, and company market presence.
+ */
+export function estimateVehicleAnnualDemand(
+  model: VehicleModel,
+  gameState: GameState,
+  regions: Region[],
+  technologies: Technology[] = [],
+  events: HistoricalEvent[] = []
+): { totalDemand: number; demandByRegion: Record<RegionId, number> } {
+  const nextDateYear = gameState.date.year + 1;
+  const appealBonus = techAppealBonus(gameState.unlockedTechnologyIds, technologies);
+  const demandByRegion: Record<RegionId, number> = {
+    'north-america': 0,
+    europe: 0,
+    'middle-east': 0,
+  };
+  let totalDemand = 0;
+
+  for (const region of regions) {
+    const eventMultiplier = getActiveEventMultiplier(events, region.id, { ...gameState.date, year: nextDateYear });
+    const expectedDemand = simulateRegionDemand(
+      model,
+      region,
+      gameState.company.reputation,
+      eventMultiplier,
+      appealBonus,
+      nextDateYear
+    );
+    const marketPresence = gameState.company.marketPresence[region.id] ?? 0;
+    const suitability = model.regionSuitability?.[region.id] ?? 0.5;
+    const modelAge = Math.max(0, nextDateYear - (model.designYear ?? 1900));
+    const rawDemand = Math.floor(expectedDemand * marketPresence * suitability);
+    const adjustedDemand =
+      rawDemand === 0 && expectedDemand > 0 && nextDateYear <= 1902 && modelAge <= 2 && marketPresence > 0
+        ? 1
+        : rawDemand;
+    demandByRegion[region.id] = adjustedDemand;
+    totalDemand += adjustedDemand;
+  }
+
+  return { totalDemand, demandByRegion };
 }
 
 export function runEndTurn(input: EndTurnInput): EndTurnOutput {

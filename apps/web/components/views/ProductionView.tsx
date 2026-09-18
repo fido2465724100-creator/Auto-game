@@ -1,8 +1,8 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import type { MaterialMarketItem, MaterialType, VehicleModel } from '@ait/shared-types';
-import { calculatePremisesRent, calculateRecommendedSalePrice } from '@ait/game-engine';
+import { useEffect, useState, useRef } from 'react';
+import type { MaterialMarketItem, MaterialType, VehicleModel, Region, RegionId } from '@ait/shared-types';
+import { calculatePremisesRent, calculateRecommendedSalePrice, estimateVehicleAnnualDemand } from '@ait/game-engine';
 import { useGame } from '../../context/GameContext';
 import { useLanguage } from '../../lib/i18n';
 import { api } from '../../lib/api';
@@ -34,10 +34,13 @@ export default function ProductionPage(): React.JSX.Element {
   const { t, lang } = useLanguage();
 
   const [marketMaterials, setMarketMaterials] = useState<MaterialMarketItem[]>([]);
+  const [regions, setRegions] = useState<Region[]>([]);
   const [loading, setLoading] = useState(true);
   const [planDraft, setPlanDraft] = useState<Record<string, number>>({});
   const [statusMsg, setStatusMsg] = useState<string | null>(null);
   const [actionPending, setActionPending] = useState(false);
+  const [saveStatus, setSaveStatus] = useState<'saved' | 'saving' | 'dirty'>('saved');
+  const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     api.getMaterialsMarket()
@@ -47,6 +50,20 @@ export default function ProductionPage(): React.JSX.Element {
       .catch(() => setMarketMaterials([]))
       .finally(() => setLoading(false));
   }, [gameState?.date.year]);
+
+  useEffect(() => {
+    api.getRegions()
+      .then((regs) => setRegions(regs))
+      .catch(() => setRegions([]));
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+      }
+    };
+  }, []);
 
   useEffect(() => {
     if (gameState?.productionPlan) {
@@ -122,7 +139,29 @@ export default function ProductionPage(): React.JSX.Element {
     }
   }
 
-  const handlePlanChange = (modelId: string, value: number) => {
+  // Auto-sync helper: debounces network/engine updates while updating local draft immediately
+  const persistPlan = (newPlan: Record<string, number>, immediate: boolean = false) => {
+    setPlanDraft(newPlan);
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current);
+    }
+    if (immediate) {
+      setSaveStatus('saving');
+      updateProductionPlan(newPlan)
+        .then(() => setSaveStatus('saved'))
+        .catch(() => setSaveStatus('dirty'));
+    } else {
+      setSaveStatus('dirty');
+      debounceTimerRef.current = setTimeout(() => {
+        setSaveStatus('saving');
+        updateProductionPlan(newPlan)
+          .then(() => setSaveStatus('saved'))
+          .catch(() => setSaveStatus('dirty'));
+      }, 350);
+    }
+  };
+
+  const handlePlanChange = (modelId: string, value: number, immediate: boolean = false) => {
     const currentVal = Number(planDraft[modelId]) || 0;
     const otherPlanned = Object.entries(planDraft).reduce((sum, [id, n]) => {
       return id === modelId ? sum : sum + (Number(n) || 0);
@@ -132,10 +171,11 @@ export default function ProductionPage(): React.JSX.Element {
     const maxAllowed = Math.max(currentVal, remainingFree);
     const clamped = Math.max(0, Math.min(maxAllowed, value));
 
-    setPlanDraft((prev) => ({
-      ...prev,
+    const updated = {
+      ...planDraft,
       [modelId]: clamped,
-    }));
+    };
+    persistPlan(updated, immediate);
   };
 
   // Helper: Distribute available capacity equally across all active models
@@ -148,7 +188,7 @@ export default function ProductionPage(): React.JSX.Element {
     activeModels.forEach((m, idx) => {
       newPlan[m.id] = baseQuota + (idx < remainder ? 1 : 0);
     });
-    setPlanDraft(newPlan);
+    persistPlan(newPlan, true);
   };
 
   // Helper: Proportionally scale existing plan to exactly fit factory capacity
@@ -174,16 +214,19 @@ export default function ProductionPage(): React.JSX.Element {
         allocated += val;
       }
     });
-    setPlanDraft(newPlan);
+    persistPlan(newPlan, true);
   };
 
   const handleSavePlan = async () => {
     setActionPending(true);
     setStatusMsg(null);
+    setSaveStatus('saving');
     try {
       await updateProductionPlan(planDraft);
+      setSaveStatus('saved');
       setStatusMsg(t.production.planSaved);
     } catch (err) {
+      setSaveStatus('dirty');
       setStatusMsg(`Ошибка: ${String(err)}`);
     } finally {
       setActionPending(false);
@@ -504,6 +547,19 @@ export default function ProductionPage(): React.JSX.Element {
               <span>⚖️</span>
               <span>{lang === 'en' ? 'Equal Share' : lang === 'uk' ? 'Порівну' : lang === 'de' ? 'Gleichmäßig' : 'Поровну'}</span>
             </button>
+            {saveStatus === 'saving' ? (
+              <span className="text-[11px] font-mono text-amber-500 flex items-center gap-1 animate-pulse px-2 py-1 bg-amber-500/10 rounded-md border border-amber-500/20">
+                ⏳ {lang === 'en' ? 'Syncing...' : lang === 'uk' ? 'Синхронізація...' : 'Синхронизация...'}
+              </span>
+            ) : saveStatus === 'saved' ? (
+              <span className="text-[11px] font-mono text-emerald-500 flex items-center gap-1 px-2 py-1 bg-emerald-500/10 rounded-md border border-emerald-500/20">
+                ✓ {lang === 'en' ? 'Auto-saved' : lang === 'uk' ? 'Автозбережено' : 'Автосохранено'}
+              </span>
+            ) : (
+              <span className="text-[11px] font-mono text-stone-400 flex items-center gap-1 px-2 py-1">
+                • {lang === 'en' ? 'Editing' : lang === 'uk' ? 'Редагується' : 'Редактируется'}
+              </span>
+            )}
             <button
               onClick={handleSavePlan}
               disabled={actionPending}
@@ -519,7 +575,7 @@ export default function ProductionPage(): React.JSX.Element {
             {t.production.noModels}
           </p>
         ) : (
-          <div className="space-y-4">
+          <div className="space-y-5">
             {activeModels.map((model) => {
               const planned = planDraft[model.id] ?? 0;
               const otherPlanned = totalPlannedUnits - planned;
@@ -537,165 +593,283 @@ export default function ProductionPage(): React.JSX.Element {
               const recPrice = calculateRecommendedSalePrice(model.targetSegment, unitCost);
               const priceEval = evaluateVehiclePrice(model.salePrice, unitCost, recPrice, lang);
 
+              // Demand & Overproduction estimation
+              const demandEst = regions.length > 0 && gameState
+                ? estimateVehicleAnnualDemand(model, gameState, regions)
+                : { totalDemand: 35, demandByRegion: {} as Record<RegionId, number> };
+              const annualDemand = demandEst.totalDemand;
+              const isOverproducing = planned > annualDemand && annualDemand > 0;
+              const excessUnits = Math.max(0, planned - annualDemand);
+              const frozenCapital = excessUnits * unitCost;
+
+              // Last year sales record from reports
+              const lastReport = gameState.reportHistory?.[0];
+              const modelSales = lastReport?.salesByModel?.[model.id];
+              const warehouseStock = gameState.company.inventoryVehicles?.[model.id] ?? 0;
+
               return (
                 <div
                   key={model.id}
-                  className="rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-nested)] p-4 transition hover:border-[var(--border-brass)] space-y-3"
+                  className="rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-nested)] overflow-hidden shadow-sm hover:border-[var(--border-brass)] transition flex flex-col"
                 >
-                  <div className="flex flex-col sm:flex-row gap-3 items-start">
-                    {/* VEHICLE ART RENDER */}
-                    <div className="w-full sm:w-36 shrink-0">
-                      <CarVisualThumbnail
-                        segment={model.targetSegment}
-                        designYear={modelYear}
-                        className="w-full h-24"
-                      />
+                  {/* 1. HERO BANNER: FULL WIDTH CAR SHOWCASE */}
+                  <div className="relative w-full h-40 sm:h-48 md:h-52 bg-gradient-to-b from-stone-900 via-stone-950 to-black overflow-hidden flex items-center justify-center border-b border-[var(--border-subtle)] select-none">
+                    {/* Full width studio car render */}
+                    <CarVisualThumbnail
+                      segment={model.targetSegment}
+                      designYear={modelYear}
+                      className="w-full h-full border-0 rounded-none bg-transparent"
+                      hideWatermark
+                    />
+
+                    {/* Top-Left Floating Info Tags */}
+                    <div className="absolute top-2.5 left-3 z-10 flex flex-wrap items-center gap-1.5 backdrop-blur-md bg-black/60 px-2.5 py-1.5 rounded-lg border border-white/10 shadow-md">
+                      <span className="font-bold text-sm sm:text-base text-stone-100 era-heading tracking-wide">
+                        {model.name}
+                      </span>
+                      <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded era-badge-accent shadow-xs">
+                        {t.design.segments[model.targetSegment]?.name ?? model.targetSegment}
+                      </span>
+                      <span className="text-[11px] text-stone-300 font-mono">
+                        {modelYear} ({age} {lang === 'en' ? 'yrs' : lang === 'uk' ? 'р.' : lang === 'de' ? 'J.' : 'лет'})
+                      </span>
+                      {isObsolete ? (
+                        <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-rose-950/80 text-rose-300 border border-rose-500/60 shadow-xs">
+                          🛑 {lang === 'en' ? 'Obsolete (0 demand)' : lang === 'uk' ? 'Застаріла (попит 0)' : 'Устарела (спрос 0)'}
+                        </span>
+                      ) : isAging ? (
+                        <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-950/80 text-amber-300 border border-amber-500/60 shadow-xs">
+                          ⚠️ {lang === 'en' ? 'Aging' : lang === 'uk' ? 'Застаріває' : 'Устаревает'}
+                        </span>
+                      ) : (
+                        <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-950/80 text-emerald-300 border border-emerald-500/60 shadow-xs">
+                          ✨ {lang === 'en' ? 'Fresh' : lang === 'uk' ? 'Актуальна' : 'Актуальная'}
+                        </span>
+                      )}
                     </div>
 
-                    <div className="flex-1 min-w-0">
-                      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
-                    <div>
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <span className="font-bold text-sm text-[var(--ink-heading)] era-heading">{model.name}</span>
-                        <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded era-badge-accent">
-                          {t.design.segments[model.targetSegment]?.name ?? model.targetSegment}
-                        </span>
-                        <span className="text-[11px] text-[var(--ink-secondary)] font-mono">
-                          {modelYear} ({age} {lang === 'en' ? 'yrs' : lang === 'uk' ? 'р.' : lang === 'de' ? 'J.' : 'лет'})
-                        </span>
-                        {isObsolete ? (
-                          <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-rose-950/40 text-rose-300 border border-rose-600/50">
-                            🛑 {lang === 'en' ? 'Obsolete (0 demand)' : lang === 'uk' ? 'Застаріла (0 попит)' : lang === 'de' ? 'Veraltet (0 Nachfr.)' : 'Устарела (спрос 0)'}
+                    {/* Top-Right Floating Decommission Action */}
+                    <div className="absolute top-2.5 right-3 z-10">
+                      <button
+                        type="button"
+                        onClick={async () => {
+                          try {
+                            await decommissionVehicleModel(model.id);
+                            setStatusMsg(
+                              lang === 'en'
+                                ? `Model "${model.name}" has been decommissioned`
+                                : lang === 'uk'
+                                ? `Модель «${model.name}» знята з виробництва`
+                                : `Модель «${model.name}» снята с производства`
+                            );
+                          } catch (err) {
+                            setStatusMsg(`Ошибка: ${String(err)}`);
+                          }
+                        }}
+                        className="backdrop-blur-md bg-black/60 hover:bg-rose-950/80 text-stone-300 hover:text-rose-200 border border-white/15 hover:border-rose-500/60 text-xs font-semibold px-2.5 py-1 rounded-lg transition flex items-center gap-1.5 cursor-pointer shadow-md"
+                        title={lang === 'en' ? 'Discontinue from production' : lang === 'uk' ? 'Зняти з виробництва' : 'Снять с производства'}
+                      >
+                        <span>🛑</span>
+                        <span className="text-[11px]">{lang === 'en' ? 'Discontinue' : lang === 'uk' ? 'Зняти' : 'Снять'}</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* 2. COMPACT METRICS DASHBOARD (3 COLUMNS) */}
+                  <div className="p-3.5 space-y-3">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-2.5">
+                      {/* TILE 1: PRICE & MARGIN */}
+                      <div className="p-2.5 rounded-lg bg-[var(--paper)] border border-[var(--border-subtle)] flex flex-col justify-between space-y-1.5 text-xs shadow-2xs">
+                        <div className="flex items-center justify-between border-b border-[var(--border-subtle)] pb-1">
+                          <span className="font-bold text-[var(--ink-heading)] flex items-center gap-1">
+                            <span>🏷️</span>
+                            <span>{lang === 'en' ? 'Price & Profit' : lang === 'uk' ? 'Ціна та маржа' : 'Цена и маржа'}</span>
                           </span>
-                        ) : isAging ? (
-                          <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-950/40 text-amber-300 border border-amber-600/50">
-                            ⚠️ {lang === 'en' ? 'Aging' : lang === 'uk' ? 'Застаріває' : lang === 'de' ? 'Alternd' : 'Устаревает'}
-                          </span>
-                        ) : (
-                          <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-950/40 text-emerald-300 border border-emerald-600/50">
-                            ✨ {lang === 'en' ? 'Fresh' : lang === 'uk' ? 'Актуальна' : lang === 'de' ? 'Aktuell' : 'Актуальная'}
-                          </span>
-                        )}
-                      </div>
-                      <div className="flex items-center gap-4 mt-1 text-xs text-[var(--ink-secondary)] font-sans flex-wrap">
-                        <span>{t.production.costPerUnit}: <strong className="text-[var(--ink)]">${unitCost.toLocaleString()}</strong></span>
-                        <span>•</span>
-                        <span className="flex items-center gap-1.5">
-                          <span>{t.design.salePrice}: <strong className="text-[var(--ink-value)]">${model.salePrice.toLocaleString()}</strong></span>
                           <span className={`text-[10px] px-1.5 py-0.2 rounded font-semibold ${priceEval.badgeClass}`}>
                             {priceEval.shortLabel}
                           </span>
-                          <span className="text-[10px] opacity-75 font-mono">
-                            (💡 Рек.: ${recPrice.toLocaleString()})
-                          </span>
-                        </span>
-                        <span>•</span>
-                        <span>
-                          {lang === 'en' ? 'Margin' : lang === 'uk' ? 'Маржа' : lang === 'de' ? 'Marge' : 'Маржа'}:{' '}
-                          <strong className={unitProfit >= 0 ? 'text-emerald-400 font-mono' : 'text-rose-400 font-mono'}>
-                            {unitProfit >= 0 ? `+$${unitProfit.toLocaleString()}` : `-$${Math.abs(unitProfit).toLocaleString()}`} ({marginPct}%)
-                          </strong>
-                        </span>
-                        <span>•</span>
-                        <span>{t.production.totalCost}: <strong className="text-[var(--ink)]">${totalCost.toLocaleString()}</strong> / {lang === 'en' ? 'yr' : lang === 'uk' ? 'рік' : lang === 'de' ? 'Jahr' : 'год'}</span>
-                      </div>
-                      {isObsolete ? (
-                        <div className="text-[11px] text-rose-300 font-semibold mt-1">
-                          ⚠️ {lang === 'en' ? 'Model is obsolete (>20 yrs). Market demand for new cars has dropped to 0! Recommended to discontinue.' : lang === 'uk' ? 'Модель застаріла (>20 р.). Попит на нові авто впав до 0! Рекомендовано зняти з виробництва.' : lang === 'de' ? 'Modell veraltet (>20 J.). Nachfrage ist auf 0 gefallen!' : 'Модель морально устарела (>20 лет). Спрос на новые авто упал до 0! Рекомендуется снять с производства.'}
                         </div>
-                      ) : null}
-
-                      {/* LOSS WARNING & QUICK FIX BUTTON */}
-                      {model.salePrice < unitCost && (
-                        <div className="mt-2 p-2 rounded-lg bg-rose-950/40 border border-rose-600/60 flex flex-wrap items-center justify-between gap-2 text-xs">
-                          <span className="text-rose-200 font-semibold flex items-center gap-1.5">
-                            <span>⛔</span>
-                            <span>{lang === 'en' ? `Model sells at a loss (-$${(unitCost - model.salePrice).toLocaleString()} per unit)!` : lang === 'uk' ? `Модель продається у збиток (-$${(unitCost - model.salePrice).toLocaleString()} з кожного авто)!` : `Модель продается в убыток (-$${(unitCost - model.salePrice).toLocaleString()} с авто)!`}</span>
-                          </span>
+                        <div className="space-y-1">
+                          <div className="flex justify-between items-baseline">
+                            <span className="text-[var(--ink-secondary)]">{t.design.salePrice}:</span>
+                            <strong className="text-sm font-mono text-[var(--ink-value)]">${model.salePrice.toLocaleString()}</strong>
+                          </div>
+                          <div className="flex justify-between items-baseline text-[11px]">
+                            <span className="text-[var(--ink-secondary)]">{t.production.costPerUnit}:</span>
+                            <span className="font-mono text-[var(--ink)]">${unitCost.toLocaleString()}</span>
+                          </div>
+                          <div className="flex justify-between items-baseline pt-0.5 border-t border-[var(--border-subtle)]">
+                            <span className="text-[var(--ink-secondary)]">{lang === 'en' ? 'Margin' : lang === 'uk' ? 'Маржа' : 'Маржа'}:</span>
+                            <strong className={`font-mono text-xs ${unitProfit >= 0 ? 'text-emerald-500' : 'text-rose-500'}`}>
+                              {unitProfit >= 0 ? `+$${unitProfit.toLocaleString()}` : `-$${Math.abs(unitProfit).toLocaleString()}`} ({marginPct}%)
+                            </strong>
+                          </div>
+                        </div>
+                        {model.salePrice < unitCost ? (
                           <button
                             type="button"
                             onClick={async () => {
                               try {
                                 await saveVehicleModel({ ...model, salePrice: recPrice });
-                                setStatusMsg(
-                                  lang === 'en'
-                                    ? `Price for "${model.name}" updated to recommended market price $${recPrice.toLocaleString()}`
-                                    : lang === 'uk'
-                                    ? `Ціну на «${model.name}» виправлено на рекомендовану $${recPrice.toLocaleString()}`
-                                    : `Цена на «${model.name}» исправлена на рыночную $${recPrice.toLocaleString()}`
-                                );
+                                setStatusMsg(lang === 'en' ? `Price updated to $${recPrice}` : `Ціну оновлено на $${recPrice}`);
                               } catch (err) {
-                                setStatusMsg(`Ошибка: ${String(err)}`);
+                                setStatusMsg(String(err));
                               }
                             }}
-                            className="py-1 px-2.5 rounded bg-amber-500/20 hover:bg-amber-500/30 text-amber-950 dark:text-amber-200 border border-amber-500/60 text-[11px] font-bold flex items-center gap-1 cursor-pointer transition shadow-xs animate-pulse"
+                            className="w-full mt-1 py-1 px-2 rounded bg-amber-500/20 hover:bg-amber-500/30 text-amber-950 dark:text-amber-200 border border-amber-500/50 text-[10px] font-bold text-center animate-pulse cursor-pointer"
                           >
-                            <span>💡</span>
-                            <span>{lang === 'en' ? `Set price to $${recPrice.toLocaleString()}` : lang === 'uk' ? `Встановити ринкову ціну ($${recPrice.toLocaleString()})` : `Установить рыночную цену ($${recPrice.toLocaleString()})`}</span>
+                            💡 {lang === 'en' ? `Fix Price ($${recPrice.toLocaleString()})` : `Виправити ціну ($${recPrice.toLocaleString()})`}
                           </button>
+                        ) : (
+                          <span className="text-[10px] text-[var(--ink-secondary)] opacity-70 block text-right font-mono">
+                            💡 {lang === 'en' ? 'Rec:' : 'Рек:'} ${recPrice.toLocaleString()}
+                          </span>
+                        )}
+                      </div>
+
+                      {/* TILE 2: MARKET DEMAND & OVERPRODUCTION WARNING */}
+                      <div className="p-2.5 rounded-lg bg-[var(--paper)] border border-[var(--border-subtle)] flex flex-col justify-between space-y-1.5 text-xs shadow-2xs">
+                        <div className="flex items-center justify-between border-b border-[var(--border-subtle)] pb-1">
+                          <span className="font-bold text-[var(--ink-heading)] flex items-center gap-1">
+                            <span>📊</span>
+                            <span>{lang === 'en' ? 'Market Capacity' : lang === 'uk' ? 'Попит ринку' : 'Емкость рынка'}</span>
+                          </span>
+                          <span className="font-mono text-xs font-bold text-[var(--ink-value)]">
+                            ~{annualDemand} {lang === 'en' ? 'cars/yr' : lang === 'uk' ? 'авто/рік' : 'авто/год'}
+                          </span>
                         </div>
-                      )}
 
-                      {/* WAREHOUSE STOCK & SALES FOR LAST YEAR */}
-                      {(() => {
-                        const modelSales = gameState?.reportHistory?.[0]?.salesByModel?.[model.id];
-                        return (
-                          <div className="mt-2 p-2 rounded-md bg-[var(--paper)]/70 border border-[var(--border-subtle)] flex flex-wrap items-center justify-between gap-2 text-xs">
-                            <div className="flex items-center gap-2 flex-wrap">
-                              <span className="font-bold text-[var(--ink-heading)] flex items-center gap-1">
-                                <span>📦</span>
-                                <span>{lang === 'en' ? 'Last Year:' : lang === 'uk' ? 'Минулий рік:' : 'Итоги прошлого года:'}</span>
-                              </span>
-                              {modelSales ? (
-                                <>
-                                  <span className="text-[var(--ink-secondary)]">
-                                    {lang === 'en' ? 'Produced' : lang === 'uk' ? 'Випущено' : 'Выпущено'}: <strong className="text-[var(--ink)] font-mono">{modelSales.produced}</strong>
-                                  </span>
-                                  <span>•</span>
-                                  <span className="text-emerald-400">
-                                    {lang === 'en' ? 'Sold' : lang === 'uk' ? 'Продано' : 'Продано'}: <strong className="font-mono">{modelSales.sold}</strong>
-                                  </span>
-                                  <span>•</span>
-                                  <span className={modelSales.unsold > 0 ? 'text-amber-400 font-bold' : 'text-[var(--ink-secondary)]'}>
-                                    {lang === 'en' ? 'In Stock (Unsold)' : lang === 'uk' ? 'Залишок на складі' : 'Осталось на складе'}: <strong className="font-mono">{modelSales.unsold}</strong>
-                                  </span>
-                                </>
-                              ) : (
-                                <span className="text-[11px] text-[var(--ink-secondary)] italic">
-                                  {lang === 'en' ? 'No sales data yet' : lang === 'uk' ? 'Немає даних за минулий рік' : 'Нет данных за прошлый год (новая модель)'}
-                                </span>
-                              )}
+                        <div className="space-y-1">
+                          {isOverproducing ? (
+                            <div className="p-1.5 rounded bg-rose-500/15 border border-rose-500/40 text-rose-800 dark:text-rose-300 text-[11px] leading-tight">
+                              <div className="font-bold flex items-center gap-1">
+                                <span>⚠️</span>
+                                <span>{lang === 'en' ? 'Overproduction Risk!' : lang === 'uk' ? 'Ризик перевиробництва!' : 'Риск перепроизводства!'}</span>
+                              </div>
+                              <div className="mt-0.5 opacity-90">
+                                +{excessUnits} {lang === 'en' ? 'cars will stall in warehouse' : lang === 'uk' ? 'авто ляжуть на склад' : 'авто лягут на склад'}
+                                {frozenCapital > 0 ? ` (-$${frozenCapital.toLocaleString()})` : ''}
+                              </div>
                             </div>
+                          ) : planned > 0 ? (
+                            <div className="p-1.5 rounded bg-emerald-500/15 border border-emerald-500/40 text-emerald-800 dark:text-emerald-300 text-[11px] leading-tight flex items-center gap-1.5">
+                              <span>✅</span>
+                              <div>
+                                <strong className="block">{lang === 'en' ? 'Healthy Demand' : lang === 'uk' ? '100% Збут' : '100% Сбыт'}</strong>
+                                <span className="text-[10px] opacity-80">{lang === 'en' ? 'Quota fits market appetite' : lang === 'uk' ? 'План повністю покривається ринком' : 'Квота в пределах спроса'}</span>
+                              </div>
+                            </div>
+                          ) : (
+                            <p className="text-[11px] text-[var(--ink-secondary)] italic py-1">
+                              {lang === 'en' ? 'Line is paused (0 units planned)' : lang === 'uk' ? 'Виробництво зупинено (квота 0)' : 'Линия на паузе (квота 0)'}
+                            </p>
+                          )}
+                        </div>
 
-                            {modelSales && modelSales.unsold > 0 ? (
-                              <span className="text-[11px] px-2 py-0.5 rounded bg-amber-950/40 text-amber-300 border border-amber-600/40 font-semibold">
-                                ⚠️ {lang === 'en' ? `${modelSales.unsold} cars unsold in warehouse` : lang === 'uk' ? `${modelSales.unsold} авто не продано (на складі)` : `${modelSales.unsold} авто не продано (лежат на складе)`}
-                              </span>
-                            ) : modelSales && modelSales.produced > 0 ? (
-                              <span className="text-[11px] px-2 py-0.5 rounded bg-emerald-950/40 text-emerald-300 border border-emerald-600/40 font-semibold">
-                                ✨ {lang === 'en' ? '100% Sold Out' : lang === 'uk' ? '100% Розпродано' : '100% Распродано'}
-                              </span>
-                            ) : null}
+                        {/* Demand Saturation Bar */}
+                        <div className="space-y-0.5">
+                          <div className="flex justify-between text-[10px] text-[var(--ink-secondary)] font-mono">
+                            <span>{lang === 'en' ? 'Market load:' : lang === 'uk' ? 'Навантаження:' : 'Нагрузка:'}</span>
+                            <span className={isOverproducing ? 'text-rose-500 font-bold' : 'text-[var(--ink)]'}>
+                              {annualDemand > 0 ? Math.round((planned / annualDemand) * 100) : 0}%
+                            </span>
                           </div>
-                        );
-                      })()}
+                          <div className="w-full h-1.5 bg-[var(--surface-nested)] rounded-full overflow-hidden border border-[var(--border-subtle)]">
+                            <div
+                              className={`h-full transition-all duration-300 ${
+                                isOverproducing ? 'bg-rose-500' : planned > annualDemand * 0.8 ? 'bg-amber-500' : 'bg-emerald-500'
+                              }`}
+                              style={{ width: `${Math.min(100, annualDemand > 0 ? (planned / annualDemand) * 100 : 0)}%` }}
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* TILE 3: WAREHOUSE STOCK & PREVIOUS YEAR */}
+                      <div className="p-2.5 rounded-lg bg-[var(--paper)] border border-[var(--border-subtle)] flex flex-col justify-between space-y-1.5 text-xs shadow-2xs">
+                        <div className="flex items-center justify-between border-b border-[var(--border-subtle)] pb-1">
+                          <span className="font-bold text-[var(--ink-heading)] flex items-center gap-1">
+                            <span>📦</span>
+                            <span>{lang === 'en' ? 'Warehouse & History' : lang === 'uk' ? 'Склад і історія' : 'Склад и история'}</span>
+                          </span>
+                          <span className="text-[10px] text-[var(--ink-secondary)]">
+                            {warehouseStock} {lang === 'en' ? 'in stock' : lang === 'uk' ? 'на складі' : 'на складе'}
+                          </span>
+                        </div>
+
+                        <div className="space-y-1 text-[11px]">
+                          {modelSales ? (
+                            <div className="space-y-1">
+                              <div className="flex justify-between">
+                                <span className="text-[var(--ink-secondary)]">{lang === 'en' ? 'Last year built:' : lang === 'uk' ? 'Випущено торік:' : 'Выпуск торік:'}</span>
+                                <strong className="font-mono text-[var(--ink)]">{modelSales.produced}</strong>
+                              </div>
+                              <div className="flex justify-between">
+                                <span className="text-[var(--ink-secondary)]">{lang === 'en' ? 'Last year sold:' : lang === 'uk' ? 'Продано торік:' : 'Продано торік:'}</span>
+                                <strong className="font-mono text-emerald-500">{modelSales.sold}</strong>
+                              </div>
+                              <div className="flex justify-between border-t border-[var(--border-subtle)] pt-0.5">
+                                <span className="text-[var(--ink-secondary)]">{lang === 'en' ? 'Left in stock:' : lang === 'uk' ? 'Залишок на складі:' : 'Остаток склада:'}</span>
+                                <strong className={`font-mono ${modelSales.unsold > 0 ? 'text-amber-500' : 'text-[var(--ink-secondary)]'}`}>
+                                  {modelSales.unsold} {modelSales.unsold > 0 ? '⚠️' : '✓'}
+                                </strong>
+                              </div>
+                            </div>
+                          ) : (
+                            <p className="text-[11px] text-[var(--ink-secondary)] italic py-2">
+                              {lang === 'en' ? 'New model — no prior year history' : lang === 'uk' ? 'Нова модель — немає історії продажів' : 'Новая модель — нет истории'}
+                            </p>
+                          )}
+                        </div>
+
+                        <div className="text-[10px] text-[var(--ink-secondary)] opacity-80 pt-1 border-t border-[var(--border-subtle)]">
+                          {lang === 'en' ? 'Warehouse cars sell alongside new ones.' : lang === 'uk' ? 'Авто зі складу продаються першими.' : 'Авто со склада продаются первыми.'}
+                        </div>
+                      </div>
                     </div>
 
-                    {/* QUOTA INPUT & QUICK BUTTONS */}
-                    <div className="flex items-center gap-3">
-                      <div className="text-right">
-                        <label htmlFor={`quota-${model.id}`} className="block text-[10px] text-[var(--ink-secondary)] uppercase font-semibold">
-                          {t.production.plannedUnits}{' '}
-                          <span className="opacity-70 font-mono">
-                            ({lang === 'en' ? 'max' : lang === 'uk' ? 'макс' : lang === 'de' ? 'max' : 'макс'}: {maxForThisModel})
+                    {/* 3. INTEGRATED BOTTOM CONTROL BAR: MATERIALS & QUOTA INPUT */}
+                    <div className="pt-2.5 border-t border-[var(--border-subtle)] flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+                      {/* Materials required badges */}
+                      <div className="flex flex-wrap items-center gap-1.5">
+                        <span className="text-[10px] text-[var(--ink-secondary)] uppercase font-semibold mr-1">
+                          {lang === 'en' ? 'Per unit:' : lang === 'uk' ? 'На 1 авто:' : 'На 1 авто:'}
+                        </span>
+                        {Object.entries(req).map(([matKey, amount]) => {
+                          if (!amount || amount <= 0) return null;
+                          const m = matKey as MaterialType;
+                          const icon = MATERIAL_ICONS[m] ?? '📦';
+                          const name = t.materials[m] ?? m;
+                          const unit = t.materials.units[m] ?? 'ед.';
+
+                          return (
+                            <span
+                              key={matKey}
+                              className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] bg-[var(--paper)] border border-[var(--border-subtle)] text-[var(--ink)] shadow-2xs font-sans"
+                            >
+                              <span>{icon}</span>
+                              <span>{name}:</span>
+                              <strong className="text-[var(--ink-value)]">{amount} {unit}</strong>
+                            </span>
+                          );
+                        })}
+                      </div>
+
+                      {/* Quota Input Controls & Cost */}
+                      <div className="flex items-center gap-3 self-end lg:self-auto flex-wrap">
+                        <div className="text-right">
+                          <span className="text-[10px] text-[var(--ink-secondary)] font-mono block">
+                            {lang === 'en' ? 'Annual cost:' : lang === 'uk' ? 'Витрати на випуск:' : 'Затраты:'}{' '}
+                            <strong className="text-[var(--ink)] font-bold">${totalCost.toLocaleString()}</strong>
                           </span>
-                        </label>
-                        <div className="flex items-center gap-1 mt-0.5">
+                        </div>
+
+                        <div className="flex items-center gap-1">
                           <button
                             type="button"
-                            onClick={() => handlePlanChange(model.id, planned - 1)}
+                            onClick={() => handlePlanChange(model.id, planned - 1, true)}
                             disabled={planned <= 0}
-                            className="h-7 w-7 rounded bg-[var(--paper)] hover:bg-[var(--surface-nested)] disabled:opacity-30 font-bold era-heading text-xs flex items-center justify-center border border-[var(--border-subtle)] cursor-pointer shadow-2xs transition"
+                            className="h-7 w-7 rounded-md bg-[var(--paper)] hover:bg-[var(--surface-nested)] disabled:opacity-30 font-bold era-heading text-xs flex items-center justify-center border border-[var(--border-subtle)] cursor-pointer shadow-2xs transition"
                             title="-1"
                           >
                             -
@@ -707,92 +881,47 @@ export default function ProductionPage(): React.JSX.Element {
                             max={maxForThisModel}
                             step="1"
                             value={planned}
-                            onChange={(e) => handlePlanChange(model.id, Number(e.target.value))}
-                            className="w-16 rounded-lg era-input px-2 py-1 text-center text-xs font-bold font-mono text-[var(--ink)] shadow-inner"
+                            onChange={(e) => handlePlanChange(model.id, Number(e.target.value), false)}
+                            className="w-16 rounded-md era-input px-1.5 py-1 text-center text-xs font-bold font-mono text-[var(--ink)] shadow-inner"
                           />
                           <button
                             type="button"
-                            onClick={() => handlePlanChange(model.id, planned + 1)}
+                            onClick={() => handlePlanChange(model.id, planned + 1, true)}
                             disabled={planned >= maxForThisModel}
-                            className="h-7 w-7 rounded bg-[var(--paper)] hover:bg-[var(--surface-nested)] disabled:opacity-30 font-bold era-heading text-xs flex items-center justify-center border border-[var(--border-subtle)] cursor-pointer shadow-2xs transition"
+                            className="h-7 w-7 rounded-md bg-[var(--paper)] hover:bg-[var(--surface-nested)] disabled:opacity-30 font-bold era-heading text-xs flex items-center justify-center border border-[var(--border-subtle)] cursor-pointer shadow-2xs transition"
                             title="+1"
                           >
                             +
                           </button>
                           <button
                             type="button"
-                            onClick={() => handlePlanChange(model.id, maxForThisModel)}
-                            disabled={planned >= maxForThisModel}
-                            className="px-2 py-1 rounded bg-[var(--paper)] hover:bg-[var(--surface-nested)] disabled:opacity-30 border border-[var(--border-subtle)] text-[10px] font-bold era-label cursor-pointer shadow-2xs transition"
-                            title={lang === 'en' ? 'Take all remaining factory capacity' : lang === 'uk' ? 'Зайняти всю вільну потужність' : lang === 'de' ? 'Restkapazität belegen' : 'Занять весь свободный резерв цеха'}
+                            onClick={() => handlePlanChange(model.id, Math.floor(factory.capacity / 2), true)}
+                            disabled={factory.capacity <= 0}
+                            className="px-2 py-1 rounded-md bg-[var(--paper)] hover:bg-[var(--surface-nested)] disabled:opacity-30 border border-[var(--border-subtle)] text-[10px] font-bold era-label cursor-pointer shadow-2xs transition"
+                            title="50%"
                           >
-                            {lang === 'en' ? 'Max' : lang === 'uk' ? 'Макс' : lang === 'de' ? 'Max' : 'Макс'}
+                            50%
                           </button>
                           <button
                             type="button"
-                            onClick={() => handlePlanChange(model.id, 0)}
+                            onClick={() => handlePlanChange(model.id, maxForThisModel, true)}
+                            disabled={planned >= maxForThisModel}
+                            className="px-2 py-1 rounded-md bg-[var(--paper)] hover:bg-[var(--surface-nested)] disabled:opacity-30 border border-[var(--border-subtle)] text-[10px] font-bold era-label cursor-pointer shadow-2xs transition"
+                            title={lang === 'en' ? 'Take all remaining factory capacity' : lang === 'uk' ? 'Зайняти всю вільну потужність' : 'Занять весь резерв'}
+                          >
+                            {lang === 'en' ? 'Max' : lang === 'uk' ? 'Макс' : 'Макс'}
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handlePlanChange(model.id, 0, true)}
                             disabled={planned <= 0}
-                            className="px-1.5 py-1 rounded bg-[var(--paper)] hover:bg-rose-950/20 text-stone-500 hover:text-rose-600 disabled:opacity-30 border border-[var(--border-subtle)] text-[10px] font-bold cursor-pointer shadow-2xs transition"
-                            title={lang === 'en' ? 'Reset to 0' : 'Обнулить'}
+                            className="px-1.5 py-1 rounded-md bg-[var(--paper)] hover:bg-rose-950/20 text-stone-500 hover:text-rose-600 disabled:opacity-30 border border-[var(--border-subtle)] text-[10px] font-bold cursor-pointer shadow-2xs transition"
+                            title="0"
                           >
                             0
                           </button>
                         </div>
                       </div>
-
-                      <button
-                        type="button"
-                        onClick={async () => {
-                          try {
-                            await decommissionVehicleModel(model.id);
-                            setStatusMsg(
-                              lang === 'en'
-                                ? `Model "${model.name}" has been removed from production line`
-                                : lang === 'uk'
-                                ? `Модель «${model.name}» знята з виробничої лінії`
-                                : lang === 'de'
-                                ? `Modell „${model.name}“ von der Linie genommen`
-                                : `Модель «${model.name}» снята со сборочной линии`
-                            );
-                          } catch (err) {
-                            setStatusMsg(`Ошибка: ${String(err)}`);
-                          }
-                        }}
-                        className="self-end mb-0.5 py-1.5 px-2.5 rounded-lg border border-amber-600/40 bg-[var(--paper)] hover:bg-amber-950/20 text-amber-950 dark:text-amber-200 text-xs font-bold transition flex items-center gap-1 cursor-pointer shadow-xs"
-                        title={lang === 'en' ? 'Discontinue from production' : lang === 'uk' ? 'Зняти з виробництва' : lang === 'de' ? 'Produktion einstellen' : 'Снять с производства'}
-                      >
-                        <span>🛑</span>
-                        <span className="hidden sm:inline">{lang === 'en' ? 'Discontinue' : lang === 'uk' ? 'Зняти' : lang === 'de' ? 'Einstellen' : 'Снять'}</span>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* MATERIAL REQUIREMENTS PER UNIT */}
-                  <div className="mt-3 pt-2.5 border-t border-[var(--border-subtle)]">
-                    <span className="text-[10px] text-[var(--ink-secondary)] uppercase block font-semibold mb-1.5">
-                      {t.production.materialsRequiredPerUnit}:
-                    </span>
-                    <div className="flex flex-wrap gap-2">
-                      {Object.entries(req).map(([matKey, amount]) => {
-                        if (!amount || amount <= 0) return null;
-                        const m = matKey as MaterialType;
-                        const icon = MATERIAL_ICONS[m] ?? '📦';
-                        const name = t.materials[m] ?? m;
-                        const unit = t.materials.units[m] ?? 'ед.';
-
-                        return (
-                          <span
-                            key={matKey}
-                            className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[11px] bg-[var(--paper)] border border-[var(--border-subtle)] text-[var(--ink)] shadow-2xs font-sans"
-                          >
-                            <span>{icon}</span>
-                            <span>{name}:</span>
-                            <strong className="text-[var(--ink-value)]">{amount} {unit}</strong>
-                          </span>
-                        );
-                      })}
                     </div>
                   </div>
                 </div>

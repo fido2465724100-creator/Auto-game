@@ -8,6 +8,7 @@ interface Props {
   designYear?: number;
   className?: string;
   badge?: string;
+  hideWatermark?: boolean;
 }
 
 export function CarVisualThumbnail({
@@ -15,6 +16,7 @@ export function CarVisualThumbnail({
   designYear = 1900,
   className = '',
   badge,
+  hideWatermark = false,
 }: Props): React.JSX.Element {
   // Determine historical design aesthetic era based on vehicle design year
   const era: 'pioneer' | 'art_deco' | 'classic_fins' | 'aero_wedge' | 'modern' =
@@ -35,15 +37,18 @@ export function CarVisualThumbnail({
       className={`relative w-full rounded-lg overflow-hidden bg-gradient-to-b from-stone-900 via-stone-950 to-black border border-stone-800 shadow-inner flex items-center justify-center select-none ${className}`}
       style={{ minHeight: '84px' }}
     >
-      {/* Vignette & Ambient Glow */}
-      <div className="absolute inset-0 bg-radial from-amber-500/5 via-transparent to-black/60 pointer-events-none" />
+      {/* Studio Showroom Vignette & Spotlight */}
+      <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-stone-950 via-stone-900/40 to-transparent pointer-events-none" />
+      <div className="absolute inset-0 bg-radial from-amber-500/10 via-transparent to-black/75 pointer-events-none" />
 
       {/* ERA & SEGMENT WATERMARK */}
-      <div className="absolute top-1 left-2 text-[9px] font-mono font-bold tracking-wider text-stone-500 uppercase flex items-center gap-1 z-10">
-        <span>{designYear}</span>
-        <span>•</span>
-        <span>{segment}</span>
-      </div>
+      {!hideWatermark && (
+        <div className="absolute top-1 left-2 text-[9px] font-mono font-bold tracking-wider text-stone-500 uppercase flex items-center gap-1 z-10">
+          <span>{designYear}</span>
+          <span>•</span>
+          <span>{segment}</span>
+        </div>
+      )}
 
       {badge && (
         <div className="absolute top-1 right-2 text-[9px] font-bold px-1.5 py-0.2 rounded bg-amber-500/20 text-amber-300 border border-amber-500/40 z-10">
@@ -54,7 +59,7 @@ export function CarVisualThumbnail({
       {/* SVG CAR RENDER */}
       <svg
         viewBox="0 0 320 120"
-        className="w-full h-full max-h-28 object-contain drop-shadow-md relative z-0"
+        className="w-full h-full max-h-[88%] object-contain drop-shadow-xl relative z-0"
       >
         <defs>
           {/* Ground Shadow */}
