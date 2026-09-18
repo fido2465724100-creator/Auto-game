@@ -236,6 +236,18 @@ export interface SalesResult {
   revenue: number;
 }
 
+export interface ModelSalesRecord {
+  modelId: string;
+  modelName: string;
+  segment: VehicleSegment;
+  produced: number;
+  sold: number;
+  unsold: number;
+  revenue: number;
+  unitPrice: number;
+  unitCost: number;
+}
+
 export interface MonthlyReport {
   id: string;
   date: GameDate;
@@ -250,6 +262,7 @@ export interface MonthlyReport {
   eventNotes: string[];
   competitorNews?: string[];
   salesByRegion: Record<RegionId, number>;
+  salesByModel?: Record<string, ModelSalesRecord>;
   materialsConsumed?: Partial<Record<MaterialType, number>>;
   materialExpenses?: number;
   capacityUsed?: number;

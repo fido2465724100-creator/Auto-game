@@ -21,6 +21,7 @@ import type {
   Competitor,
   CompetitorMilestone,
   GlobalManufacturerRanking,
+  ModelSalesRecord,
 } from '@ait/shared-types';
 
 export const MATERIALS_CATALOG: MaterialMarketItem[] = [
@@ -684,10 +685,13 @@ export function runEndTurn(input: EndTurnInput): EndTurnOutput {
 
   let unitsSold = 0;
   let revenue = 0;
+  const salesByModel: Record<string, ModelSalesRecord> = {};
 
   for (const model of currentState.vehicleModels.filter((item) => item.active)) {
-    let modelStock = producedByModel[model.id] ?? 0;
-    if (modelStock <= 0) continue;
+    const initialStock = producedByModel[model.id] ?? 0;
+    let modelStock = initialStock;
+    let modelUnitsSold = 0;
+    let modelRevenue = 0;
 
     for (const region of input.regions) {
       if (modelStock <= 0) {
@@ -716,8 +720,24 @@ export function runEndTurn(input: EndTurnInput): EndTurnOutput {
 
       unitsSold += sold;
       modelStock -= sold;
+      modelUnitsSold += sold;
+      modelRevenue += sold * model.salePrice;
       salesByRegion[region.id] += sold;
       revenue += sold * model.salePrice;
+    }
+
+    if (initialStock > 0 || modelUnitsSold > 0) {
+      salesByModel[model.id] = {
+        modelId: model.id,
+        modelName: model.name,
+        segment: model.targetSegment,
+        produced: initialStock,
+        sold: modelUnitsSold,
+        unsold: Math.max(0, initialStock - modelUnitsSold),
+        revenue: modelRevenue,
+        unitPrice: model.salePrice,
+        unitCost: model.productionCost,
+      };
     }
   }
 
@@ -879,6 +899,7 @@ export function runEndTurn(input: EndTurnInput): EndTurnOutput {
     ],
     competitorNews,
     salesByRegion,
+    salesByModel,
     materialsConsumed,
     materialExpenses: materialProcurementCost,
     capacityUsed: producedUnits,

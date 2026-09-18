@@ -234,6 +234,36 @@ export function MorningGazetteModal(props: Props = {}): React.JSX.Element | null
               </p>
             )}
 
+            {/* Model Sales & Warehouse Inventory */}
+            {report.salesByModel && Object.keys(report.salesByModel).length > 0 && (
+              <div className="space-y-1.5 pt-2 border-t border-stone-300">
+                <h4 className="font-bold text-[11px] uppercase tracking-wider text-stone-900 flex items-center justify-between">
+                  <span>{lang === 'en' ? '📦 Models & Inventory' : lang === 'uk' ? '📦 Моделі та склад' : lang === 'de' ? '📦 Modelle & Lager' : '📦 Модели и склад'}</span>
+                </h4>
+                <div className="space-y-1 text-[11px]">
+                  {Object.values(report.salesByModel).map((sm) => (
+                    <div key={sm.modelId} className="bg-white/80 p-1.5 rounded border border-stone-200">
+                      <div className="flex justify-between font-semibold text-stone-900">
+                        <span>{sm.modelName}</span>
+                        <span className="font-mono text-emerald-800">${sm.revenue.toLocaleString()}</span>
+                      </div>
+                      <div className="flex justify-between text-stone-600 text-[10px] mt-0.5">
+                        <span>
+                          {lang === 'en' ? 'Sold' : lang === 'uk' ? 'Продано' : 'Продано'}: <strong className="text-emerald-700">{sm.sold}</strong> / {sm.produced}
+                        </span>
+                        <span>
+                          {lang === 'en' ? 'Stock' : lang === 'uk' ? 'Склад' : 'Склад'}:{' '}
+                          <strong className={sm.unsold > 0 ? 'text-amber-800 font-bold' : 'text-stone-500'}>
+                            {sm.unsold} {lang === 'en' ? 'unsold' : lang === 'uk' ? 'залишок' : 'не продано'}
+                          </strong>
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {report.shortageOccurred && (
               <div className="bg-rose-100 border border-rose-300 p-2 rounded text-[11px] text-rose-900 mt-2">
                 <strong>

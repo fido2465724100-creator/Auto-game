@@ -14,6 +14,7 @@ import { useGame } from '../../context/GameContext';
 import { useLanguage } from '../../lib/i18n';
 import { api } from '../../lib/api';
 import { CarBlueprintSilhouette } from '../CarBlueprintSilhouette';
+import { evaluateVehiclePrice } from '../../lib/pricingHelper';
 
 const MATERIAL_ICONS: Record<MaterialType, string> = {
   wood: '🪵',
@@ -138,6 +139,19 @@ export const VehicleDesignView: React.FC = () => {
   const handleSaveModel = async (e: React.FormEvent): Promise<void> => {
     e.preventDefault();
     if (!name.trim()) return;
+
+    if (salePrice < calculatedSpecs.productionCost) {
+      const confirmLoss = window.confirm(
+        lang === 'en'
+          ? `WARNING: The price ($${salePrice.toLocaleString()}) is lower than the production cost ($${calculatedSpecs.productionCost.toLocaleString()}). You will lose money on every car sold! Do you really want to save this model?`
+          : lang === 'uk'
+          ? `УВАГА: Ціна ($${salePrice.toLocaleString()}) нижча за собівартість складання ($${calculatedSpecs.productionCost.toLocaleString()}). Завод буде нести прямі збитки на кожному авто! Ви дійсно бажаєте затвердити цю модель?`
+          : lang === 'de'
+          ? `ACHTUNG: Der Verkaufspreis ($${salePrice.toLocaleString()}) liegt unter den Produktionskosten ($${calculatedSpecs.productionCost.toLocaleString()}). Sie machen Verlust! Trotzdem fortfahren?`
+          : `ВНИМАНИЕ: Отпускная цена ($${salePrice.toLocaleString()}) ниже себестоимости сборки ($${calculatedSpecs.productionCost.toLocaleString()}). Завод будет нести прямой убыток с каждого проданного авто! Вы уверены, что хотите утвердить убыточную цену?`
+      );
+      if (!confirmLoss) return;
+    }
 
     setSaving(true);
     setStatusMessage(null);
@@ -549,6 +563,15 @@ export const VehicleDesignView: React.FC = () => {
                   className="mt-1 w-full rounded-lg era-input px-3 py-2 text-[var(--ink)] font-mono font-bold text-base shadow-inner"
                   required
                 />
+                {/* LIVE PRICE EVALUATION FEEDBACK */}
+                {(() => {
+                  const evalTag = evaluateVehiclePrice(salePrice, calculatedSpecs.productionCost, recommendedPrice, lang);
+                  return (
+                    <div className={`mt-1.5 px-2.5 py-1.5 rounded text-xs flex items-start gap-1.5 ${evalTag.badgeClass}`}>
+                      <span>{evalTag.detail}</span>
+                    </div>
+                  );
+                })()}
               </div>
 
               <div className="flex justify-between border-t border-[var(--border-subtle)] pt-2">
@@ -697,34 +720,53 @@ export const VehicleDesignView: React.FC = () => {
                           <div className="flex items-center justify-between">
                             <span>{t.design.salePrice}:</span>
                             {editingPriceModelId === m.id ? (
-                              <div className="flex items-center gap-1">
-                                <input
-                                  type="number"
-                                  value={editingPriceValue}
-                                  onChange={(e) => setEditingPriceValue(Number(e.target.value))}
-                                  step={50}
-                                  min={m.productionCost}
-                                  className="w-20 rounded era-input px-1.5 py-0.5 text-xs font-mono font-bold text-[var(--ink)] shadow-inner"
-                                />
-                                <button
-                                  type="button"
-                                  onClick={async () => {
-                                    await saveVehicleModel({ ...m, salePrice: editingPriceValue });
-                                    setEditingPriceModelId(null);
-                                  }}
-                                  className="px-2 py-0.5 rounded bg-emerald-700 hover:bg-emerald-600 text-white text-[11px] font-bold cursor-pointer shadow-2xs"
-                                  title="Сохранить цену"
-                                >
-                                  ✓
-                                </button>
-                                <button
-                                  type="button"
-                                  onClick={() => setEditingPriceModelId(null)}
-                                  className="px-1.5 py-0.5 rounded bg-stone-700 text-white text-[11px] cursor-pointer"
-                                  title="Отмена"
-                                >
-                                  ✕
-                                </button>
+                              <div className="flex flex-col items-end gap-1">
+                                <div className="flex items-center gap-1">
+                                  <input
+                                    type="number"
+                                    value={editingPriceValue}
+                                    onChange={(e) => setEditingPriceValue(Number(e.target.value))}
+                                    step={50}
+                                    min={100}
+                                    className="w-20 rounded era-input px-1.5 py-0.5 text-xs font-mono font-bold text-[var(--ink)] shadow-inner"
+                                  />
+                                  <button
+                                    type="button"
+                                    onClick={() => setEditingPriceValue(calculateRecommendedSalePrice(m.targetSegment, m.productionCost))}
+                                    className="px-1.5 py-0.5 rounded bg-[var(--paper)] hover:bg-[var(--surface-nested)] border border-[var(--border-subtle)] text-[10px] font-bold text-[var(--accent-gold)] cursor-pointer"
+                                    title={lang === 'en' ? 'Apply recommended market price' : lang === 'uk' ? 'Встановити рек. ціну' : 'Установить рекомендованную цену'}
+                                  >
+                                    💡 {calculateRecommendedSalePrice(m.targetSegment, m.productionCost)}
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={async () => {
+                                      await saveVehicleModel({ ...m, salePrice: editingPriceValue });
+                                      setEditingPriceModelId(null);
+                                    }}
+                                    className="px-2 py-0.5 rounded bg-emerald-700 hover:bg-emerald-600 text-white text-[11px] font-bold cursor-pointer shadow-2xs"
+                                    title="Сохранить цену"
+                                  >
+                                    ✓
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={() => setEditingPriceModelId(null)}
+                                    className="px-1.5 py-0.5 rounded bg-stone-700 text-white text-[11px] cursor-pointer"
+                                    title="Отмена"
+                                  >
+                                    ✕
+                                  </button>
+                                </div>
+                                {(() => {
+                                  const rec = calculateRecommendedSalePrice(m.targetSegment, m.productionCost);
+                                  const evalTag = evaluateVehiclePrice(editingPriceValue, m.productionCost, rec, lang);
+                                  return (
+                                    <span className={`text-[10px] px-1.5 py-0.5 rounded ${evalTag.badgeClass}`}>
+                                      {evalTag.shortLabel}: {evalTag.detail}
+                                    </span>
+                                  );
+                                })()}
                               </div>
                             ) : (
                               <div className="flex items-center gap-1.5">
@@ -743,19 +785,89 @@ export const VehicleDesignView: React.FC = () => {
                               </div>
                             )}
                           </div>
+
+                          {/* Recommended price & market feedback badge when not editing */}
+                          {editingPriceModelId !== m.id && (() => {
+                            const rec = calculateRecommendedSalePrice(m.targetSegment, m.productionCost);
+                            const evalTag = evaluateVehiclePrice(m.salePrice, m.productionCost, rec, lang);
+                            return (
+                              <div className="flex items-center justify-between text-[11px] pt-0.5">
+                                <span className="text-[var(--ink-secondary)]">
+                                  💡 {lang === 'en' ? 'Rec:' : lang === 'uk' ? 'Рек:' : 'Рек:'} <strong className="text-[var(--accent-gold)]">${rec.toLocaleString()}</strong>
+                                </span>
+                                <span className={`text-[10px] px-1.5 py-0.2 rounded font-semibold ${evalTag.badgeClass}`}>
+                                  {evalTag.shortLabel}
+                                </span>
+                              </div>
+                            );
+                          })()}
+
                           <div className="flex justify-between">
                             <span>{t.production.plannedUnits}:</span>
                             <span className="font-mono font-bold text-[var(--ink)]">
                               {gameState?.productionPlan?.[m.id] ?? 0} {t.topbar.unitsQuarter}
                             </span>
                           </div>
+
                           <div className="flex justify-between border-t border-[var(--border-subtle)] pt-1.5 font-bold">
                             <span>{t.design.unitProfit}:</span>
-                            <span className="font-mono text-emerald-400">
-                              +${m.salePrice - m.productionCost} ({Math.round(((m.salePrice - m.productionCost) / (m.salePrice || 1)) * 100)}%)
+                            <span
+                              className={`font-mono ${
+                                m.salePrice >= m.productionCost ? 'text-emerald-400' : 'text-rose-400 font-bold'
+                              }`}
+                            >
+                              {m.salePrice >= m.productionCost
+                                ? `+$${(m.salePrice - m.productionCost).toLocaleString()}`
+                                : `-$${Math.abs(m.salePrice - m.productionCost).toLocaleString()}`}{' '}
+                              ({Math.round(((m.salePrice - m.productionCost) / (m.salePrice || 1)) * 100)}%)
                             </span>
                           </div>
                         </div>
+
+                        {/* WAREHOUSE & SALES HISTORY */}
+                        {(() => {
+                          const modelSales = gameState?.reportHistory?.[0]?.salesByModel?.[m.id];
+                          return (
+                            <div className="mt-2 rounded-lg p-2 bg-[var(--surface-nested)] border border-[var(--border-subtle)] space-y-1 text-xs">
+                              <div className="flex items-center justify-between font-bold text-[var(--ink-heading)]">
+                                <span className="flex items-center gap-1">
+                                  <span>📦</span>
+                                  <span>{lang === 'en' ? 'Stock & Sales (Last Year):' : lang === 'uk' ? 'Склад та продажі (за рік):' : 'Склад и продажи (за прошлый год):'}</span>
+                                </span>
+                                {modelSales && modelSales.unsold > 0 ? (
+                                  <span className="text-[10px] px-1.5 py-0.2 rounded bg-amber-950/60 text-amber-300 border border-amber-600/40">
+                                    {lang === 'en' ? `${modelSales.unsold} in stock` : lang === 'uk' ? `${modelSales.unsold} на складі` : `${modelSales.unsold} на складе`}
+                                  </span>
+                                ) : modelSales && modelSales.produced > 0 ? (
+                                  <span className="text-[10px] px-1.5 py-0.2 rounded bg-emerald-950/60 text-emerald-300 border border-emerald-600/40">
+                                    {lang === 'en' ? '100% Sold' : lang === 'uk' ? '100% Продано' : '100% Продано'}
+                                  </span>
+                                ) : null}
+                              </div>
+
+                              {modelSales ? (
+                                <div className="grid grid-cols-3 gap-1 text-center pt-1 border-t border-[var(--border-subtle)] text-[11px]">
+                                  <div className="bg-[var(--paper)]/60 rounded p-1">
+                                    <span className="block text-[10px] text-[var(--ink-secondary)]">{lang === 'en' ? 'Produced' : lang === 'uk' ? 'Випущено' : 'Выпущено'}</span>
+                                    <span className="font-mono font-bold text-[var(--ink)]">{modelSales.produced}</span>
+                                  </div>
+                                  <div className="bg-[var(--paper)]/60 rounded p-1">
+                                    <span className="block text-[10px] text-emerald-400">{lang === 'en' ? 'Sold' : lang === 'uk' ? 'Продано' : 'Продано'}</span>
+                                    <span className="font-mono font-bold text-emerald-400">{modelSales.sold}</span>
+                                  </div>
+                                  <div className={`rounded p-1 ${modelSales.unsold > 0 ? 'bg-amber-950/30 text-amber-400 font-bold border border-amber-800/40' : 'bg-[var(--paper)]/60 text-[var(--ink-secondary)]'}`}>
+                                    <span className="block text-[10px]">{lang === 'en' ? 'In Stock' : lang === 'uk' ? 'На складі' : 'Остаток на складе'}</span>
+                                    <span className="font-mono font-bold">{modelSales.unsold}</span>
+                                  </div>
+                                </div>
+                              ) : (
+                                <div className="text-[10px] text-[var(--ink-secondary)] italic">
+                                  {lang === 'en' ? 'No sales data yet for this model' : lang === 'uk' ? 'Ще немає даних про продажі цієї моделі' : 'Нет данных за прошлый год (новая модель)'}
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })()}
 
                       {/* DECOMMISSION / DISCONTINUE BUTTON */}
                       <button

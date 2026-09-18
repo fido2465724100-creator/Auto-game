@@ -5,7 +5,7 @@ import { useLanguage } from '../../lib/i18n';
 
 export default function ReportsPage(): React.JSX.Element {
   const { gameState, loading } = useGame();
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
 
   if (loading) return <p className="py-8 text-center text-stone-600">Загрузка архива отчетов...</p>;
 
@@ -133,6 +133,36 @@ export default function ReportsPage(): React.JSX.Element {
                       {t.regions[reg as keyof typeof t.regions] ?? reg.replace('-', ' ')}: <strong className="text-[var(--ink)] font-mono">{units} {t.production.unitsShort}</strong>
                     </span>
                   ))}
+                </div>
+              ) : null}
+
+              {/* Sales & Inventory by Model */}
+              {report.salesByModel && Object.keys(report.salesByModel).length > 0 ? (
+                <div className="text-[11px] border-t border-[var(--border-subtle)] pt-2 space-y-1.5 font-sans">
+                  <div className="font-bold text-[var(--ink-heading)] flex items-center gap-1.5">
+                    <span>📦</span>
+                    <span>{lang === 'en' ? 'Sales & Inventory by Model:' : lang === 'uk' ? 'Продажі та залишки за моделями:' : 'Продажи и остатки по моделям:'}</span>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
+                    {Object.values(report.salesByModel).map((sm) => (
+                      <div key={sm.modelId} className="bg-[var(--surface-nested)] p-2 rounded border border-[var(--border-subtle)] space-y-0.5">
+                        <div className="flex justify-between font-bold text-[var(--ink)]">
+                          <span>{sm.modelName}</span>
+                          <span className="font-mono text-emerald-400">+${sm.revenue.toLocaleString()}</span>
+                        </div>
+                        <div className="text-[11px] flex justify-between text-[var(--ink-secondary)]">
+                          <span>{lang === 'en' ? 'Sold' : lang === 'uk' ? 'Продано' : 'Продано'}:</span>
+                          <span className="font-mono font-bold text-[var(--ink)]">{sm.sold} / {sm.produced}</span>
+                        </div>
+                        <div className="text-[11px] flex justify-between">
+                          <span className="text-[var(--ink-secondary)]">{lang === 'en' ? 'In Stock (Unsold)' : lang === 'uk' ? 'Залишок на складі' : 'Осталось на складе'}:</span>
+                          <span className={`font-mono font-bold ${sm.unsold > 0 ? 'text-amber-400' : 'text-stone-400'}`}>
+                            {sm.unsold}
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               ) : null}
             </article>

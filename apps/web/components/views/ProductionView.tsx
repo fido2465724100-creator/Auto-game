@@ -2,10 +2,11 @@
 
 import { useEffect, useState } from 'react';
 import type { MaterialMarketItem, MaterialType } from '@ait/shared-types';
-import { calculatePremisesRent } from '@ait/game-engine';
+import { calculatePremisesRent, calculateRecommendedSalePrice } from '@ait/game-engine';
 import { useGame } from '../../context/GameContext';
 import { useLanguage } from '../../lib/i18n';
 import { api } from '../../lib/api';
+import { evaluateVehiclePrice } from '../../lib/pricingHelper';
 
 const MATERIAL_ICONS: Record<MaterialType, string> = {
   wood: '🪵',
@@ -448,6 +449,8 @@ export default function ProductionPage(): React.JSX.Element {
               const isAging = age >= 9 && age < 20;
               const unitProfit = model.salePrice - unitCost;
               const marginPct = Math.round((unitProfit / (model.salePrice || 1)) * 100);
+              const recPrice = calculateRecommendedSalePrice(model.targetSegment, unitCost);
+              const priceEval = evaluateVehiclePrice(model.salePrice, unitCost, recPrice, lang);
 
               return (
                 <div
@@ -481,7 +484,15 @@ export default function ProductionPage(): React.JSX.Element {
                       <div className="flex items-center gap-4 mt-1 text-xs text-[var(--ink-secondary)] font-sans flex-wrap">
                         <span>{t.production.costPerUnit}: <strong className="text-[var(--ink)]">${unitCost.toLocaleString()}</strong></span>
                         <span>•</span>
-                        <span>{t.design.salePrice}: <strong className="text-[var(--ink-value)]">${model.salePrice.toLocaleString()}</strong></span>
+                        <span className="flex items-center gap-1.5">
+                          <span>{t.design.salePrice}: <strong className="text-[var(--ink-value)]">${model.salePrice.toLocaleString()}</strong></span>
+                          <span className={`text-[10px] px-1.5 py-0.2 rounded font-semibold ${priceEval.badgeClass}`}>
+                            {priceEval.shortLabel}
+                          </span>
+                          <span className="text-[10px] opacity-75 font-mono">
+                            (💡 Рек.: ${recPrice.toLocaleString()})
+                          </span>
+                        </span>
                         <span>•</span>
                         <span>
                           {lang === 'en' ? 'Margin' : lang === 'uk' ? 'Маржа' : lang === 'de' ? 'Marge' : 'Маржа'}:{' '}
@@ -497,6 +508,50 @@ export default function ProductionPage(): React.JSX.Element {
                           ⚠️ {lang === 'en' ? 'Model is obsolete (>20 yrs). Market demand for new cars has dropped to 0! Recommended to discontinue.' : lang === 'uk' ? 'Модель застаріла (>20 р.). Попит на нові авто впав до 0! Рекомендовано зняти з виробництва.' : lang === 'de' ? 'Modell veraltet (>20 J.). Nachfrage ist auf 0 gefallen!' : 'Модель морально устарела (>20 лет). Спрос на новые авто упал до 0! Рекомендуется снять с производства.'}
                         </div>
                       ) : null}
+
+                      {/* WAREHOUSE STOCK & SALES FOR LAST YEAR */}
+                      {(() => {
+                        const modelSales = gameState?.reportHistory?.[0]?.salesByModel?.[model.id];
+                        return (
+                          <div className="mt-2 p-2 rounded-md bg-[var(--paper)]/70 border border-[var(--border-subtle)] flex flex-wrap items-center justify-between gap-2 text-xs">
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <span className="font-bold text-[var(--ink-heading)] flex items-center gap-1">
+                                <span>📦</span>
+                                <span>{lang === 'en' ? 'Last Year:' : lang === 'uk' ? 'Минулий рік:' : 'Итоги прошлого года:'}</span>
+                              </span>
+                              {modelSales ? (
+                                <>
+                                  <span className="text-[var(--ink-secondary)]">
+                                    {lang === 'en' ? 'Produced' : lang === 'uk' ? 'Випущено' : 'Выпущено'}: <strong className="text-[var(--ink)] font-mono">{modelSales.produced}</strong>
+                                  </span>
+                                  <span>•</span>
+                                  <span className="text-emerald-400">
+                                    {lang === 'en' ? 'Sold' : lang === 'uk' ? 'Продано' : 'Продано'}: <strong className="font-mono">{modelSales.sold}</strong>
+                                  </span>
+                                  <span>•</span>
+                                  <span className={modelSales.unsold > 0 ? 'text-amber-400 font-bold' : 'text-[var(--ink-secondary)]'}>
+                                    {lang === 'en' ? 'In Stock (Unsold)' : lang === 'uk' ? 'Залишок на складі' : 'Осталось на складе'}: <strong className="font-mono">{modelSales.unsold}</strong>
+                                  </span>
+                                </>
+                              ) : (
+                                <span className="text-[11px] text-[var(--ink-secondary)] italic">
+                                  {lang === 'en' ? 'No sales data yet' : lang === 'uk' ? 'Немає даних за минулий рік' : 'Нет данных за прошлый год (новая модель)'}
+                                </span>
+                              )}
+                            </div>
+
+                            {modelSales && modelSales.unsold > 0 ? (
+                              <span className="text-[11px] px-2 py-0.5 rounded bg-amber-950/40 text-amber-300 border border-amber-600/40 font-semibold">
+                                ⚠️ {lang === 'en' ? `${modelSales.unsold} cars unsold in warehouse` : lang === 'uk' ? `${modelSales.unsold} авто не продано (на складі)` : `${modelSales.unsold} авто не продано (лежат на складе)`}
+                              </span>
+                            ) : modelSales && modelSales.produced > 0 ? (
+                              <span className="text-[11px] px-2 py-0.5 rounded bg-emerald-950/40 text-emerald-300 border border-emerald-600/40 font-semibold">
+                                ✨ {lang === 'en' ? '100% Sold Out' : lang === 'uk' ? '100% Розпродано' : '100% Распродано'}
+                              </span>
+                            ) : null}
+                          </div>
+                        );
+                      })()}
                     </div>
 
                     {/* QUOTA INPUT & QUICK BUTTONS */}
