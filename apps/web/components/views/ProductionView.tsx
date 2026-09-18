@@ -25,6 +25,7 @@ export default function ProductionPage(): React.JSX.Element {
     setAutoProcurement,
     expandFactory,
     decommissionVehicleModel,
+    saveVehicleModel,
   } = useGame();
   const { t, lang } = useLanguage();
 
@@ -508,6 +509,37 @@ export default function ProductionPage(): React.JSX.Element {
                           ⚠️ {lang === 'en' ? 'Model is obsolete (>20 yrs). Market demand for new cars has dropped to 0! Recommended to discontinue.' : lang === 'uk' ? 'Модель застаріла (>20 р.). Попит на нові авто впав до 0! Рекомендовано зняти з виробництва.' : lang === 'de' ? 'Modell veraltet (>20 J.). Nachfrage ist auf 0 gefallen!' : 'Модель морально устарела (>20 лет). Спрос на новые авто упал до 0! Рекомендуется снять с производства.'}
                         </div>
                       ) : null}
+
+                      {/* LOSS WARNING & QUICK FIX BUTTON */}
+                      {model.salePrice < unitCost && (
+                        <div className="mt-2 p-2 rounded-lg bg-rose-950/40 border border-rose-600/60 flex flex-wrap items-center justify-between gap-2 text-xs">
+                          <span className="text-rose-200 font-semibold flex items-center gap-1.5">
+                            <span>⛔</span>
+                            <span>{lang === 'en' ? `Model sells at a loss (-$${(unitCost - model.salePrice).toLocaleString()} per unit)!` : lang === 'uk' ? `Модель продається у збиток (-$${(unitCost - model.salePrice).toLocaleString()} з кожного авто)!` : `Модель продается в убыток (-$${(unitCost - model.salePrice).toLocaleString()} с авто)!`}</span>
+                          </span>
+                          <button
+                            type="button"
+                            onClick={async () => {
+                              try {
+                                await saveVehicleModel({ ...model, salePrice: recPrice });
+                                setStatusMsg(
+                                  lang === 'en'
+                                    ? `Price for "${model.name}" updated to recommended market price $${recPrice.toLocaleString()}`
+                                    : lang === 'uk'
+                                    ? `Ціну на «${model.name}» виправлено на рекомендовану $${recPrice.toLocaleString()}`
+                                    : `Цена на «${model.name}» исправлена на рыночную $${recPrice.toLocaleString()}`
+                                );
+                              } catch (err) {
+                                setStatusMsg(`Ошибка: ${String(err)}`);
+                              }
+                            }}
+                            className="py-1 px-2.5 rounded bg-amber-500/20 hover:bg-amber-500/30 text-amber-950 dark:text-amber-200 border border-amber-500/60 text-[11px] font-bold flex items-center gap-1 cursor-pointer transition shadow-xs animate-pulse"
+                          >
+                            <span>💡</span>
+                            <span>{lang === 'en' ? `Set price to $${recPrice.toLocaleString()}` : lang === 'uk' ? `Встановити ринкову ціну ($${recPrice.toLocaleString()})` : `Установить рыночную цену ($${recPrice.toLocaleString()})`}</span>
+                          </button>
+                        </div>
+                      )}
 
                       {/* WAREHOUSE STOCK & SALES FOR LAST YEAR */}
                       {(() => {

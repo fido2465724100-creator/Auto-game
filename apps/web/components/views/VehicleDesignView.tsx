@@ -67,6 +67,7 @@ export const VehicleDesignView: React.FC = () => {
     package: 'package-none',
   });
   const [salePrice, setSalePrice] = useState<number>(SEGMENT_PROFILES.economy.baseSalePrice);
+  const [isPriceCustomized, setIsPriceCustomized] = useState<boolean>(false);
 
   const factoryCapacity = gameState?.company.factory?.capacity ?? gameState?.company.productionCapacity ?? 4;
   const currentPlan = gameState?.productionPlan ?? {};
@@ -82,6 +83,7 @@ export const VehicleDesignView: React.FC = () => {
 
   const handleSegmentChange = (newSegment: VehicleSegment): void => {
     setSegment(newSegment);
+    setIsPriceCustomized(false);
     const specs = calculateVehicleSpecs(
       newSegment,
       selectedComponents,
@@ -124,6 +126,12 @@ export const VehicleDesignView: React.FC = () => {
   const recommendedPrice = useMemo(() => {
     return calculateRecommendedSalePrice(segment, calculatedSpecs.productionCost);
   }, [segment, calculatedSpecs.productionCost]);
+
+  useEffect(() => {
+    if (!isPriceCustomized && recommendedPrice > 0) {
+      setSalePrice(recommendedPrice);
+    }
+  }, [recommendedPrice, isPriceCustomized]);
 
   const selectedEngine = availableComponents.find((c) => c.id === selectedComponents.engine);
   const isCrankPenaltyActive =
@@ -546,7 +554,10 @@ export const VehicleDesignView: React.FC = () => {
                   </label>
                   <button
                     type="button"
-                    onClick={() => setSalePrice(recommendedPrice)}
+                    onClick={() => {
+                      setIsPriceCustomized(false);
+                      setSalePrice(recommendedPrice);
+                    }}
                     className="text-[11px] font-bold text-[var(--accent-gold)] hover:underline cursor-pointer flex items-center gap-1"
                     title={lang === 'en' ? 'Apply recommended market price' : lang === 'uk' ? 'Встановити рекомендовану ринкову ціну' : lang === 'de' ? 'Empfohlenen Preis setzen' : 'Применить рекомендованную цену'}
                   >
@@ -559,7 +570,10 @@ export const VehicleDesignView: React.FC = () => {
                   min={100}
                   step={50}
                   value={salePrice}
-                  onChange={(e) => setSalePrice(Number(e.target.value))}
+                  onChange={(e) => {
+                    setIsPriceCustomized(true);
+                    setSalePrice(Number(e.target.value));
+                  }}
                   className="mt-1 w-full rounded-lg era-input px-3 py-2 text-[var(--ink)] font-mono font-bold text-base shadow-inner"
                   required
                 />
@@ -791,13 +805,41 @@ export const VehicleDesignView: React.FC = () => {
                             const rec = calculateRecommendedSalePrice(m.targetSegment, m.productionCost);
                             const evalTag = evaluateVehiclePrice(m.salePrice, m.productionCost, rec, lang);
                             return (
-                              <div className="flex items-center justify-between text-[11px] pt-0.5">
-                                <span className="text-[var(--ink-secondary)]">
-                                  💡 {lang === 'en' ? 'Rec:' : lang === 'uk' ? 'Рек:' : 'Рек:'} <strong className="text-[var(--accent-gold)]">${rec.toLocaleString()}</strong>
-                                </span>
-                                <span className={`text-[10px] px-1.5 py-0.2 rounded font-semibold ${evalTag.badgeClass}`}>
-                                  {evalTag.shortLabel}
-                                </span>
+                              <div className="space-y-1 pt-0.5">
+                                <div className="flex items-center justify-between text-[11px]">
+                                  <span className="text-[var(--ink-secondary)]">
+                                    💡 {lang === 'en' ? 'Rec:' : lang === 'uk' ? 'Рек:' : 'Рек:'} <strong className="text-[var(--accent-gold)]">${rec.toLocaleString()}</strong>
+                                  </span>
+                                  <span className={`text-[10px] px-1.5 py-0.2 rounded font-semibold ${evalTag.badgeClass}`}>
+                                    {evalTag.shortLabel}
+                                  </span>
+                                </div>
+                                {m.salePrice < m.productionCost && (
+                                  <button
+                                    type="button"
+                                    onClick={async () => {
+                                      await saveVehicleModel({ ...m, salePrice: rec });
+                                      setStatusMessage(
+                                        lang === 'en'
+                                          ? `Price for "${m.name}" updated to recommended market price $${rec.toLocaleString()}`
+                                          : lang === 'uk'
+                                          ? `Ціну на «${m.name}» виправлено на рекомендовану $${rec.toLocaleString()}`
+                                          : `Цена на «${m.name}» исправлена на рыночную $${rec.toLocaleString()}`
+                                      );
+                                    }}
+                                    className="w-full mt-1 py-1 px-2 rounded bg-amber-500/20 hover:bg-amber-500/30 text-amber-950 dark:text-amber-200 border border-amber-500/60 text-[11px] font-bold flex items-center justify-center gap-1 cursor-pointer transition animate-pulse shadow-xs"
+                                    title={lang === 'en' ? 'Click to fix price to recommended market price' : 'Нажмите, чтобы исправить цену на рекомендованную'}
+                                  >
+                                    <span>💡</span>
+                                    <span>
+                                      {lang === 'en'
+                                        ? `Set to market price ($${rec.toLocaleString()})`
+                                        : lang === 'uk'
+                                        ? `Встановити ринкову ціну ($${rec.toLocaleString()})`
+                                        : `Установить рыночную цену ($${rec.toLocaleString()})`}
+                                    </span>
+                                  </button>
+                                )}
                               </div>
                             );
                           })()}
