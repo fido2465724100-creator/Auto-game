@@ -263,6 +263,20 @@ export const technologies1900to1915Seed: Technology[] = [
     effects: [{ key: 'costMultiplier', value: -0.06 }, { key: 'appealBonus', value: 0.03 }],
   },
   {
+    id: 'synthetic-rubber',
+    name: 'Synthetic Rubber Synthesis',
+    yearAvailable: 1938,
+    category: 'manufacturing',
+    description: 'Industrial synthesis of styrene-butadiene rubber (Buna-S/GR-S) overcomes reliance on overseas colonial plantation latex and slashes tire production costs.',
+    researchCost: 35000,
+    researchDurationMonths: 5,
+    prerequisites: [],
+    effects: [
+      { key: 'costMultiplier', value: -0.04 },
+      { key: 'reliabilityBonus', value: 3 },
+    ],
+  },
+  {
     id: 'automatic-transmission',
     name: 'Hydramatic Automatic Transmission',
     yearAvailable: 1940,

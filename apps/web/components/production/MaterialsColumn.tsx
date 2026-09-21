@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import type { MaterialMarketItem, MaterialType } from '@ait/shared-types';
+import { getMaterialDisplayName, getMaterialDescription } from '../../lib/materialLocalizer';
 
 const MATERIAL_ICONS: Record<MaterialType, string> = {
   wood: '🪵',
@@ -26,6 +27,7 @@ interface Props {
   onBuyAllShortages: () => Promise<void>;
   lang: string;
   t: any;
+  year?: number;
 }
 
 export function MaterialsColumn({
@@ -42,6 +44,7 @@ export function MaterialsColumn({
   onBuyAllShortages,
   lang,
   t,
+  year = 1900,
 }: Props): React.JSX.Element {
   const [buyingMat, setBuyingMat] = useState<string | null>(null);
 
@@ -132,7 +135,8 @@ export function MaterialsColumn({
           const isShort = demand > inStock;
           const deficit = isShort ? demand - inStock : 0;
           const icon = MATERIAL_ICONS[item.id] ?? '📦';
-          const name = t.materials[item.id] ?? item.name;
+          const name = getMaterialDisplayName(item.id, year, t);
+          const description = getMaterialDescription(item.id, year, t, item.description);
           const unit = t.materials.units[item.id] ?? 'ед.';
           const isBuying = buyingMat === item.id;
 
@@ -146,7 +150,10 @@ export function MaterialsColumn({
               }`}
             >
               <div className="flex items-center justify-between text-xs mb-1">
-                <span className="font-bold text-[var(--ink-heading)] flex items-center gap-1">
+                <span
+                  className="font-bold text-[var(--ink-heading)] flex items-center gap-1 cursor-help"
+                  title={description}
+                >
                   <span>{icon}</span>
                   <span>{name}</span>
                 </span>

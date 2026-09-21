@@ -19,11 +19,25 @@ export const de: TranslationSchema = {
   // Materials
   materials: {
     steel: 'Stahl & Gusseisen',
+    steelModern: 'Automobiltiefziehblech',
     wood: 'Hartholz & Bauholz',
+    woodModern: 'Edelholz & Furnier',
     rubber: 'Naturkautschuk',
+    rubberModern: 'Synthesekautschuk & Reifen',
     leather: 'Leder & Polsterung',
     aluminum: 'Aluminium',
     plastic: 'Kunststoffe & Polymere',
+    descriptions: {
+      steelEarly: 'Kernmetall für Zylinderblöcke, schwere Leiterrahmen, Blattfedern und Starrachsen.',
+      steelModern: 'Tiefziehbleche für selbsttragende Karosserien, Sicherheitsfahrgastzellen und Aggregate.',
+      woodEarly: 'Unerlässlicher Werkstoff der 1900–1920er: Kutschengerippe, Holzspeichenräder und Trittbretter.',
+      woodModern: 'Edle Zierhölzer und Armaturenbrett-Furniere für repräsentative Luxuslimousinen.',
+      rubberEarly: 'Kolonialer Plantagenkautschuk für frühe Vollgummi- und Luftreifen, Dichtungen und Riemen.',
+      rubberModern: 'Synthetische Butadien-Styrol-Elastomere (Buna/GR-S) und moderne Reifengummimischungen.',
+      leather: 'Bezugsmaterial für offene Kutschensitzbänke und Faltverdecke.',
+      aluminum: 'Leichtmetall-Legierungen zur Gewichtsreduzierung und Verbesserung des Leistungsgewichts.',
+      plastic: 'Polymer-Innovation der 1950er: Kostengünstige Innenverkleidungen ersetzen schwere Bauteile.',
+    },
     units: {
       steel: 'kg',
       wood: 'Stk.',
@@ -448,6 +462,10 @@ export const de: TranslationSchema = {
     'passenger-diesel-engine': {
       name: 'Pkw-Dieselmotor',
       description: 'Selbstzündender Dieselmotor bietet herausragende Kraftstoffeffizienz und hohes Drehmoment.',
+    },
+    'synthetic-rubber': {
+      name: 'Synthesekautschuk & Elastomere',
+      description: 'Industrielle Synthese von Butadien-Styrol-Kautschuk (Buna-S/GR-S). Beseitigt Rohstoffengpässe und senkt Reifenkosten.',
     },
     'automatic-transmission': {
       name: 'Hydromechanisches Automatikgetriebe',

@@ -2,6 +2,7 @@ import {
   runEndTurn,
   LOAN_TEMPLATES,
   MATERIALS_CATALOG,
+  getEraMaterialsCatalog,
   calculateMaterialRequirements,
   scrapWarehouseVehicles,
 } from '@ait/game-engine';
@@ -503,7 +504,7 @@ class BrowserGameEngineClass {
 
   getMaterialsMarket(): MaterialMarketItem[] {
     const currentYear = this.getState().date.year;
-    return MATERIALS_CATALOG.filter((item) => item.yearAvailable <= currentYear);
+    return getEraMaterialsCatalog(currentYear).filter((item) => item.yearAvailable <= currentYear);
   }
 
   buyMaterial(materialId: MaterialType, amount: number): GameState {

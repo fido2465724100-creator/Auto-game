@@ -14,6 +14,7 @@ import { useGame } from '../context/GameContext';
 import { useLanguage } from '../lib/i18n';
 import { api } from '../lib/api';
 import { CarBlueprintSilhouette } from './CarBlueprintSilhouette';
+import { getMaterialDisplayName } from '../lib/materialLocalizer';
 
 interface QuickVehicleDesignModalProps {
   isOpen: boolean;
@@ -426,7 +427,7 @@ export const QuickVehicleDesignModal: React.FC<QuickVehicleDesignModalProps> = (
                 {Object.entries(calculatedSpecs.materialsRequired).map(([mat, amount]) => (
                   <span key={mat} className="flex items-center gap-1 font-mono text-[var(--ink)]">
                     <span>{MATERIAL_ICONS[mat as MaterialType] ?? '📦'}</span>
-                    <span>{(t.materials[mat as MaterialType] as string | undefined) ?? mat}:</span>
+                    <span>{getMaterialDisplayName(mat as MaterialType, gameState?.date.year ?? 1900, t)}:</span>
                     <strong className="text-[var(--ink-value)]">{amount}</strong>
                   </span>
                 ))}

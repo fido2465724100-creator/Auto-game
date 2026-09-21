@@ -6,6 +6,7 @@ import { calculatePremisesRent } from '@ait/game-engine';
 import { useGame } from '../../context/GameContext';
 import { useLanguage } from '../../lib/i18n';
 import { getEraTheme, getEraName, getEraMaterial, getAdvisorTitle } from '../../lib/eraTheme';
+import { getMaterialDisplayName } from '../../lib/materialLocalizer';
 import { CarBlueprintSilhouette } from '../../components/CarBlueprintSilhouette';
 import { QuickVehicleDesignModal } from '../../components/QuickVehicleDesignModal';
 import { QuickResearchModal } from '../../components/QuickResearchModal';
@@ -718,10 +719,10 @@ export default function DashboardPage(): React.JSX.Element {
                             {Object.entries(model.materialsRequired ?? {}).map(([mat, amt]) => {
                               if (!amt) return null;
                               return (
-                                <span key={mat} className="flex items-center gap-1 era-stat-box px-1.5 py-0.5 rounded text-[10px] font-mono">
-                                  <span>{MATERIAL_ICONS[mat as MaterialType] ?? ''}</span>
-                                  <span>{(t.materials[mat as MaterialType] as string | undefined) ?? mat}: <strong className="era-value">{amt}</strong></span>
-                                </span>
+                                  <span key={mat} className="flex items-center gap-1 era-stat-box px-1.5 py-0.5 rounded text-[10px] font-mono">
+                                    <span>{MATERIAL_ICONS[mat as MaterialType] ?? ''}</span>
+                                    <span>{getMaterialDisplayName(mat as MaterialType, gameState?.date.year ?? 1900, t)}: <strong className="era-value">{amt}</strong></span>
+                                  </span>
                               );
                             })}
                           </div>
@@ -790,7 +791,7 @@ export default function DashboardPage(): React.JSX.Element {
                         <div className="flex justify-between items-start">
                           <div className="flex items-center gap-1">
                             <span className="text-sm">{icon}</span>
-                            <span className="font-serif font-bold era-heading">{t.materials[mat] ?? mat}</span>
+                            <span className="font-serif font-bold era-heading">{getMaterialDisplayName(mat, gameState?.date.year ?? 1900, t)}</span>
                           </div>
                           <span className="text-[10px] era-label font-mono">
                             {lang === 'en' ? 'Req' : lang === 'uk' ? 'Потр' : lang === 'de' ? 'Bedarf' : 'Потр'}: {needed}

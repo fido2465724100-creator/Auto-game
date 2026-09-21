@@ -19,11 +19,25 @@ export const en: TranslationSchema = {
   // Materials
   materials: {
     steel: 'Steel & Iron',
+    steelModern: 'Automotive Sheet Steel',
     wood: 'Hardwood Timber',
+    woodModern: 'Decorative Wood & Veneer',
     rubber: 'Natural Caoutchouc',
+    rubberModern: 'Synthetic Rubber & Tires',
     leather: 'Leather & Upholstery',
     aluminum: 'Aluminum',
     plastic: 'Plastics & Polymers',
+    descriptions: {
+      steelEarly: 'Primary metal for engine blocks, chassis ladder frames, leaf springs, and solid axles.',
+      steelModern: 'High-tensile stamped sheet steel for unitized unibody bodies and assemblies.',
+      woodEarly: 'Crucial 1900–1920s carriage material: wooden frames, wheel spokes, and firewall dash.',
+      woodModern: 'Decorative fine veneers and dashboard trim for upscale executive saloons.',
+      rubberEarly: 'Colonial plantation latex for early solid and pneumatic tires, seals, and drive belts.',
+      rubberModern: 'Synthetic styrene-butadiene elastomers (Buna/GR-S) and modern vulcanized tire compounds.',
+      leather: 'Upholstery material for open carriage benches and folding convertible roofs.',
+      aluminum: 'Lightweight alloy that reduces vehicular weight and improves performance.',
+      plastic: '1950s polymer revolution: cost-effective interior panels replacing heavy timber.',
+    },
     units: {
       steel: 'kg',
       wood: 'units',
@@ -448,6 +462,10 @@ export const en: TranslationSchema = {
     'passenger-diesel-engine': {
       name: 'Passenger Diesel Engine',
       description: 'Compression-ignition diesel engine offers unmatched fuel economy and exceptional commercial torque.',
+    },
+    'synthetic-rubber': {
+      name: 'Synthetic Rubber & Elastomers',
+      description: 'Industrial synthesis of styrene-butadiene rubber (Buna-S/GR-S). Overcomes reliance on colonial latex imports and cuts tire costs.',
     },
     'automatic-transmission': {
       name: 'Hydramatic Automatic Transmission',

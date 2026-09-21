@@ -16,6 +16,7 @@ import { api } from '../../lib/api';
 import { CarBlueprintSilhouette } from '../CarBlueprintSilhouette';
 import { CarVisualThumbnail } from '../CarVisualThumbnail';
 import { evaluateVehiclePrice } from '../../lib/pricingHelper';
+import { getMaterialDisplayName, getMaterialDescription } from '../../lib/materialLocalizer';
 
 const MATERIAL_ICONS: Record<MaterialType, string> = {
   wood: '🪵',
@@ -618,10 +619,16 @@ export const VehicleDesignView: React.FC = () => {
                 if (!amount || amount <= 0) return null;
                 const m = matKey as MaterialType;
                 const icon = MATERIAL_ICONS[m] ?? '📦';
-                const name = t.materials[m] ?? m;
+                const currentYear = gameState?.date.year ?? 1900;
+                const name = getMaterialDisplayName(m, currentYear, t);
+                const desc = getMaterialDescription(m, currentYear, t);
                 const unit = t.materials.units[m] ?? 'ед.';
                 return (
-                  <div key={matKey} className="flex items-center justify-between p-2 rounded-lg bg-[var(--surface-nested)] border border-[var(--border-subtle)] shadow-2xs">
+                  <div
+                    key={matKey}
+                    title={desc}
+                    className="flex items-center justify-between p-2 rounded-lg bg-[var(--surface-nested)] border border-[var(--border-subtle)] shadow-2xs cursor-help"
+                  >
                     <span className="flex items-center gap-1.5 font-medium text-[var(--ink)] text-[11px]">
                       <span>{icon}</span> <span>{name}:</span>
                     </span>

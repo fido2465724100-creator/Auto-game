@@ -77,6 +77,42 @@ export const MATERIALS_CATALOG: MaterialMarketItem[] = [
   },
 ];
 
+export const getEraMaterialsCatalog = (year: number = 1900): MaterialMarketItem[] => {
+  return MATERIALS_CATALOG.map((item) => {
+    if (item.id === 'rubber') {
+      return {
+        ...item,
+        name: year >= 1940 ? 'Синтетический каучук и резина' : 'Натуральный каучук',
+        description:
+          year >= 1940
+            ? 'Бутадиен-стирольный синтетический каучук (Buna/GR-S) и вулканизированная шинная резина.'
+            : 'Колониальный каучук для ранних сплошных и пневматических шин, сальников и ремней.',
+      };
+    }
+    if (item.id === 'wood') {
+      return {
+        ...item,
+        name: year >= 1935 ? 'Древесина и шпон отделки' : 'Конструкционная древесина',
+        description:
+          year >= 1935
+            ? 'Декоративный шпон и элементы отделки интерьера престижных салонов.'
+            : 'Критически важный материал эпохи 1900–1920: каретные кузова, спицы колес, щитки.',
+      };
+    }
+    if (item.id === 'steel') {
+      return {
+        ...item,
+        name: year >= 1930 ? 'Кузовная сталь и прокат' : 'Сталь и Чугун',
+        description:
+          year >= 1930
+            ? 'Листовой автопрокат для штампованных цельнометаллических кузовов и агрегатов.'
+            : 'Основной металл для блоков цилиндров, рам, рессор и мостов.',
+      };
+    }
+    return item;
+  });
+};
+
 export function calculateMaterialRequirements(
   segment: VehicleSegment,
   selectedComponents: Partial<VehicleComponents>,
@@ -114,9 +150,28 @@ export function calculateMaterialRequirements(
     req.steel += 25;
   }
 
-  if (year >= 1950) {
-    req.plastic = Math.round(req.wood * 0.7);
-    req.wood = Math.round(req.wood * 0.1);
+  // Historical material evolution across eras:
+  // 1925-1934: Budd all-steel stamping begins phasing out coachwork structural wood
+  if (year >= 1925 && year < 1935) {
+    req.wood = Math.round(req.wood * 0.6);
+    req.steel += 10;
+  }
+  // 1935-1949: Monocoque steel unibody era eliminates structural wood (remaining wood is dashboard/interior veneer)
+  else if (year >= 1935 && year < 1950) {
+    req.wood = Math.max(1, Math.round(req.wood * 0.18));
+    req.steel += 15;
+  }
+  // 1950+: Polymer & plastic revolution replaces heavy interior components and remaining structural timber
+  else if (year >= 1950) {
+    const rawWood = req.wood;
+    req.plastic = Math.round(rawWood * 0.7);
+    req.wood = Math.max(1, Math.round(rawWood * 0.05));
+    req.steel += 15;
+  }
+
+  // 1940+: Synthetic rubber synthesis (Buna-S/GR-S) delivers 15% polymer efficiency savings
+  if (year >= 1940) {
+    req.rubber = Math.max(2, Math.round(req.rubber * 0.85));
   }
 
   // Coachbuilder founder perk: 25% savings on wood and leather

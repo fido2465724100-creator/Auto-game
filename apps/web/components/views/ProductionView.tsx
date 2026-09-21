@@ -2,11 +2,12 @@
 
 import { useEffect, useState, useRef } from 'react';
 import type { MaterialMarketItem, MaterialType, VehicleModel, Region, RegionId } from '@ait/shared-types';
-import { calculatePremisesRent, calculateRecommendedSalePrice, estimateVehicleAnnualDemand } from '@ait/game-engine';
+import { calculatePremisesRent, calculateRecommendedSalePrice, estimateVehicleAnnualDemand, calculateMaterialRequirements } from '@ait/game-engine';
 import { useGame } from '../../context/GameContext';
 import { useLanguage } from '../../lib/i18n';
 import { api } from '../../lib/api';
 import { evaluateVehiclePrice } from '../../lib/pricingHelper';
+import { getMaterialDisplayName } from '../../lib/materialLocalizer';
 import { MaterialsColumn } from '../production/MaterialsColumn';
 import { VehicleWarehouseColumn } from '../production/VehicleWarehouseColumn';
 import { CarVisualThumbnail } from '../CarVisualThumbnail';
@@ -128,7 +129,15 @@ export default function ProductionPage(): React.JSX.Element {
     const planned = planDraft[model.id] ?? 0;
     if (planned <= 0) continue;
     const effectiveUnits = Math.round(planned * effectiveScale);
-    const req = model.materialsRequired ?? {};
+    let req = model.materialsRequired;
+    if (!req || (gameState.date.year >= 1935 && (req.wood ?? 0) > 25)) {
+      req = calculateMaterialRequirements(
+        model.targetSegment,
+        model.components,
+        gameState.date.year,
+        gameState.company.founderPerk
+      );
+    }
     for (const [mat, amount] of Object.entries(req)) {
       const m = mat as MaterialType;
       materialDemand[m] = (materialDemand[m] ?? 0) + (amount ?? 0) * effectiveUnits;
@@ -519,6 +528,7 @@ export default function ProductionPage(): React.JSX.Element {
             onBuyAllShortages={handleBuyAllShortages}
             lang={lang}
             t={t}
+            year={gameState.date.year}
           />
         </div>
 
@@ -668,9 +678,17 @@ export default function ProductionPage(): React.JSX.Element {
               const maxForThisModel = Math.max(planned, factory.capacity - otherPlanned);
               const unitCost = model.productionCost;
               const totalCost = unitCost * planned;
-              const req = model.materialsRequired ?? {};
-              const modelYear = model.designYear ?? 1900;
               const currentYear = gameState?.date.year ?? 1900;
+              let req = model.materialsRequired;
+              if (!req || (currentYear >= 1935 && (req.wood ?? 0) > 25)) {
+                req = calculateMaterialRequirements(
+                  model.targetSegment,
+                  model.components,
+                  currentYear,
+                  gameState.company.founderPerk
+                );
+              }
+              const modelYear = model.designYear ?? 1900;
               const age = Math.max(0, currentYear - modelYear);
               const isObsolete = age >= 20;
               const isAging = age >= 9 && age < 20;
@@ -935,7 +953,7 @@ export default function ProductionPage(): React.JSX.Element {
                           if (!amount || amount <= 0) return null;
                           const m = matKey as MaterialType;
                           const icon = MATERIAL_ICONS[m] ?? '📦';
-                          const name = t.materials[m] ?? m;
+                          const name = getMaterialDisplayName(m, currentYear, t);
                           const unit = t.materials.units[m] ?? 'ед.';
 
                           return (
