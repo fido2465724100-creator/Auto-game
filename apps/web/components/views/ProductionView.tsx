@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState, useRef } from 'react';
-import type { MaterialMarketItem, MaterialType, VehicleModel, Region, RegionId } from '@ait/shared-types';
+import type { MaterialMarketItem, MaterialType, VehicleModel, Region, RegionId, Technology, HistoricalEvent } from '@ait/shared-types';
 import { calculatePremisesRent, calculateRecommendedSalePrice, estimateVehicleAnnualDemand, calculateMaterialRequirements } from '@ait/game-engine';
 import { useGame } from '../../context/GameContext';
 import { useLanguage } from '../../lib/i18n';
@@ -36,6 +36,8 @@ export default function ProductionPage(): React.JSX.Element {
 
   const [marketMaterials, setMarketMaterials] = useState<MaterialMarketItem[]>([]);
   const [regions, setRegions] = useState<Region[]>([]);
+  const [technologies, setTechnologies] = useState<Technology[]>([]);
+  const [events, setEvents] = useState<HistoricalEvent[]>([]);
   const [loading, setLoading] = useState(true);
   const [planDraft, setPlanDraft] = useState<Record<string, number>>({});
   const [statusMsg, setStatusMsg] = useState<string | null>(null);
@@ -56,6 +58,12 @@ export default function ProductionPage(): React.JSX.Element {
     api.getRegions()
       .then((regs) => setRegions(regs))
       .catch(() => setRegions([]));
+    api.getTechnologies()
+      .then((techs) => setTechnologies(techs))
+      .catch(() => setTechnologies([]));
+    api.getEvents()
+      .then((evts) => setEvents(evts))
+      .catch(() => setEvents([]));
   }, []);
 
   useEffect(() => {
@@ -219,7 +227,7 @@ export default function ProductionPage(): React.JSX.Element {
     let totalDemand = 0;
     for (const model of activeModels) {
       const demandEst = regions.length > 0 && gameState
-        ? estimateVehicleAnnualDemand(model, gameState, regions)
+        ? estimateVehicleAnnualDemand(model, gameState, regions, technologies, events)
         : { totalDemand: 35, demandByRegion: {} as Record<RegionId, number> };
       const d = Math.max(0, demandEst.totalDemand);
       modelDemands[model.id] = d;
@@ -699,7 +707,7 @@ export default function ProductionPage(): React.JSX.Element {
 
               // Demand & Overproduction estimation
               const demandEst = regions.length > 0 && gameState
-                ? estimateVehicleAnnualDemand(model, gameState, regions)
+                ? estimateVehicleAnnualDemand(model, gameState, regions, technologies, events)
                 : { totalDemand: 35, demandByRegion: {} as Record<RegionId, number> };
               const annualDemand = demandEst.totalDemand;
               const isOverproducing = planned > annualDemand && annualDemand > 0;

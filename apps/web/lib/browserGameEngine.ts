@@ -341,6 +341,10 @@ class BrowserGameEngineClass {
     });
   }
 
+  getEvents(): HistoricalEvent[] {
+    return this.events;
+  }
+
   startResearch(technologyId: string, allocatedBudget: number): GameState {
     const tech = this.technologies.find((item) => item.id === technologyId);
     if (!tech) return this.getState();

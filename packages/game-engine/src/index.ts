@@ -429,6 +429,10 @@ function getActiveEventMultiplier(events: HistoricalEvent[], regionId: RegionId,
 }
 
 function techAppealBonus(unlockedTechIds: string[], technologies: Technology[]): number {
+  if (!technologies || technologies.length === 0) {
+    // If technologies catalogue was not loaded, use realistic historical estimate based on unlocked tech count (~3.5% per tech)
+    return 1 + (unlockedTechIds?.length ?? 0) * 0.035;
+  }
   const bonus = technologies
     .filter((tech) => unlockedTechIds.includes(tech.id))
     .flatMap((tech) => tech.effects)

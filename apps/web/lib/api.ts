@@ -12,6 +12,7 @@ import type {
   BadgeDesign,
   Competitor,
   CompetitorMilestone,
+  HistoricalEvent,
 } from '@ait/shared-types';
 import { browserGameEngine } from './browserGameEngine';
 
@@ -87,6 +88,15 @@ export const api = {
       return await request<Array<Technology & { status: string }>>('/game/technologies');
     } catch {
       return browserGameEngine.getTechnologies();
+    }
+  },
+
+  getEvents: async (): Promise<HistoricalEvent[]> => {
+    if (isBrowserOnlyMode()) return browserGameEngine.getEvents();
+    try {
+      return await request<HistoricalEvent[]>('/game/events');
+    } catch {
+      return browserGameEngine.getEvents();
     }
   },
 
