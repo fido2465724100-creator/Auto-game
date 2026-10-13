@@ -581,6 +581,7 @@ export default function DashboardPage(): React.JSX.Element {
                               <CarBlueprintSilhouette
                                 segment={model.targetSegment}
                                 powertrain={powertrain}
+                                year={model.designYear ?? gameState?.date?.year ?? 1900}
                                 className="w-full shadow-2xs"
                               />
                             </div>

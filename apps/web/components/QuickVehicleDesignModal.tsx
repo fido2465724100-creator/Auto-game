@@ -14,6 +14,7 @@ import { useGame } from '../context/GameContext';
 import { useLanguage } from '../lib/i18n';
 import { api } from '../lib/api';
 import { CarBlueprintSilhouette } from './CarBlueprintSilhouette';
+import { getDecadeIndex } from './CarVisualThumbnail';
 import { getMaterialDisplayName } from '../lib/materialLocalizer';
 
 interface QuickVehicleDesignModalProps {
@@ -48,6 +49,9 @@ export const QuickVehicleDesignModal: React.FC<QuickVehicleDesignModalProps> = (
 
   // Form State
   const currentYear = gameState?.date.year ?? 1900;
+  const currentDecade = getDecadeIndex(currentYear);
+  const isGhPages = typeof window !== 'undefined' && window.location.pathname.startsWith('/Auto-game');
+  const base = isGhPages ? '/Auto-game' : '';
   const [name, setName] = useState(`Model ${currentYear}-E`);
   const [segment, setSegment] = useState<VehicleSegment>('economy');
   const [quarterlyQuota, setQuarterlyQuota] = useState<number>(2);
@@ -293,15 +297,27 @@ export const QuickVehicleDesignModal: React.FC<QuickVehicleDesignModalProps> = (
                           key={seg}
                           type="button"
                           onClick={() => handleSegmentChange(seg)}
-                          className={`rounded-xl border-2 px-2.5 py-2 text-left transition cursor-pointer ${
+                          className={`group rounded-xl border-2 p-2 text-left transition cursor-pointer flex flex-col justify-between ${
                             segment === seg
                               ? 'border-[var(--border-brass)] bg-[var(--surface-nested)] font-bold text-[var(--ink-heading)] shadow-xs ring-1 ring-[var(--border-brass)]'
                               : 'border-[var(--border-subtle)] bg-[var(--paper)] text-[var(--ink)] hover:border-[var(--border-brass)]'
                           }`}
                         >
-                          <div className="font-bold text-[var(--ink-heading)] era-heading leading-tight">{t.design.segments[seg]?.name ?? seg}</div>
-                          <div className="text-[10px] font-bold text-[var(--accent-gold)] mt-0.5">{demandTag}</div>
-                          <div className="text-[10px] text-[var(--ink-secondary)] line-clamp-1 mt-0.5">{t.design.segments[seg]?.description ?? ''}</div>
+                          {/* Mini Car Preview Thumbnail */}
+                          <div className="relative w-full h-16 rounded-md overflow-hidden mb-1.5 bg-stone-950 border border-[var(--border-subtle)] shadow-xs flex items-center justify-center">
+                            <img
+                              src={`${base}/cars/${seg}-d${currentDecade}.jpg`}
+                              alt={seg}
+                              className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-300"
+                              loading="lazy"
+                            />
+                            <div className="absolute inset-0 bg-radial from-transparent via-transparent to-black/35 pointer-events-none" />
+                          </div>
+                          <div>
+                            <div className="font-bold text-[var(--ink-heading)] era-heading leading-tight">{t.design.segments[seg]?.name ?? seg}</div>
+                            <div className="text-[10px] font-bold text-[var(--accent-gold)] mt-0.5">{demandTag}</div>
+                            <div className="text-[10px] text-[var(--ink-secondary)] line-clamp-1 mt-0.5">{t.design.segments[seg]?.description ?? ''}</div>
+                          </div>
                         </button>
                       );
                     })}

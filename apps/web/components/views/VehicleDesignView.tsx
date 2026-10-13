@@ -14,7 +14,7 @@ import { useGame } from '../../context/GameContext';
 import { useLanguage } from '../../lib/i18n';
 import { api } from '../../lib/api';
 import { CarBlueprintSilhouette } from '../CarBlueprintSilhouette';
-import { CarVisualThumbnail } from '../CarVisualThumbnail';
+import { CarVisualThumbnail, getDecadeIndex } from '../CarVisualThumbnail';
 import { evaluateVehiclePrice } from '../../lib/pricingHelper';
 import { getMaterialDisplayName, getMaterialDescription } from '../../lib/materialLocalizer';
 
@@ -70,6 +70,11 @@ export const VehicleDesignView: React.FC = () => {
   });
   const [salePrice, setSalePrice] = useState<number>(SEGMENT_PROFILES.economy.baseSalePrice);
   const [isPriceCustomized, setIsPriceCustomized] = useState<boolean>(false);
+
+  const currentYear = gameState?.date.year ?? 1900;
+  const currentDecade = getDecadeIndex(currentYear);
+  const isGhPages = typeof window !== 'undefined' && window.location.pathname.startsWith('/Auto-game');
+  const base = isGhPages ? '/Auto-game' : '';
 
   const factoryCapacity = gameState?.company.factory?.capacity ?? gameState?.company.productionCapacity ?? 4;
   const currentPlan = gameState?.productionPlan ?? {};
@@ -277,15 +282,27 @@ export const VehicleDesignView: React.FC = () => {
                         type="button"
                         key={segKey}
                         onClick={() => handleSegmentChange(segKey)}
-                        className={`rounded-xl border-2 p-3 text-left transition cursor-pointer ${
+                        className={`group rounded-xl border-2 p-2.5 text-left transition cursor-pointer flex flex-col justify-between ${
                           isSelected
                             ? 'border-[var(--border-brass)] bg-[var(--surface-nested)] font-semibold text-[var(--ink-heading)] shadow-md ring-1 ring-[var(--border-brass)]'
                             : 'border-[var(--border-subtle)] bg-[var(--paper)] text-[var(--ink)] hover:bg-[var(--surface-nested)] hover:border-[var(--border-brass)]'
                         }`}
                       >
-                        <div className="text-sm font-bold text-[var(--ink-heading)] era-heading">{segInfo?.name ?? profile.name}</div>
-                        <div className="text-[11px] font-bold text-[var(--accent-gold)] mt-0.5">{demandTag}</div>
-                        <div className="text-[10px] text-[var(--ink-secondary)] font-mono mt-0.5">{segInfo?.tag}</div>
+                        {/* Mini Car Preview Thumbnail */}
+                        <div className="relative w-full h-20 rounded-lg overflow-hidden mb-2 bg-stone-950 border border-[var(--border-subtle)] shadow-xs flex items-center justify-center">
+                          <img
+                            src={`${base}/cars/${segKey}-d${currentDecade}.jpg`}
+                            alt={segKey}
+                            className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-300"
+                            loading="lazy"
+                          />
+                          <div className="absolute inset-0 bg-radial from-transparent via-transparent to-black/35 pointer-events-none" />
+                        </div>
+                        <div>
+                          <div className="text-sm font-bold text-[var(--ink-heading)] era-heading">{segInfo?.name ?? profile.name}</div>
+                          <div className="text-[11px] font-bold text-[var(--accent-gold)] mt-0.5">{demandTag}</div>
+                          <div className="text-[10px] text-[var(--ink-secondary)] font-mono mt-0.5">{segInfo?.tag}</div>
+                        </div>
                       </button>
                     );
                   })}
@@ -1055,6 +1072,13 @@ export const VehicleDesignView: React.FC = () => {
                           {lang === 'en' ? 'Archived' : lang === 'uk' ? 'В архіві' : lang === 'de' ? 'Archiviert' : 'В архиве'}
                         </span>
                       </div>
+
+                      {/* CAR VISUAL ART (Archived) */}
+                      <CarVisualThumbnail
+                        segment={m.targetSegment}
+                        designYear={m.designYear ?? 1900}
+                        className="w-full h-24 my-1 opacity-75 grayscale hover:grayscale-0 hover:opacity-100 transition"
+                      />
 
                       <div className="space-y-1 text-xs text-[var(--ink-secondary)]">
                         <div className="flex justify-between">

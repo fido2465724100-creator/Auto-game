@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import type { VehicleSegment } from '@ait/shared-types';
 import { useLanguage } from '../lib/i18n';
+import { getDecadeIndex } from './CarVisualThumbnail';
 
 interface Props {
   segment: VehicleSegment;
@@ -19,6 +20,13 @@ export function CarBlueprintSilhouette({
   year = 1900,
 }: Props): React.JSX.Element {
   const { lang, t } = useLanguage();
+  const [imgError, setImgError] = useState(false);
+
+  const decade = getDecadeIndex(year);
+  const isGhPages = typeof window !== 'undefined' && window.location.pathname.startsWith('/Auto-game');
+  const base = isGhPages ? '/Auto-game' : '';
+  const photoUrl = `${base}/cars/${segment}-d${decade}.jpg`;
+  const fallbackUrl = `${base}/cars/d${decade}.jpg`;
 
   // View mode: 'combined' (CAD Grid + Realistic Render), 'render_only' (Just realistic car), 'draft_only' (Pure wireframe blueprint)
   const [viewMode, setViewMode] = useState<'combined' | 'render_only' | 'draft_only'>('combined');
@@ -359,380 +367,28 @@ export function CarBlueprintSilhouette({
           <rect x="0" y="0" width="420" height="185" fill={isBlueprint ? '#071224' : '#faf7ef'} />
         )}
 
-        {/* ================= LAYER 2: REALISTIC VEHICLE MODEL (Adapts by Era and Segment) ================= */}
+        {/* ================= LAYER 2: REALISTIC VEHICLE MODEL ================= */}
         {showRender && (
           <g id="realisticModelLayer">
             {/* Ground Shadow */}
-            <ellipse cx="205" cy="150" rx="145" ry="5" fill="black" fillOpacity="0.45" />
+            <ellipse cx="210" cy="148" rx="145" ry="6" fill="black" fillOpacity="0.55" />
 
-            {/* --- ERA 1: PIONEER (1900-1918) --- */}
-            {era === 'pioneer' && (
-              <g id="pioneerRender">
-                {segment === 'utility' ? (
-                  // Pioneer Delivery Wagon
-                  <>
-                    <rect x="75" y="55" width="165" height="75" rx="3" fill={`url(#bodyGrad-${uid})`} stroke="#1c1917" strokeWidth="2" />
-                    <line x1="75" y1="80" x2="240" y2="80" stroke="#000" strokeWidth="1.5" opacity="0.4" />
-                    <line x1="75" y1="105" x2="240" y2="105" stroke="#000" strokeWidth="1.5" opacity="0.4" />
-                    {/* Cab */}
-                    <path d="M 240 55 L 280 70 L 280 130 L 240 130 Z" fill={`url(#bodyGrad-${uid})`} stroke="#1c1917" strokeWidth="2" />
-                    <rect x="245" y="70" width="30" height="34" fill={`url(#glassSky-${uid})`} stroke="#000" strokeWidth="1" />
-                    {/* Hood & Radiator */}
-                    <path d="M 280 98 L 340 98 L 340 130 L 280 130 Z" fill={`url(#bodyGrad-${uid})`} stroke="#1c1917" strokeWidth="1.8" />
-                    <rect x="338" y="88" width="10" height="42" rx="2" fill={`url(#brassChrome-${uid})`} stroke="#78350f" strokeWidth="1.2" />
-                    <circle cx="345" cy="94" r="6" fill="#fef08a" stroke={`url(#brassChrome-${uid})`} strokeWidth="1.5" />
-                    <polygon points="348,90 410,75 410,115 348,100" fill={`url(#lampBeam-${uid})`} opacity="0.75" />
-                  </>
-                ) : segment === 'luxury' ? (
-                  // Pioneer Imperial Limousine / Tonneau
-                  <>
-                    <path d="M 75 130 L 85 75 Q 98 52 148 52 L 255 52 Q 268 52 268 80 L 268 130 Z" fill={`url(#bodyGrad-${uid})`} stroke={`url(#brassChrome-${uid})`} strokeWidth="1.8" />
-                    <rect x="110" y="62" width="50" height="36" rx="2" fill={`url(#glassSky-${uid})`} stroke={`url(#brassChrome-${uid})`} strokeWidth="1" />
-                    <rect x="175" y="62" width="58" height="36" rx="2" fill={`url(#glassSky-${uid})`} stroke={`url(#brassChrome-${uid})`} strokeWidth="1" />
-                    {/* Chauffeur Cockpit */}
-                    <path d="M 268 80 L 300 80 L 300 130 L 268 130 Z" fill={`url(#bodyGrad-${uid})`} stroke="#1c1917" strokeWidth="1.5" />
-                    <path d="M 300 94 L 355 98 L 355 130 L 300 130 Z" fill={`url(#bodyGrad-${uid})`} stroke="#1c1917" strokeWidth="1.5" />
-                    <rect x="353" y="82" width="11" height="48" rx="2" fill={`url(#brassChrome-${uid})`} stroke="#78350f" strokeWidth="1.2" />
-                    <circle cx="360" cy="90" r="7" fill="#fef08a" stroke={`url(#brassChrome-${uid})`} strokeWidth="1.5" />
-                    <polygon points="364,84 418,65 418,125 364,98" fill={`url(#lampBeam-${uid})`} opacity="0.8" />
-                  </>
-                ) : (
-                  // Pioneer High-Wheel Runabout / Tourer
-                  <>
-                    <path
-                      d="M 85 125 Q 98 86 160 86 L 250 86 Q 275 86 288 104 L 345 106 L 345 128 L 85 128 Z"
-                      fill={`url(#bodyGrad-${uid})`}
-                      stroke={`url(#brassChrome-${uid})`}
-                      strokeWidth="1.5"
-                    />
-                    <rect x="160" y="70" width="58" height="26" rx="4" fill="#3f2e22" stroke="#1c1917" strokeWidth="1.5" />
-                    <rect x="148" y="66" width="15" height="30" rx="2" fill="#29180d" stroke="#1c1917" strokeWidth="1" />
-                    <line x1="245" y1="80" x2="230" y2="105" stroke={`url(#brassChrome-${uid})`} strokeWidth="3.5" />
-                    <ellipse cx="247" cy="78" rx="11" ry="4" fill="#1c1917" stroke={`url(#brassChrome-${uid})`} strokeWidth="1" />
-                    <rect x="342" y="94" width="9" height="34" rx="2" fill={`url(#brassChrome-${uid})`} stroke="#78350f" strokeWidth="1.2" />
-                    <circle cx="348" cy="100" r="6" fill="#fef08a" stroke={`url(#brassChrome-${uid})`} strokeWidth="1.5" />
-                    <polygon points="352,94 415,75 415,130 352,108" fill={`url(#lampBeam-${uid})`} opacity="0.75" />
-                    {/* Swept Fenders */}
-                    <path d="M 68 126 Q 88 94 132 102 Q 158 112 176 128" stroke="#1c1917" strokeWidth="3.5" fill="none" />
-                    <path d="M 255 128 Q 275 102 320 102 Q 345 108 358 128" stroke="#1c1917" strokeWidth="3.5" fill="none" />
-                  </>
-                )}
-              </g>
-            )}
-
-            {/* --- ERA 2: ART DECO & 1930s (STREAMLINE) --- */}
-            {era === 'art_deco' && (
-              <g id="artDecoRender">
-                {segment === 'utility' ? (
-                  // 1930s-1940s Classic Workhorse Truck / Pickup (Flatbed with Stake-Sides)
-                  <>
-                    {/* Heavy Steel Chassis Rail */}
-                    <rect x="62" y="122" width="304" height="8" rx="2" fill="#1e293b" stroke="#0f172a" strokeWidth="1.2" />
-
-                    {/* Cargo Flatbed & Wooden Stake Racks */}
-                    <rect x="62" y="90" width="150" height="32" rx="2" fill={`url(#bodyGrad-${uid})`} stroke="#1c1917" strokeWidth="1.6" />
-                    <line x1="62" y1="100" x2="212" y2="100" stroke="#78350f" strokeWidth="2.5" />
-                    <line x1="62" y1="110" x2="212" y2="110" stroke="#78350f" strokeWidth="2.5" />
-
-                    {/* Vertical Wooden Stakes */}
-                    <line x1="72" y1="80" x2="72" y2="122" stroke="#451a03" strokeWidth="3.5" />
-                    <line x1="115" y1="80" x2="115" y2="122" stroke="#451a03" strokeWidth="3.5" />
-                    <line x1="160" y1="80" x2="160" y2="122" stroke="#451a03" strokeWidth="3.5" />
-                    <line x1="202" y1="80" x2="202" y2="122" stroke="#451a03" strokeWidth="3.5" />
-                    <line x1="68" y1="80" x2="206" y2="80" stroke="#451a03" strokeWidth="3" />
-
-                    {/* Heavy Rear Mudguard */}
-                    <path d="M 85 125 Q 95 95 120 95 Q 145 95 155 125" stroke="#09090b" strokeWidth="5.5" fill="none" />
-
-                    {/* Enclosed Truck Cab (Upright & Sturdy) */}
-                    <path
-                      d="M 212 126 L 212 60 Q 220 56 248 56 Q 275 56 285 75 L 302 96 L 358 100 Q 366 108 360 126 L 212 126 Z"
-                      fill={`url(#bodyGrad-${uid})`}
-                      stroke={`url(#silverChrome-${uid})`}
-                      strokeWidth="1.6"
-                    />
-                    {/* Cab Side Window & Windshield with Sunvisor */}
-                    <path d="M 220 64 L 268 64 L 282 92 L 220 92 Z" fill={`url(#glassSky-${uid})`} stroke={`url(#silverChrome-${uid})`} strokeWidth="1" />
-                    <line x1="265" y1="62" x2="292" y2="72" stroke={`url(#silverChrome-${uid})`} strokeWidth="2.5" />
-
-                    {/* Tall Vertical Commercial Truck Grille */}
-                    <path d="M 356 94 Q 366 106 362 126 L 350 126 Z" fill={`url(#silverChrome-${uid})`} stroke="#334155" strokeWidth="1.5" />
-                    <line x1="357" y1="100" x2="357" y2="124" stroke="#1e293b" strokeWidth="1.2" />
-                    <line x1="360" y1="102" x2="360" y2="124" stroke="#1e293b" strokeWidth="1.2" />
-
-                    {/* Bullet Headlight & Running Board */}
-                    <ellipse cx="348" cy="94" rx="8" ry="5.5" fill="#fef08a" stroke={`url(#silverChrome-${uid})`} strokeWidth="1.5" />
-                    <polygon points="352,88 418,65 418,130 352,105" fill={`url(#lampBeam-${uid})`} opacity="0.8" />
-                    <line x1="158" y1="128" x2="258" y2="128" stroke="#1e293b" strokeWidth="4" />
-
-                    {/* Sweeping Front Truck Fender */}
-                    <path d="M 252 126 Q 278 88 330 92 Q 360 102 368 126" stroke="#09090b" strokeWidth="5" fill="none" />
-                  </>
-                ) : (
-                  // Passenger Car (Economy, Family, Luxury)
-                  <>
-                    {/* Teardrop Aerodynamic Roofline */}
-                    <path
-                      d="M 68 124 Q 76 82 138 62 Q 220 50 268 68 L 292 92 L 358 98 Q 366 108 360 124 L 68 124 Z"
-                      fill={`url(#bodyGrad-${uid})`}
-                      stroke={`url(#silverChrome-${uid})`}
-                      strokeWidth="1.6"
-                    />
-                    {/* Streamline Split Windows */}
-                    <path d="M 145 68 L 198 64 L 198 92 L 138 92 Z" fill={`url(#glassSky-${uid})`} stroke={`url(#silverChrome-${uid})`} strokeWidth="1" />
-                    <path d="M 206 64 L 262 70 L 280 92 L 206 92 Z" fill={`url(#glassSky-${uid})`} stroke={`url(#silverChrome-${uid})`} strokeWidth="1" />
-                    {/* Massive Waterfall Chrome Grille */}
-                    <path d="M 356 94 Q 366 106 362 126 L 350 126 Z" fill={`url(#silverChrome-${uid})`} stroke="#334155" strokeWidth="1.5" />
-                    <line x1="357" y1="100" x2="357" y2="124" stroke="#1e293b" strokeWidth="1.2" />
-                    <line x1="360" y1="102" x2="360" y2="124" stroke="#1e293b" strokeWidth="1.2" />
-                    {/* Bullet Headlight & Radiant Projector Beam */}
-                    <ellipse cx="348" cy="94" rx="8" ry="5.5" fill="#fef08a" stroke={`url(#silverChrome-${uid})`} strokeWidth="1.5" />
-                    <polygon points="352,88 418,65 418,130 352,105" fill={`url(#lampBeam-${uid})`} opacity="0.8" />
-                    {/* Chrome Beltline Waist Trim */}
-                    <line x1="78" y1="94" x2="352" y2="96" stroke={`url(#silverChrome-${uid})`} strokeWidth="1.8" />
-                    {/* Heavy Bulbous Pontoon Fenders */}
-                    <path d="M 60 126 Q 72 84 125 92 Q 156 102 176 126" stroke="#09090b" strokeWidth="4.5" fill="none" />
-                    <path d="M 252 126 Q 278 88 330 92 Q 360 102 368 126" stroke="#09090b" strokeWidth="4.5" fill="none" />
-                  </>
-                )}
-              </g>
-            )}
-
-            {/* --- ERA 3: CLASSIC FINS & CHROME (1945-1974) --- */}
-            {era === 'classic_fins' && (
-              <g id="classicFinsRender">
-                {segment === 'utility' ? (
-                  // 1950s Classic Stepside Pickup (Chevy 3100 / Ford F-100 style)
-                  <>
-                    <rect x="62" y="92" width="150" height="34" rx="2.5" fill={`url(#bodyGrad-${uid})`} stroke={`url(#silverChrome-${uid})`} strokeWidth="1.6" />
-                    <path d="M 85 126 Q 92 94 118 94 Q 144 94 152 126" stroke="#09090b" strokeWidth="6" fill="none" />
-                    <rect x="190" y="122" width="24" height="5" rx="1.5" fill={`url(#silverChrome-${uid})`} />
-                    <path
-                      d="M 212 126 L 212 68 Q 220 62 258 62 Q 280 62 292 80 L 312 96 L 368 98 Q 372 108 368 126 L 212 126 Z"
-                      fill={`url(#bodyGrad-${uid})`}
-                      stroke={`url(#silverChrome-${uid})`}
-                      strokeWidth="1.6"
-                    />
-                    <path d="M 220 70 L 262 68 L 290 92 L 220 92 Z" fill={`url(#glassSky-${uid})`} stroke={`url(#silverChrome-${uid})`} strokeWidth="1" />
-                    <rect x="214" y="74" width="3" height="14" fill={`url(#glassSky-${uid})`} />
-                    <rect x="362" y="100" width="10" height="24" rx="2" fill={`url(#silverChrome-${uid})`} stroke="#475569" strokeWidth="1.2" />
-                    <circle cx="364" cy="106" r="4" fill="#fef08a" stroke="#fff" strokeWidth="1" />
-                    <polygon points="368,102 418,80 418,135 368,122" fill={`url(#lampBeam-${uid})`} opacity="0.8" />
-                    <line x1="310" y1="108" x2="368" y2="108" stroke={`url(#silverChrome-${uid})`} strokeWidth="2.5" />
-                    <path d="M 252 126 Q 278 88 330 90 Q 362 100 370 126" stroke="#09090b" strokeWidth="5.5" fill="none" />
-                  </>
-                ) : (
-                  // Low-slung Cruiser with Prominent Tailfin
-                  <>
-                    <path
-                      d="M 58 88 Q 72 100 80 126 L 368 126 Q 372 112 368 102 L 318 98 L 280 68 L 165 68 L 125 94 L 58 88 Z"
-                      fill={`url(#bodyGrad-${uid})`}
-                      stroke={`url(#silverChrome-${uid})`}
-                      strokeWidth="1.8"
-                    />
-                    {/* Panoramic Wrap-around Windshield */}
-                    <polygon points="132,94 168,72 278,72 310,94 132,94" fill={`url(#glassSky-${uid})`} stroke={`url(#silverChrome-${uid})`} strokeWidth="1" />
-                    {/* Rocket Tailfin Tip */}
-                    <polygon points="58,88 74,96 64,104" fill={`url(#silverChrome-${uid})`} />
-                    <circle cx="60" cy="91" r="3" fill="#ef4444" />
-                    {/* Chrome Grille & Double Headlights */}
-                    <rect x="362" y="100" width="10" height="24" rx="2" fill={`url(#silverChrome-${uid})`} stroke="#475569" strokeWidth="1.2" />
-                    <circle cx="364" cy="106" r="4" fill="#fef08a" stroke="#fff" strokeWidth="1" />
-                    <circle cx="364" cy="116" r="4" fill="#fef08a" stroke="#fff" strokeWidth="1" />
-                    <polygon points="368,102 418,80 418,135 368,122" fill={`url(#lampBeam-${uid})`} opacity="0.8" />
-                    {/* Side Chrome Spear */}
-                    <path d="M 68 108 L 180 108 L 260 112 L 364 112" stroke={`url(#silverChrome-${uid})`} strokeWidth="2.5" fill="none" />
-                  </>
-                )}
-              </g>
-            )}
-
-            {/* --- ERA 4: AERO WEDGE & INNOVATION (1975-2004) --- */}
-            {era === 'aero_wedge' && (
-              <g id="aeroWedgeRender">
-                {segment === 'utility' ? (
-                  // 1980s Squarebody Heavy-Duty Pickup
-                  <>
-                    <rect x="62" y="90" width="158" height="34" rx="2" fill={`url(#bodyGrad-${uid})`} stroke="#334155" strokeWidth="1.6" />
-                    <line x1="62" y1="105" x2="220" y2="105" stroke="#0f172a" strokeWidth="1.5" />
-                    <rect x="68" y="122" width="8" height="16" fill="#09090b" />
-                    <path
-                      d="M 220 124 L 220 64 L 285 64 L 310 92 L 375 98 L 375 124 L 220 124 Z"
-                      fill={`url(#bodyGrad-${uid})`}
-                      stroke="#334155"
-                      strokeWidth="1.6"
-                    />
-                    <polygon points="228,88 228,68 280,68 304,88" fill={`url(#glassSky-${uid})`} stroke="#0f172a" strokeWidth="1.2" />
-                    <rect x="366" y="98" width="10" height="18" rx="1.5" fill={`url(#silverChrome-${uid})`} stroke="#334155" strokeWidth="1" />
-                    <rect x="369" y="101" width="6" height="5" fill="#f8fafc" />
-                    <rect x="369" y="108" width="6" height="5" fill="#f8fafc" />
-                    <polygon points="375,102 418,85 418,130 375,115" fill={`url(#lampBeam-${uid})`} opacity="0.75" />
-                    <rect x="58" y="116" width="12" height="10" rx="1.5" fill="#09090b" />
-                    <rect x="368" y="116" width="10" height="10" rx="1.5" fill="#09090b" />
-                  </>
-                ) : (
-                  // Sharp Wedge Silhouette
-                  <>
-                    <path
-                      d="M 65 124 L 65 100 L 138 98 L 190 70 L 285 70 L 342 98 L 375 108 L 375 124 Z"
-                      fill={`url(#bodyGrad-${uid})`}
-                      stroke="#334155"
-                      strokeWidth="1.6"
-                    />
-                    {/* Aerodynamic Green-Tinted Glasshouse */}
-                    <polygon points="144,96 192,72 282,72 334,96" fill={`url(#glassSky-${uid})`} stroke="#0f172a" strokeWidth="1.2" />
-                    {/* Composite Headlamp Lenses */}
-                    <polygon points="348,100 370,105 370,112 348,109" fill="#f8fafc" stroke="#64748b" strokeWidth="1" />
-                    <polygon points="370,102 418,85 418,130 370,115" fill={`url(#lampBeam-${uid})`} opacity="0.75" />
-                    {/* Black Impact Bumpers */}
-                    <rect x="60" y="115" width="12" height="10" rx="1.5" fill="#09090b" />
-                    <rect x="368" y="115" width="10" height="10" rx="1.5" fill="#09090b" />
-                    <line x1="72" y1="115" x2="368" y2="115" stroke="#09090b" strokeWidth="3" />
-                  </>
-                )}
-              </g>
-            )}
-
-            {/* --- ERA 5: MODERN & ELECTRIC (2005+) --- */}
-            {era === 'modern' && (
-              <g id="modernRender">
-                {segment === 'utility' ? (
-                  // Modern Heavy-Duty Commercial Pickup Truck
-                  <>
-                    <path d="M 62 120 L 62 84 L 218 84 L 218 120 Z" fill={`url(#bodyGrad-${uid})`} stroke={`url(#silverChrome-${uid})`} strokeWidth="1.4" />
-                    <rect x="62" y="84" width="5" height="24" rx="1" fill="#ef4444" />
-                    <rect x="67" y="81" width="146" height="4" rx="1.5" fill="#0f172a" />
-                    <path
-                      d="M 218 120 L 218 62 Q 224 58 280 58 L 332 84 L 375 90 L 375 120 L 218 120 Z"
-                      fill={`url(#bodyGrad-${uid})`}
-                      stroke={`url(#silverChrome-${uid})`}
-                      strokeWidth="1.4"
-                    />
-                    <polygon points="226,86 226,64 276,64 322,86" fill={`url(#glassSky-${uid})`} stroke="#0f172a" strokeWidth="1.2" />
-                    <path d="M 368 90 L 374 90 L 374 108 L 368 108 Z" fill="#38bdf8" stroke="#e0f2fe" strokeWidth="1" />
-                    <polygon points="372,94 418,80 418,130 372,114" fill={`url(#lampBeam-${uid})`} opacity="0.85" />
-                    <rect x="362" y="96" width="10" height="10" rx="1" fill="#0f172a" />
-                    <line x1="165" y1="122" x2="295" y2="122" stroke="#09090b" strokeWidth="5" />
-                  </>
-                ) : (
-                  // Fastback Coupe Fluid Aerodynamics
-                  <>
-                    <path
-                      d="M 62 122 Q 68 94 122 84 Q 200 56 278 72 L 345 94 Q 370 104 374 120 L 62 122 Z"
-                      fill={`url(#bodyGrad-${uid})`}
-                      stroke={`url(#silverChrome-${uid})`}
-                      strokeWidth="1.4"
-                    />
-                    {/* Panoramic Canopy */}
-                    <path d="M 134 84 Q 205 62 272 74 L 324 94 L 128 94 Z" fill={`url(#glassSky-${uid})`} stroke="#0f172a" strokeWidth="1" />
-                    {/* Modern LED Matrix Projector Lightbar */}
-                    <path d="M 342 96 Q 366 104 372 106 L 366 112 Z" fill="#38bdf8" stroke="#e0f2fe" strokeWidth="1" />
-                    <polygon points="368,98 418,80 418,130 368,114" fill={`url(#lampBeam-${uid})`} opacity="0.85" />
-                    {/* Rear LED Halo Strip */}
-                    <path d="M 64 98 Q 62 106 66 112" stroke="#ef4444" strokeWidth="2.5" fill="none" />
-                    {/* Sculpted Bottom Aero Skirt */}
-                    <line x1="160" y1="122" x2="275" y2="122" stroke="#09090b" strokeWidth="3.5" />
-                  </>
-                )}
-              </g>
-            )}
-
-            {/* REALISTIC WHEELS (Rear: cx=110, cy=132 | Front: cx=295, cy=132 | r=18) */}
-            {/* REAR WHEEL */}
-            <g id="wheelRear">
-              <ellipse cx="110" cy="149" rx="20" ry="3.5" fill="black" fillOpacity="0.4" />
-              <circle cx="110" cy="132" r="18" fill={`url(#tireGrad-${uid})`} stroke="#09090b" strokeWidth="2" />
-              {era === 'pioneer' ? (
-                // Spoked Wheel
-                <>
-                  <circle cx="110" cy="132" r="15" fill="none" stroke={`url(#brassChrome-${uid})`} strokeWidth="1" />
-                  <circle cx="110" cy="132" r="6" fill={`url(#brassChrome-${uid})`} />
-                  {Array.from({ length: 8 }).map((_, i) => (
-                    <line
-                      key={i}
-                      x1="110"
-                      y1="132"
-                      x2={110 + Math.cos((i * 45 * Math.PI) / 180) * 15}
-                      y2={132 + Math.sin((i * 45 * Math.PI) / 180) * 15}
-                      stroke={`url(#brassChrome-${uid})`}
-                      strokeWidth="1"
-                    />
-                  ))}
-                </>
-              ) : era === 'art_deco' || era === 'classic_fins' ? (
-                // Chrome Dish with Whitewall Ring
-                <>
-                  <circle cx="110" cy="132" r="15" fill="#f8fafc" stroke="#000" strokeWidth="0.8" />
-                  <circle cx="110" cy="132" r="10" fill={`url(#silverChrome-${uid})`} stroke="#475569" strokeWidth="1" />
-                  <circle cx="110" cy="132" r="4" fill="#09090b" />
-                </>
-              ) : (
-                // Modern Alloy Wheel
-                <>
-                  <circle cx="110" cy="132" r="13" fill="#1e293b" stroke={`url(#silverChrome-${uid})`} strokeWidth="1.2" />
-                  <circle cx="110" cy="132" r="4" fill={`url(#silverChrome-${uid})`} />
-                  {Array.from({ length: 5 }).map((_, i) => (
-                    <line
-                      key={i}
-                      x1="110"
-                      y1="132"
-                      x2={110 + Math.cos((i * 72 * Math.PI) / 180) * 13}
-                      y2={132 + Math.sin((i * 72 * Math.PI) / 180) * 13}
-                      stroke={`url(#silverChrome-${uid})`}
-                      strokeWidth="2"
-                    />
-                  ))}
-                </>
-              )}
-            </g>
-
-            {/* FRONT WHEEL */}
-            <g id="wheelFront">
-              <ellipse cx="295" cy="149" rx="20" ry="3.5" fill="black" fillOpacity="0.4" />
-              <circle cx="295" cy="132" r="18" fill={`url(#tireGrad-${uid})`} stroke="#09090b" strokeWidth="2" />
-              {era === 'pioneer' ? (
-                // Spoked Wheel
-                <>
-                  <circle cx="295" cy="132" r="15" fill="none" stroke={`url(#brassChrome-${uid})`} strokeWidth="1" />
-                  <circle cx="295" cy="132" r="6" fill={`url(#brassChrome-${uid})`} />
-                  {Array.from({ length: 8 }).map((_, i) => (
-                    <line
-                      key={i}
-                      x1="295"
-                      y1="132"
-                      x2={295 + Math.cos((i * 45 * Math.PI) / 180) * 15}
-                      y2={132 + Math.sin((i * 45 * Math.PI) / 180) * 15}
-                      stroke={`url(#brassChrome-${uid})`}
-                      strokeWidth="1"
-                    />
-                  ))}
-                </>
-              ) : era === 'art_deco' || era === 'classic_fins' ? (
-                // Chrome Dish with Whitewall Ring
-                <>
-                  <circle cx="295" cy="132" r="15" fill="#f8fafc" stroke="#000" strokeWidth="0.8" />
-                  <circle cx="295" cy="132" r="10" fill={`url(#silverChrome-${uid})`} stroke="#475569" strokeWidth="1" />
-                  <circle cx="295" cy="132" r="4" fill="#09090b" />
-                </>
-              ) : (
-                // Modern Alloy Wheel
-                <>
-                  <circle cx="295" cy="132" r="13" fill="#1e293b" stroke={`url(#silverChrome-${uid})`} strokeWidth="1.2" />
-                  <circle cx="295" cy="132" r="4" fill={`url(#silverChrome-${uid})`} />
-                  {Array.from({ length: 5 }).map((_, i) => (
-                    <line
-                      key={i}
-                      x1="295"
-                      y1="132"
-                      x2={295 + Math.cos((i * 72 * Math.PI) / 180) * 13}
-                      y2={132 + Math.sin((i * 72 * Math.PI) / 180) * 13}
-                      stroke={`url(#silverChrome-${uid})`}
-                      strokeWidth="2"
-                    />
-                  ))}
-                </>
-              )}
-            </g>
+            {/* HIGH-RES 3D STUDIO PHOTOREALISTIC RENDER */}
+            <image
+              href={imgError ? fallbackUrl : photoUrl}
+              x="50"
+              y="22"
+              width="320"
+              height="128"
+              preserveAspectRatio="xMidYMid meet"
+              onError={() => setImgError(true)}
+              style={{
+                filter:
+                  isBlueprint && viewMode === 'combined'
+                    ? 'contrast(1.08) drop-shadow(0 4px 12px rgba(0,0,0,0.6))'
+                    : 'drop-shadow(0 4px 12px rgba(0,0,0,0.6))',
+              }}
+            />
           </g>
         )}
 
