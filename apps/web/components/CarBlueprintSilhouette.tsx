@@ -23,8 +23,10 @@ export function CarBlueprintSilhouette({
   const [imgError, setImgError] = useState(false);
 
   const decade = getDecadeIndex(year);
-  const isGhPages = typeof window !== 'undefined' && window.location.pathname.startsWith('/Auto-game');
-  const base = isGhPages ? '/Auto-game' : '';
+  const base =
+    process.env.NEXT_PUBLIC_BASE_PATH ||
+    (process.env.GITHUB_PAGES === 'true' ? '/Auto-game' : '') ||
+    (typeof window !== 'undefined' && window.location.pathname.startsWith('/Auto-game') ? '/Auto-game' : '');
   const photoUrl = `${base}/cars/${segment}-d${decade}.jpg`;
   const fallbackUrl = `${base}/cars/d${decade}.jpg`;
 

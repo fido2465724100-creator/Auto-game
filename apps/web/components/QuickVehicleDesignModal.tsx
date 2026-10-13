@@ -50,8 +50,10 @@ export const QuickVehicleDesignModal: React.FC<QuickVehicleDesignModalProps> = (
   // Form State
   const currentYear = gameState?.date.year ?? 1900;
   const currentDecade = getDecadeIndex(currentYear);
-  const isGhPages = typeof window !== 'undefined' && window.location.pathname.startsWith('/Auto-game');
-  const base = isGhPages ? '/Auto-game' : '';
+  const base =
+    process.env.NEXT_PUBLIC_BASE_PATH ||
+    (process.env.GITHUB_PAGES === 'true' ? '/Auto-game' : '') ||
+    (typeof window !== 'undefined' && window.location.pathname.startsWith('/Auto-game') ? '/Auto-game' : '');
   const [name, setName] = useState(`Model ${currentYear}-E`);
   const [segment, setSegment] = useState<VehicleSegment>('economy');
   const [quarterlyQuota, setQuarterlyQuota] = useState<number>(2);

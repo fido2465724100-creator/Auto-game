@@ -57,8 +57,10 @@ export function CarVisualThumbnail({
   const [useFallback, setUseFallback] = useState(false);
 
   // Determine base path for GitHub Pages or local development
-  const isGhPages = typeof window !== "undefined" && window.location.pathname.startsWith("/Auto-game");
-  const base = isGhPages ? "/Auto-game" : "";
+  const base =
+    process.env.NEXT_PUBLIC_BASE_PATH ||
+    (process.env.GITHUB_PAGES === 'true' ? '/Auto-game' : '') ||
+    (typeof window !== 'undefined' && window.location.pathname.startsWith('/Auto-game') ? '/Auto-game' : '');
 
   // Specific 52-model hero image url
   const primaryUrl = `${base}/cars/${segment}-d${decade}.jpg`;

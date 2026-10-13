@@ -43,8 +43,10 @@ export default function SecretGalleryPage(): React.JSX.Element {
   const [selectedDecade, setSelectedDecade] = useState<number | 'all'>('all');
   const [lightboxCar, setLightboxCar] = useState<CarItem | null>(null);
 
-  const isGhPages = typeof window !== 'undefined' && window.location.pathname.startsWith('/Auto-game');
-  const base = isGhPages ? '/Auto-game' : '';
+  const base =
+    process.env.NEXT_PUBLIC_BASE_PATH ||
+    (process.env.GITHUB_PAGES === 'true' ? '/Auto-game' : '') ||
+    (typeof window !== 'undefined' && window.location.pathname.startsWith('/Auto-game') ? '/Auto-game' : '');
 
   // Generate 52 cars list
   const allCars: CarItem[] = [];
