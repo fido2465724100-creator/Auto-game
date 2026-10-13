@@ -1,9 +1,9 @@
 'use client';
 
-import React, { useState } from "react";
+import React from "react";
 import type { VehicleSegment } from "@ait/shared-types";
 import { CarVisualDefs } from "./car-visual/defs";
-import { CarWheel } from "./car-visual/wheelRenderer";
+import { PerspectiveCarWheel } from "./car-visual/wheelRenderer";
 import { CarBody } from "./car-visual/carBodies";
 
 interface Props {
@@ -58,71 +58,103 @@ export function CarVisualThumbnail({
 }: Props): React.JSX.Element {
   const decade = getDecadeIndex(designYear);
   const uid = `${segment}-d${decade}`;
-  const [imageError, setImageError] = useState(false);
-
-  // Determine base path for GitHub Pages or local development
-  const isGhPages = typeof window !== "undefined" && window.location.pathname.startsWith("/Auto-game");
-  const base = isGhPages ? "/Auto-game" : "";
-  const photoUrl = `${base}/cars/d${decade}.jpg`;
 
   return (
     <div
-      className={`relative w-full rounded-lg overflow-hidden bg-gradient-to-b from-stone-900 via-stone-950 to-black border border-stone-800 shadow-inner flex items-center justify-center select-none ${className}`}
-      style={{ minHeight: "84px" }}
+      className={`relative w-full rounded-lg overflow-hidden bg-slate-100 border border-slate-300 shadow-md flex items-center justify-center select-none ${className}`}
+      style={{ minHeight: "88px" }}
     >
-      {/* Studio Showroom Vignette & Spotlight */}
-      <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-stone-950 via-stone-900/40 to-transparent pointer-events-none z-1" />
-      <div className="absolute inset-0 bg-radial from-amber-500/10 via-transparent to-black/75 pointer-events-none z-1" />
-
       {/* ERA & SEGMENT WATERMARK */}
       {!hideWatermark && (
-        <div className="absolute top-2 left-2 text-[10px] font-mono font-bold tracking-wider text-stone-300 uppercase flex items-center gap-1.5 z-10 bg-black/60 px-2.5 py-1 rounded-md backdrop-blur-md border border-white/15 shadow-md">
-          <span className="text-amber-400 font-extrabold">{designYear}</span>
-          <span className="text-stone-500">•</span>
-          <span className="text-stone-200">{segment}</span>
-          <span className="text-stone-500 hidden sm:inline">•</span>
-          <span className="text-stone-400 hidden sm:inline">{getDecadeName(decade)}</span>
+        <div className="absolute top-2 left-2 text-[10px] font-mono font-bold tracking-wider text-slate-800 uppercase flex items-center gap-1.5 z-10 bg-white/85 px-2.5 py-1 rounded-md backdrop-blur-md border border-slate-200/80 shadow-sm">
+          <span className="text-amber-600 font-extrabold">{designYear}</span>
+          <span className="text-slate-400">•</span>
+          <span className="text-slate-800">{segment}</span>
+          <span className="text-slate-400 hidden sm:inline">•</span>
+          <span className="text-slate-600 hidden sm:inline">{getDecadeName(decade)}</span>
         </div>
       )}
 
       {badge && (
-        <div className="absolute top-2 right-2 text-[10px] font-bold px-2 py-0.5 rounded-md bg-amber-500/25 text-amber-300 border border-amber-500/50 z-10 shadow-md backdrop-blur-md">
+        <div className="absolute top-2 right-2 text-[10px] font-bold px-2 py-0.5 rounded-md bg-amber-500/20 text-amber-800 border border-amber-500/40 z-10 shadow-sm backdrop-blur-md">
           {badge}
         </div>
       )}
 
-      {/* 1. PHOTOREALISTIC 3/4 ANGLE HERO PHOTO */}
-      {!imageError ? (
-        <div className="relative w-full h-full flex items-center justify-center overflow-hidden">
-          <img
-            src={photoUrl}
-            alt={`${designYear} ${segment}`}
-            className="w-full h-full object-cover sm:object-contain object-center drop-shadow-2xl transition-transform duration-700 hover:scale-105"
-            onError={() => setImageError(true)}
-            loading="lazy"
-          />
-          {/* Subtle Ambient Vignette */}
-          <div className="absolute inset-0 bg-radial from-transparent via-transparent to-black/50 pointer-events-none" />
-        </div>
-      ) : (
-        /* 2. 3D VECTOR STUDIO RENDER FALLBACK */
-        <svg
-          viewBox="0 0 320 120"
-          className="w-full h-full max-h-[88%] object-contain drop-shadow-xl relative z-0"
-        >
-          <CarVisualDefs uid={uid} segment={segment} decade={decade} />
-          <ellipse cx="160" cy="108" rx="135" ry="7" fill={`url(#groundShadow-${uid})`} />
-          <ellipse cx="160" cy="106" rx="115" ry="3.5" fill={`url(#floorSheen-${uid})`} opacity="0.6" />
-          <CarBody segment={segment} decade={decade} uid={uid} />
-          <path d="M 60 70 Q 150 36 270 65" stroke={`url(#softboxSheen-${uid})`} strokeWidth="3" fill="none" opacity="0.7" />
-          <g id="wheelRear">
-            <CarWheel cx={92} cy={96} radius={18} decade={decade} uid={uid} />
-          </g>
-          <g id="wheelFront">
-            <CarWheel cx={242} cy={96} radius={18} decade={decade} uid={uid} />
-          </g>
-        </svg>
-      )}
+      {/* 3/4 ANGLE 52 BESPOKE VEHICLES IN UNIFIED MARBLE SHOWROOM */}
+      <svg
+        viewBox="0 0 400 220"
+        className="w-full h-full object-contain relative z-0 transition-transform duration-500 hover:scale-[1.02]"
+      >
+        <CarVisualDefs uid={uid} segment={segment} decade={decade} />
+
+        {/* 1. Showroom Gallery Architectural Wall */}
+        <rect x="0" y="0" width="400" height="150" fill={`url(#showroomWall-${uid})`} />
+        <line x1="80" y1="0" x2="80" y2="150" stroke="#cbd5e1" strokeWidth="1" opacity="0.4" />
+        <line x1="200" y1="0" x2="200" y2="150" stroke="#cbd5e1" strokeWidth="1" opacity="0.4" />
+        <line x1="320" y1="0" x2="320" y2="150" stroke="#cbd5e1" strokeWidth="1" opacity="0.4" />
+
+        {/* 2. Softbox Overhead Ceiling Light */}
+        <ellipse cx="200" cy="10" rx="180" ry="35" fill={`url(#ceilingGlow-${uid})`} opacity="0.85" />
+
+        {/* 3. Polished Carrara Marble Floor */}
+        <rect x="0" y="140" width="400" height="80" fill={`url(#marbleFloor-${uid})`} />
+        <rect x="0" y="140" width="400" height="80" fill={`url(#marbleReflection-${uid})`} opacity="0.35" />
+
+        {/* 4. Display Turntable Pedestal */}
+        {/* Pedestal Cast Floor Shadow */}
+        <ellipse cx="200" cy="177" rx="166" ry="24" fill={`url(#pedestalShadow-${uid})`} />
+
+        {/* Pedestal Rim (Cylindrical metallic edge bevel) */}
+        <path
+          d="M 36 158 A 164 25 0 0 0 364 158 v 12 A 164 25 0 0 1 36 170 Z"
+          fill={`url(#pedestalRim-${uid})`}
+          stroke="#475569"
+          strokeWidth="0.5"
+        />
+
+        {/* Pedestal Top Polished Surface */}
+        <ellipse
+          cx="200"
+          cy="158"
+          rx="164"
+          ry="25"
+          fill={`url(#pedestalTop-${uid})`}
+          stroke={`url(#pedestalRim-${uid})`}
+          strokeWidth="1"
+        />
+
+        {/* Pedestal Top Reflection Sheen */}
+        <ellipse cx="200" cy="157" rx="150" ry="21" fill={`url(#marbleReflection-${uid})`} opacity="0.5" />
+
+        {/* 5. Car Contact Cast Shadow onto Pedestal */}
+        <ellipse cx="210" cy="164" rx="136" ry="16" fill={`url(#carPedestalShadow-${uid})`} />
+
+        {/* 6. Far Front Perspective Wheel (Tucked Behind Front Clip) */}
+        <g id="wheelFarFront">
+          <PerspectiveCarWheel cx={262} cy={147} rx={13} ry={17} decade={decade} uid={uid} isFront={true} />
+        </g>
+
+        {/* 7. Bespoke Copyright-Safe 3/4 Perspective Car Body */}
+        <CarBody segment={segment} decade={decade} uid={uid} />
+
+        {/* 8. Near Perspective Wheels with Historic Tire & Rim Compounds */}
+        <g id="wheelNearRear">
+          <PerspectiveCarWheel cx={124} cy={158} rx={17} ry={22} decade={decade} uid={uid} isFront={false} />
+        </g>
+        <g id="wheelNearFront">
+          <PerspectiveCarWheel cx={298} cy={162} rx={17} ry={22} decade={decade} uid={uid} isFront={true} />
+        </g>
+
+        {/* 9. Softbox Specular Highlight Slash across Hood & Roof */}
+        <path
+          d="M 75 118 Q 200 78 340 125"
+          stroke={`url(#softboxSheen-${uid})`}
+          strokeWidth="2.5"
+          fill="none"
+          opacity="0.45"
+        />
+      </svg>
     </div>
   );
 }

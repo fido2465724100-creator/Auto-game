@@ -14,779 +14,1113 @@ export function CarBody({ segment, decade, uid }: BodyProps): React.JSX.Element 
   const nickelStroke = `url(#nickel-${uid})`;
   const glassFill = `url(#glass-${uid})`;
   const softbox = `url(#softboxSheen-${uid})`;
+  const hoodSheen = `url(#hoodSheen-${uid})`;
+  const twoTone = `url(#twoToneRoof-${uid})`;
 
   // =========================================================================
-  // DECADE 0: 1900-1909 (BRASS HORSELESS CARRIAGE ERA)
+  // DECADE 0: 1900-1909 (HORSELESS CARRIAGE & BRASS ERA)
+  // White natural rubber tires, wooden carriage framing, brass lanterns
   // =========================================================================
   if (decade === 0) {
     if (segment === "utility") {
-      // 1900s Depot Delivery Wagon (Open-cab, wooden cargo slats, brass lanterns)
+      // Depot Delivery Hack / Express Wagon (open cab, wood cargo slats, canvas curtain, brass lantern)
       return (
         <g id="body-d0-utility">
-          <rect x="52" y="36" width="126" height="52" rx="3" fill="#3f2e22" stroke="#1c1917" strokeWidth="2" />
-          <line x1="52" y1="52" x2="178" y2="52" stroke="#78350f" strokeWidth="1.8" />
-          <line x1="52" y1="68" x2="178" y2="68" stroke="#78350f" strokeWidth="1.8" />
-          <path d="M 178 36 L 212 48 L 212 88 L 178 88 Z" fill={bodyFill} stroke="#1c1917" strokeWidth="2" />
-          <rect x="182" y="48" width="24" height="24" fill={glassFill} stroke="#1c1917" strokeWidth="1" />
-          <path d="M 212 66 L 262 66 L 262 88 L 212 88 Z" fill={bodyFill} stroke="#1c1917" strokeWidth="1.8" />
-          <rect x="260" y="58" width="9" height="30" rx="2" fill={brassStroke} stroke="#78350f" strokeWidth="1.2" />
-          <circle cx="266" cy="62" r="5.5" fill="#fef08a" stroke={brassStroke} strokeWidth="1.5" />
-          <path d="M 45 88 Q 58 64 92 68 Q 115 76 130 88" stroke="#1c1917" strokeWidth="3" fill="none" />
-          <path d="M 195 88 Q 212 66 245 68 Q 265 74 274 88" stroke="#1c1917" strokeWidth="3" fill="none" />
+          {/* Wooden slatted cargo bed box */}
+          <polygon points="72,148 72,92 188,88 188,154 144,158 124,136 104,155" fill="#5c3a21" stroke="#29180c" strokeWidth="2" />
+          <line x1="72" y1="108" x2="188" y2="104" stroke="#854d0e" strokeWidth="2" />
+          <line x1="72" y1="124" x2="188" y2="120" stroke="#854d0e" strokeWidth="2" />
+          <line x1="72" y1="138" x2="188" y2="134" stroke="#854d0e" strokeWidth="2" />
+          {/* Rolled canvas side drop curtains */}
+          <rect x="76" y="92" width="104" height="10" rx="3" fill="#fef3c7" stroke="#b45309" strokeWidth="1" />
+          {/* Cab front partition & footboard */}
+          <polygon points="188,88 232,84 252,126 270,140 270,160 188,154" fill={bodyFill} stroke="#1c1917" strokeWidth="1.8" />
+          {/* Driver bench seat */}
+          <polygon points="196,122 232,118 238,136 196,138" fill="#3f2e22" stroke="#1c1917" strokeWidth="1.5" />
+          {/* Brass cowl lantern */}
+          <rect x="238" y="112" width="12" height="18" rx="2" fill={brassStroke} stroke="#78350f" strokeWidth="1.2" />
+          <circle cx="244" cy="120" r="4.5" fill="#fef08a" />
+          {/* Engine box front cowl with brass louvers */}
+          <polygon points="252,126 295,124 322,142 270,140" fill={bodyFill} stroke="#1c1917" strokeWidth="1.5" />
+          {/* Brass radiator nose plane */}
+          <polygon points="295,124 322,142 322,162 295,148" fill={brassStroke} stroke="#78350f" strokeWidth="1.8" />
+          {/* Far brass lantern */}
+          <rect x="290" y="116" width="9" height="14" rx="2" fill={brassStroke} stroke="#78350f" strokeWidth="1" />
+          <circle cx="294" cy="122" r="3.5" fill="#fef08a" />
+          {/* Front heavy timber bumper */}
+          <line x1="285" y1="152" x2="330" y2="166" stroke="#451a03" strokeWidth="4.5" />
         </g>
       );
     }
     if (segment === "luxury") {
-      // 1900s Grand Imperial Tonneau (High coach-built body, twin brass lanterns, grand radiator)
+      // Grand Imperial Tonneau (Coach-built rear tonneau with beveled glass, high roof, twin brass lanterns)
       return (
         <g id="body-d0-luxury">
-          <path d="M 52 86 L 62 44 Q 72 28 112 28 L 196 28 Q 206 28 206 50 L 206 86 Z" fill={bodyFill} stroke={brassStroke} strokeWidth="2" />
-          <rect x="82" y="36" width="38" height="28" rx="2" fill={glassFill} stroke={brassStroke} strokeWidth="1.2" />
-          <rect x="130" y="36" width="46" height="28" rx="2" fill={glassFill} stroke={brassStroke} strokeWidth="1.2" />
-          <path d="M 206 50 L 232 50 L 232 86 L 206 86 Z" fill={bodyFill} stroke="#1c1917" strokeWidth="1.6" />
-          <path d="M 232 60 L 276 64 L 276 86 L 232 86 Z" fill={bodyFill} stroke="#1c1917" strokeWidth="1.6" />
-          <rect x="274" y="50" width="10" height="38" rx="2" fill={brassStroke} stroke="#78350f" strokeWidth="1.5" />
-          <circle cx="282" cy="56" r="6.5" fill="#fef08a" stroke={brassStroke} strokeWidth="1.5" />
-          <path d="M 45 86 Q 60 58 96 64 Q 120 74 135 88" stroke="#1c1917" strokeWidth="3.5" fill="none" />
-          <path d="M 195 88 Q 215 62 255 64 Q 280 72 286 88" stroke="#1c1917" strokeWidth="3.5" fill="none" />
-          <path d="M 64 30 L 194 30" stroke={softbox} strokeWidth="2" fill="none" />
+          {/* Coach-built high passenger compartment */}
+          <path d="M 74,148 L 74,78 Q 80,60 115,58 L 198,56 Q 212,56 216,74 L 216,154 Q 180,156 144,158 Q 124,134 104,155 Z" fill={bodyFill} stroke={brassStroke} strokeWidth="2" />
+          {/* Beveled glass passenger windows with brass framing */}
+          <polygon points="90,74 135,72 135,110 90,112" fill={glassFill} stroke={brassStroke} strokeWidth="1.5" />
+          <polygon points="145,72 195,70 195,110 145,110" fill={glassFill} stroke={brassStroke} strokeWidth="1.5" />
+          {/* Front open chauffeur station */}
+          <polygon points="216,74 245,92 250,132 280,140 280,160 216,154" fill={bodyFill} stroke="#1c1917" strokeWidth="1.8" />
+          {/* Tufted leather chauffeur seat */}
+          <polygon points="220,110 248,110 250,132 220,132" fill="#3f2e22" stroke="#1c1917" strokeWidth="1.5" />
+          {/* Long high hood with brass hinge crease */}
+          <polygon points="250,132 296,126 328,142 280,140" fill={bodyFill} stroke="#1c1917" strokeWidth="1.8" />
+          <line x1="250" y1="132" x2="328" y2="142" stroke={brassStroke} strokeWidth="2" />
+          {/* Monumental square brass radiator front face */}
+          <polygon points="296,126 328,142 328,164 296,148" fill={brassStroke} stroke="#78350f" strokeWidth="2.5" />
+          <polygon points="300,132 324,144 324,160 300,148" fill="#1c1917" stroke="#78350f" strokeWidth="1" />
+          {/* Giant brass acetylene headlamps with mounting fork */}
+          <circle cx="334" cy="144" r="9" fill={brassStroke} stroke="#78350f" strokeWidth="1.5" />
+          <circle cx="334" cy="144" r="6" fill="#fef08a" />
+          <circle cx="292" cy="130" r="7.5" fill={brassStroke} stroke="#78350f" strokeWidth="1.5" />
+          <circle cx="292" cy="130" r="5" fill="#fef08a" />
+          {/* Arched carriage fenders */}
+          <path d="M 68,148 Q 95,115 146,148" stroke="#1c1917" strokeWidth="4" fill="none" />
+          <path d="M 270,158 Q 298,124 336,155" stroke="#1c1917" strokeWidth="4" fill="none" />
         </g>
       );
     }
     if (segment === "family") {
-      // 1900s Surrey with Fringe (Two rows of tufted seats, folding fabric canopy top, brass stanchions)
+      // Surrey with Fringe on Top (dual rows of tufted seats, canopy on 4 brass stanchions, brass grab rails)
       return (
         <g id="body-d0-family">
-          <path d="M 56 86 Q 66 52 110 52 L 205 52 Q 220 52 228 66 L 266 70 L 266 88 L 56 88 Z" fill={bodyFill} stroke={brassStroke} strokeWidth="1.6" />
-          {/* Canopy Top */}
-          <rect x="70" y="24" width="145" height="6" rx="2" fill="#fef3c7" stroke="#92400e" strokeWidth="1.2" />
-          <line x1="85" y1="30" x2="85" y2="52" stroke={brassStroke} strokeWidth="2" />
-          <line x1="145" y1="30" x2="145" y2="52" stroke={brassStroke} strokeWidth="2" />
-          <line x1="205" y1="30" x2="205" y2="52" stroke={brassStroke} strokeWidth="2" />
-          {/* Dual Bench Seats */}
-          <rect x="95" y="40" width="40" height="22" rx="3" fill="#451a03" stroke="#1c1917" strokeWidth="1.2" />
-          <rect x="155" y="40" width="40" height="22" rx="3" fill="#451a03" stroke="#1c1917" strokeWidth="1.2" />
-          <rect x="264" y="60" width="8" height="28" rx="2" fill={brassStroke} stroke="#78350f" strokeWidth="1.2" />
-          <circle cx="270" cy="65" r="5" fill="#fef08a" stroke={brassStroke} strokeWidth="1.2" />
-          <path d="M 46 86 Q 60 60 96 66 Q 118 74 132 88" stroke="#1c1917" strokeWidth="3" fill="none" />
-          <path d="M 195 88 Q 212 64 248 66 Q 268 72 276 88" stroke="#1c1917" strokeWidth="3" fill="none" />
+          {/* Carriage lower tub */}
+          <path d="M 78,148 Q 84,116 118,116 L 235,116 Q 248,116 256,132 L 295,134 L 324,148 L 278,162 Q 220,160 144,158 Q 124,136 104,155 Z" fill={bodyFill} stroke={brassStroke} strokeWidth="1.8" />
+          {/* Canopy roof on brass stanchions */}
+          <polygon points="85,62 230,56 242,70 95,74" fill="#fef3c7" stroke="#b45309" strokeWidth="1.5" />
+          {/* Fringe scallops hanging below canopy */}
+          <line x1="85" y1="74" x2="242" y2="70" stroke="#d97706" strokeWidth="3" strokeDasharray="3,2" />
+          {/* 4 Brass vertical canopy poles */}
+          <line x1="98" y1="74" x2="98" y2="120" stroke={brassStroke} strokeWidth="2.5" />
+          <line x1="150" y1="72" x2="150" y2="118" stroke={brassStroke} strokeWidth="2.5" />
+          <line x1="190" y1="71" x2="190" y2="118" stroke={brassStroke} strokeWidth="2.5" />
+          <line x1="230" y1="69" x2="230" y2="120" stroke={brassStroke} strokeWidth="2.5" />
+          {/* Dual tufted leather bench seats */}
+          <polygon points="105,100 142,98 144,124 105,124" fill="#3f2e22" stroke="#1c1917" strokeWidth="1.5" />
+          <polygon points="165,98 205,96 208,124 165,124" fill="#3f2e22" stroke="#1c1917" strokeWidth="1.5" />
+          {/* Front curved footboard & brass tiller */}
+          <path d="M 245,120 Q 262,118 258,102" stroke={brassStroke} strokeWidth="3" fill="none" />
+          {/* Front brass carriage lantern */}
+          <rect x="268" y="120" width="10" height="15" rx="2" fill={brassStroke} stroke="#78350f" strokeWidth="1.2" />
+          <circle cx="273" cy="127" r="4" fill="#fef08a" />
+          {/* Flowing carriage mudguards */}
+          <path d="M 74,148 Q 98,118 146,148" stroke="#1c1917" strokeWidth="3.5" fill="none" />
+          <path d="M 270,160 Q 296,128 332,156" stroke="#1c1917" strokeWidth="3.5" fill="none" />
         </g>
       );
     }
-    // 1900s Economy: Curved-Dash Runabout Buggy
+    // Economy: Curved-Dash Runabout Buggy (high curved wooden dash, single seat, steering tiller)
     return (
       <g id="body-d0-economy">
-        <path d="M 64 86 Q 74 58 118 58 L 186 58 Q 204 58 214 70 L 255 72 Q 268 74 266 84 L 260 88 L 64 88 Z" fill={bodyFill} stroke={brassStroke} strokeWidth="1.5" />
-        {/* Tufted Leather Seat */}
-        <rect x="120" y="44" width="48" height="22" rx="4" fill="#3f2e22" stroke="#1c1917" strokeWidth="1.5" />
-        {/* Curved Dash Front Tiller */}
-        <path d="M 252 72 Q 268 70 264 60" stroke={brassStroke} strokeWidth="3" fill="none" />
-        <rect x="254" y="64" width="6" height="22" rx="2" fill={brassStroke} stroke="#78350f" strokeWidth="1.2" />
-        <circle cx="258" cy="68" r="4.5" fill="#fef08a" stroke={brassStroke} strokeWidth="1.2" />
-        <path d="M 50 86 Q 64 62 98 66 Q 118 74 130 88" stroke="#1c1917" strokeWidth="3" fill="none" />
-        <path d="M 195 88 Q 212 66 242 66 Q 260 72 268 88" stroke="#1c1917" strokeWidth="3" fill="none" />
+        {/* Curved front dash platform */}
+        <path d="M 88,148 Q 96,122 135,122 L 225,122 Q 242,122 250,136 L 285,138 Q 306,142 305,125 L 312,125 Q 315,148 290,152 L 276,162 Q 210,160 144,158 Q 124,136 104,155 Z" fill={bodyFill} stroke={brassStroke} strokeWidth="1.8" />
+        {/* Tufted black leather bench seat */}
+        <polygon points="145,100 195,98 200,126 145,126" fill="#29180c" stroke="#1c1917" strokeWidth="1.8" />
+        {/* Brass steering tiller bar */}
+        <path d="M 225,124 Q 240,110 236,92" stroke={brassStroke} strokeWidth="3" fill="none" />
+        {/* Side carriage kerosene lantern */}
+        <rect x="235" y="118" width="9" height="14" rx="2" fill={brassStroke} stroke="#78350f" strokeWidth="1.2" />
+        <circle cx="239" cy="125" r="3.5" fill="#fef08a" />
+        {/* Wooden carriage curved fenders */}
+        <path d="M 84,148 Q 102,125 142,150" stroke="#1c1917" strokeWidth="3" fill="none" />
+        <path d="M 268,160 Q 292,132 322,155" stroke="#1c1917" strokeWidth="3" fill="none" />
       </g>
     );
   }
 
   // =========================================================================
-  // DECADE 1: 1910-1919 (BRASS & TORPEDO TOURING ERA)
+  // DECADE 1: 1910-1919 (BRASS TORPEDO & TOURING ERA)
+  // Grey natural rubber tires, rounded torpedo hood, brass/nickel radiator
   // =========================================================================
   if (decade === 1) {
     if (segment === "utility") {
-      // 1910s Enclosed Panel Delivery Van
+      // Enclosed Panel Delivery Van (solid sides, curved wood roof, split windshield, brass radiator)
       return (
         <g id="body-d1-utility">
-          <path d="M 50 86 L 50 40 Q 55 36 172 36 L 172 86 Z" fill={bodyFill} stroke="#1c1917" strokeWidth="1.8" />
-          <line x1="50" y1="48" x2="172" y2="48" stroke="#94a3b8" strokeWidth="1.2" opacity="0.6" />
-          <path d="M 172 36 L 210 44 L 210 86 L 172 86 Z" fill={bodyFill} stroke="#1c1917" strokeWidth="1.8" />
-          <rect x="176" y="44" width="26" height="26" fill={glassFill} stroke="#000" strokeWidth="1" />
-          <path d="M 210 60 L 268 64 L 268 86 L 210 86 Z" fill={bodyFill} stroke="#1c1917" strokeWidth="1.6" />
-          <rect x="266" y="56" width="9" height="32" rx="2" fill={brassStroke} stroke="#78350f" strokeWidth="1.2" />
-          <circle cx="272" cy="62" r="5.5" fill="#fef08a" stroke={brassStroke} strokeWidth="1.5" />
-          <line x1="120" y1="88" x2="200" y2="88" stroke="#000" strokeWidth="3" />
+          {/* Van enclosed cargo body with rounded roof */}
+          <path d="M 70,146 L 70,72 Q 78,58 135,56 L 210,54 L 210,154 Q 180,156 144,158 Q 124,136 104,155 Z" fill={bodyFill} stroke="#1c1917" strokeWidth="2" />
+          {/* Side panel decorative grooved molding */}
+          <rect x="85" y="70" width="112" height="65" rx="3" fill="none" stroke="#ca8a04" strokeWidth="1.5" />
+          {/* Driver cab & split windshield */}
+          <polygon points="210,54 235,66 238,105 210,105" fill={glassFill} stroke="#1c1917" strokeWidth="1.5" />
+          <polygon points="210,105 240,105 242,156 210,154" fill={bodyFill} stroke="#1c1917" strokeWidth="1.8" />
+          {/* Long rounded commercial hood */}
+          <polygon points="240,105 288,110 324,134 272,130" fill={bodyFill} stroke="#1c1917" strokeWidth="1.8" />
+          {/* Brass rounded radiator shell */}
+          <path d="M 288,110 Q 308,106 324,134 L 324,162 L 288,148 Z" fill={brassStroke} stroke="#78350f" strokeWidth="2" />
+          {/* Heavy steel bumper bar */}
+          <line x1="280" y1="152" x2="334" y2="166" stroke="#475569" strokeWidth="4.5" />
+          {/* Twin brass headlights */}
+          <circle cx="330" cy="138" r="7.5" fill={brassStroke} stroke="#78350f" strokeWidth="1.2" />
+          <circle cx="330" cy="138" r="5" fill="#fef08a" />
+          <circle cx="288" cy="124" r="6" fill={brassStroke} stroke="#78350f" strokeWidth="1.2" />
+          <circle cx="288" cy="124" r="4" fill="#fef08a" />
         </g>
       );
     }
     if (segment === "luxury") {
-      // 1910s Town Car / Chauffeur Limousine (Formal bevel-glass cabin + open driver)
+      // Chauffeur Limousine (enclosed rear passenger salon, open chauffeur seat, tall nickel radiator)
       return (
         <g id="body-d1-luxury">
-          <path d="M 48 86 L 54 38 Q 62 30 110 30 L 190 30 L 190 86 Z" fill={bodyFill} stroke={brassStroke} strokeWidth="1.8" />
-          <rect x="76" y="38" width="46" height="28" rx="3" fill={glassFill} stroke={brassStroke} strokeWidth="1.2" />
-          <rect x="132" y="38" width="48" height="28" rx="3" fill={glassFill} stroke={brassStroke} strokeWidth="1.2" />
-          {/* Driver Cockpit */}
-          <path d="M 190 52 L 222 52 L 222 86 L 190 86 Z" fill={bodyFill} stroke="#1c1917" strokeWidth="1.5" />
-          <path d="M 222 58 L 275 62 L 275 86 L 222 86 Z" fill={bodyFill} stroke="#1c1917" strokeWidth="1.5" />
-          <rect x="273" y="50" width="10" height="38" rx="2" fill={brassStroke} stroke="#78350f" strokeWidth="1.2" />
-          <circle cx="280" cy="56" r="6" fill="#fef08a" stroke={brassStroke} strokeWidth="1.5" />
-          <line x1="120" y1="88" x2="200" y2="88" stroke="#1c1917" strokeWidth="3.5" />
+          {/* Formal enclosed rear passenger salon */}
+          <path d="M 72,146 L 72,68 Q 80,54 125,52 L 205,50 Q 212,50 215,65 L 215,154 Q 180,156 144,158 Q 124,136 104,155 Z" fill={bodyFill} stroke={nickelStroke} strokeWidth="2" />
+          {/* Opera side windows with beveled glass */}
+          <polygon points="86,66 136,64 136,104 86,106" fill={glassFill} stroke={nickelStroke} strokeWidth="1.5" />
+          <polygon points="146,64 198,62 198,104 146,104" fill={glassFill} stroke={nickelStroke} strokeWidth="1.5" />
+          {/* Chauffeur compartment with leather half-canopy */}
+          <polygon points="205,50 240,64 242,106 215,106" fill={glassFill} stroke="#1c1917" strokeWidth="1.5" />
+          <polygon points="215,106 248,106 250,156 215,154" fill={bodyFill} stroke="#1c1917" strokeWidth="1.8" />
+          {/* Long torpedo hood with cooling louvers */}
+          <polygon points="248,106 295,108 330,132 278,130" fill={bodyFill} stroke="#1c1917" strokeWidth="1.8" />
+          <line x1="255" y1="120" x2="280" y2="120" stroke="#1c1917" strokeWidth="1.5" />
+          <line x1="255" y1="124" x2="280" y2="124" stroke="#1c1917" strokeWidth="1.5" />
+          {/* Tall nickel radiator shell */}
+          <polygon points="295,108 330,132 330,164 295,148" fill={nickelStroke} stroke="#475569" strokeWidth="2.5" />
+          {/* Dual large nickel headlamps */}
+          <circle cx="336" cy="136" r="8.5" fill={nickelStroke} stroke="#475569" strokeWidth="1.5" />
+          <circle cx="336" cy="136" r="6" fill="#fef08a" />
+          <circle cx="294" cy="122" r="7" fill={nickelStroke} stroke="#475569" strokeWidth="1.5" />
+          <circle cx="294" cy="122" r="4.5" fill="#fef08a" />
+          {/* Long continuous running boards */}
+          <line x1="144" y1="158" x2="276" y2="162" stroke="#1c1917" strokeWidth="5" />
         </g>
       );
     }
     if (segment === "family") {
-      // 1910s 5-Passenger Torpedo Tourer
+      // Torpedo Tourer (flush-sided 4-door open body, folding canvas roof boot, running boards)
       return (
         <g id="body-d1-family">
-          <path d="M 52 86 Q 60 52 110 52 L 210 52 L 225 60 L 274 64 L 274 86 L 52 86 Z" fill={bodyFill} stroke={brassStroke} strokeWidth="1.6" />
-          {/* Folded Canvas Soft Top */}
-          <path d="M 52 56 Q 60 48 82 52 Q 65 65 52 65 Z" fill="#78350f" stroke="#451a03" strokeWidth="1" />
-          {/* Windshield Glass */}
-          <line x1="210" y1="52" x2="205" y2="38" stroke={brassStroke} strokeWidth="2" />
-          <rect x="198" y="38" width="10" height="14" fill={glassFill} stroke={brassStroke} strokeWidth="1" opacity="0.85" />
-          <rect x="272" y="56" width="8" height="32" rx="2" fill={brassStroke} stroke="#78350f" strokeWidth="1.2" />
-          <circle cx="278" cy="62" r="5.5" fill="#fef08a" stroke={brassStroke} strokeWidth="1.5" />
-          <line x1="120" y1="88" x2="200" y2="88" stroke="#1c1917" strokeWidth="3.5" />
+          {/* Folded canvas top boot resting over rear deck */}
+          <polygon points="70,126 102,112 110,124 74,136" fill="#d97706" stroke="#78350f" strokeWidth="1.5" />
+          {/* Flush torpedo 4-door side tub */}
+          <path d="M 76,146 Q 84,118 120,118 L 240,114 Q 252,114 260,124 L 298,126 L 328,142 L 278,162 Q 220,160 144,158 Q 124,136 104,155 Z" fill={bodyFill} stroke={brassStroke} strokeWidth="1.8" />
+          {/* Split brass-framed windscreen */}
+          <polygon points="234,80 252,80 258,114 240,114" fill={glassFill} stroke={brassStroke} strokeWidth="2" />
+          {/* Rounded torpedo hood & brass radiator */}
+          <polygon points="252,114 295,116 328,138 278,134" fill={bodyFill} stroke="#1c1917" strokeWidth="1.8" />
+          <path d="M 295,116 Q 312,112 328,138 L 328,162 L 295,148 Z" fill={brassStroke} stroke="#78350f" strokeWidth="2" />
+          {/* Twin brass headlights */}
+          <circle cx="334" cy="140" r="8" fill={brassStroke} stroke="#78350f" strokeWidth="1.5" />
+          <circle cx="334" cy="140" r="5.5" fill="#fef08a" />
+          <circle cx="292" cy="126" r="6.5" fill={brassStroke} stroke="#78350f" strokeWidth="1.5" />
+          <circle cx="292" cy="126" r="4.5" fill="#fef08a" />
+          {/* Continuous running board */}
+          <line x1="144" y1="158" x2="276" y2="162" stroke="#1c1917" strokeWidth="4.5" />
         </g>
       );
     }
-    // 1910s Economy: Model-T Tin Lizzie Roadster
+    // Economy: Brass Roadster / Spider (minimalist 2-seat runabout, folded top envelope, brass radiator)
     return (
       <g id="body-d1-economy">
-        <path d="M 58 86 Q 68 56 122 56 L 198 56 L 212 64 L 268 66 L 268 86 L 58 86 Z" fill={bodyFill} stroke={brassStroke} strokeWidth="1.5" />
-        {/* Roadster Buggy Top */}
-        <path d="M 120 56 Q 130 38 165 38 L 196 38 L 198 56 Z" fill="#451a03" stroke="#1c1917" strokeWidth="1.2" />
-        <rect x="198" y="44" width="12" height="18" fill={glassFill} stroke={brassStroke} strokeWidth="1" />
-        <rect x="266" y="58" width="8" height="30" rx="2" fill={brassStroke} stroke="#78350f" strokeWidth="1.2" />
-        <circle cx="272" cy="64" r="5" fill="#fef08a" stroke={brassStroke} strokeWidth="1.5" />
-        <line x1="120" y1="88" x2="200" y2="88" stroke="#1c1917" strokeWidth="3.5" />
+        {/* Folded top canvas boot */}
+        <polygon points="76,130 102,118 108,128 80,138" fill="#d97706" stroke="#78350f" strokeWidth="1.5" />
+        {/* 2-Seat lightweight body */}
+        <path d="M 82,146 Q 90,122 130,122 L 235,118 Q 248,118 255,128 L 292,128 L 322,142 L 276,162 Q 220,160 144,158 Q 124,136 104,155 Z" fill={bodyFill} stroke={brassStroke} strokeWidth="1.8" />
+        {/* Monocle / brass split windshield */}
+        <polygon points="230,86 248,86 252,118 235,118" fill={glassFill} stroke={brassStroke} strokeWidth="1.8" />
+        {/* Rounded torpedo hood */}
+        <polygon points="248,118 290,120 322,140 276,136" fill={bodyFill} stroke="#1c1917" strokeWidth="1.8" />
+        {/* Brass round radiator shell */}
+        <path d="M 290,120 Q 306,116 322,140 L 322,162 L 290,148 Z" fill={brassStroke} stroke="#78350f" strokeWidth="2" />
+        {/* Brass headlamps */}
+        <circle cx="328" cy="142" r="7.5" fill={brassStroke} stroke="#78350f" strokeWidth="1.2" />
+        <circle cx="328" cy="142" r="5" fill="#fef08a" />
+        <circle cx="288" cy="128" r="6" fill={brassStroke} stroke="#78350f" strokeWidth="1.2" />
+        <circle cx="288" cy="128" r="4" fill="#fef08a" />
       </g>
     );
   }
 
   // =========================================================================
-  // DECADE 2: 1920-1929 (ROARING TWENTIES VINTAGE ERA)
+  // DECADE 2: 1920-1929 (ROARING TWENTIES & GATSBY ERA)
+  // Wide whitewall tires, nickel/chrome plating, wire wheels, external trunks
   // =========================================================================
   if (decade === 2) {
     if (segment === "utility") {
-      // 1920s Express Stake-Bed Truck
+      // Heavy Express Stake Truck (enclosed steel cab with visor, wooden stake flatbed with rails)
       return (
         <g id="body-d2-utility">
-          <rect x="48" y="58" width="112" height="28" rx="2" fill="#451a03" stroke="#1c1917" strokeWidth="1.5" />
-          <line x1="48" y1="67" x2="160" y2="67" stroke="#78350f" strokeWidth="2" />
-          <line x1="48" y1="76" x2="160" y2="76" stroke="#78350f" strokeWidth="2" />
-          <path d="M 160 86 L 160 42 Q 166 40 188 40 L 210 40 L 216 54 L 228 66 L 276 68 L 276 86 L 160 86 Z" fill={bodyFill} stroke={nickelStroke} strokeWidth="1.5" />
-          <rect x="166" y="45" width="38" height="20" fill={glassFill} stroke={nickelStroke} strokeWidth="1" />
-          <rect x="274" y="56" width="9" height="32" rx="2" fill={nickelStroke} stroke="#475569" strokeWidth="1.2" />
-          <circle cx="280" cy="64" r="5.5" fill="#fef08a" stroke={nickelStroke} strokeWidth="1.5" />
-          <line x1="120" y1="88" x2="198" y2="88" stroke="#000" strokeWidth="3.5" />
+          {/* Heavy wooden flatbed with vertical stake rails */}
+          <polygon points="68,148 68,102 185,98 185,154 144,158 124,136 104,155" fill="#78350f" stroke="#29180c" strokeWidth="2" />
+          <line x1="68" y1="116" x2="185" y2="112" stroke="#b45309" strokeWidth="2.5" />
+          <line x1="68" y1="130" x2="185" y2="126" stroke="#b45309" strokeWidth="2.5" />
+          {/* Vertical stake uprights */}
+          <line x1="88" y1="102" x2="88" y2="148" stroke="#451a03" strokeWidth="3" />
+          <line x1="125" y1="100" x2="125" y2="136" stroke="#451a03" strokeWidth="3" />
+          <line x1="160" y1="99" x2="160" y2="150" stroke="#451a03" strokeWidth="3" />
+          {/* Enclosed cab with windshield sunvisor */}
+          <polygon points="185,65 230,62 238,102 185,102" fill={glassFill} stroke="#1c1917" strokeWidth="1.8" />
+          <polygon points="228,60 248,72 242,75 228,65" fill="#1c1917" stroke="#475569" strokeWidth="1" />
+          <polygon points="185,102 240,102 242,156 185,154" fill={bodyFill} stroke="#1c1917" strokeWidth="2" />
+          {/* Long commercial hood with louvers */}
+          <polygon points="240,102 288,106 324,130 274,126" fill={bodyFill} stroke="#1c1917" strokeWidth="1.8" />
+          {/* Heavy nickel radiator with steel guard bar */}
+          <polygon points="288,106 324,130 324,162 288,148" fill={nickelStroke} stroke="#334155" strokeWidth="2.5" />
+          {/* Heavy channel steel bumper */}
+          <line x1="280" y1="152" x2="335" y2="166" stroke="#334155" strokeWidth="5" />
         </g>
       );
     }
     if (segment === "luxury") {
-      // 1920s Gatsby Dual-Cowl Phaeton / Boattail Speedster (Monumental hood, twin horns)
+      // Gatsby Dual-Cowl Phaeton (elongated hood, dual cockpits, external chrome flex exhaust pipes)
       return (
         <g id="body-d2-luxury">
-          <path d="M 46 86 Q 52 56 100 52 L 180 50 L 195 60 L 282 62 L 282 86 L 46 86 Z" fill={bodyFill} stroke={nickelStroke} strokeWidth="1.8" />
-          {/* Folded Top & Dual Windshields */}
-          <path d="M 48 56 Q 55 46 76 48 Z" fill="#29180d" />
-          <line x1="130" y1="52" x2="126" y2="40" stroke={nickelStroke} strokeWidth="1.8" />
-          <line x1="195" y1="60" x2="190" y2="45" stroke={nickelStroke} strokeWidth="2" />
-          <rect x="184" y="44" width="10" height="16" fill={glassFill} stroke={nickelStroke} strokeWidth="1" opacity="0.9" />
-          {/* Side Mounted Spare Wheel */}
-          <circle cx="160" cy="72" r="14" fill="#09090b" stroke={nickelStroke} strokeWidth="1.2" />
-          <circle cx="160" cy="72" r="10" fill="#ffffff" />
-          <circle cx="160" cy="72" r="6" fill={nickelStroke} />
-          {/* Monumental Radiator & Twin Trumpet Horns */}
-          <rect x="280" y="52" width="10" height="36" rx="2" fill={nickelStroke} stroke="#334155" strokeWidth="1.5" />
-          <circle cx="286" cy="58" r="6.5" fill="#fef08a" stroke={nickelStroke} strokeWidth="1.5" />
-          <line x1="265" y1="74" x2="280" y2="74" stroke={nickelStroke} strokeWidth="3" />
-          <line x1="120" y1="88" x2="200" y2="88" stroke="#1c1917" strokeWidth="4" />
+          {/* Swept rear speedster / dual cockpit tub */}
+          <path d="M 72,146 Q 80,112 120,112 L 235,108 Q 248,108 254,120 L 298,122 L 332,138 L 278,162 Q 220,160 144,158 Q 124,136 104,155 Z" fill={bodyFill} stroke={chromeStroke} strokeWidth="2" />
+          {/* Secondary rear cockpit cowl and small windscreen */}
+          <polygon points="160,94 178,94 182,110 162,110" fill={glassFill} stroke={chromeStroke} strokeWidth="1.5" />
+          {/* Primary windshield with chrome stanchions */}
+          <polygon points="230,76 250,76 256,110 236,110" fill={glassFill} stroke={chromeStroke} strokeWidth="2" />
+          {/* Ultra-long hood with twin rows of louvers */}
+          <polygon points="250,110 298,112 334,134 278,128" fill={bodyFill} stroke="#1c1917" strokeWidth="1.8" />
+          {/* 3 External chrome flexible exhaust pipes exiting hood */}
+          <path d="M 265,116 Q 275,130 278,148" stroke={chromeStroke} strokeWidth="3" fill="none" />
+          <path d="M 272,117 Q 282,131 285,148" stroke={chromeStroke} strokeWidth="3" fill="none" />
+          <path d="M 279,118 Q 289,132 292,148" stroke={chromeStroke} strokeWidth="3" fill="none" />
+          {/* Massive chrome drum headlights & crossbar */}
+          <circle cx="340" cy="136" r="9.5" fill={chromeStroke} stroke="#334155" strokeWidth="1.5" />
+          <circle cx="340" cy="136" r="7" fill="#fef08a" />
+          <circle cx="295" cy="120" r="8" fill={chromeStroke} stroke="#334155" strokeWidth="1.5" />
+          <circle cx="295" cy="120" r="5.5" fill="#fef08a" />
+          <line x1="295" y1="120" x2="340" y2="136" stroke={chromeStroke} strokeWidth="2.5" />
+          {/* Full-width curved chrome bumper */}
+          <path d="M 285,152 Q 312,160 342,166" stroke={chromeStroke} strokeWidth="4" fill="none" />
         </g>
       );
     }
     if (segment === "family") {
-      // 1920s Tudor 4-Door Box Sedan
+      // Six-Light Town Sedan (upright formal 4-door, sun visor, rear luggage trunk strapped on rack)
       return (
         <g id="body-d2-family">
-          <path d="M 52 86 L 56 42 Q 62 36 105 36 L 205 36 L 218 52 L 226 64 L 278 66 L 278 86 L 52 86 Z" fill={bodyFill} stroke={nickelStroke} strokeWidth="1.6" />
-          {/* Sunvisor */}
-          <line x1="202" y1="36" x2="220" y2="44" stroke="#000" strokeWidth="2" />
-          {/* 3 Windows */}
-          <rect x="75" y="42" width="34" height="22" rx="2" fill={glassFill} stroke={nickelStroke} strokeWidth="1" />
-          <rect x="117" y="42" width="38" height="22" rx="2" fill={glassFill} stroke={nickelStroke} strokeWidth="1" />
-          <rect x="163" y="42" width="38" height="22" rx="2" fill={glassFill} stroke={nickelStroke} strokeWidth="1" />
-          {/* External Rear Trunk Rack */}
-          <rect x="42" y="66" width="10" height="18" rx="2" fill="#29180d" stroke="#000" strokeWidth="1" />
-          <rect x="276" y="56" width="9" height="32" rx="2" fill={nickelStroke} stroke="#334155" strokeWidth="1.2" />
-          <circle cx="282" cy="62" r="5.5" fill="#fef08a" stroke={nickelStroke} strokeWidth="1.5" />
-          <line x1="120" y1="88" x2="200" y2="88" stroke="#000" strokeWidth="3.5" />
+          {/* Strapped leather rear luggage trunk */}
+          <polygon points="68,144 68,106 102,104 102,146" fill="#3f2e22" stroke="#1c1917" strokeWidth="1.8" />
+          <line x1="72" y1="106" x2="72" y2="144" stroke="#ca8a04" strokeWidth="1.5" />
+          <line x1="96" y1="105" x2="96" y2="144" stroke="#ca8a04" strokeWidth="1.5" />
+          {/* Formal upright sedan greenhouse with sunvisor */}
+          <polygon points="98,64 212,60 216,106 98,106" fill={glassFill} stroke="#1c1917" strokeWidth="1.8" />
+          {/* Windshield visor */}
+          <polygon points="210,58 228,68 222,72 210,64" fill="#1c1917" stroke="#475569" strokeWidth="1" />
+          {/* Sedan body flank */}
+          <polygon points="98,106 226,104 230,156 144,158 124,136 104,155 98,146" fill={bodyFill} stroke="#1c1917" strokeWidth="2" />
+          {/* Hood & tall nickel radiator */}
+          <polygon points="226,104 286,108 322,132 272,128" fill={bodyFill} stroke="#1c1917" strokeWidth="1.8" />
+          <polygon points="286,108 322,132 322,162 286,148" fill={nickelStroke} stroke="#334155" strokeWidth="2" />
+          {/* Twin nickel drum headlights */}
+          <circle cx="330" cy="136" r="8" fill={nickelStroke} stroke="#334155" strokeWidth="1.5" />
+          <circle cx="330" cy="136" r="5.5" fill="#fef08a" />
+          <circle cx="288" cy="122" r="6.5" fill={nickelStroke} stroke="#334155" strokeWidth="1.5" />
+          <circle cx="288" cy="122" r="4.5" fill="#fef08a" />
         </g>
       );
     }
-    // 1920s Economy: Doctor’s Coupe (Tall cab, visor, rumble trunk)
+    // Economy: Doctor's Coupe (upright 2-door coupe, sunvisor, turtle-deck rear trunk, motometer)
     return (
       <g id="body-d2-economy">
-        <path d="M 54 86 Q 60 70 85 68 L 135 68 L 140 40 L 195 40 L 208 54 L 216 66 L 274 68 L 274 86 L 54 86 Z" fill={bodyFill} stroke={nickelStroke} strokeWidth="1.5" />
-        <line x1="192" y1="40" x2="210" y2="48" stroke="#000" strokeWidth="2" />
-        <rect x="146" y="45" width="46" height="20" fill={glassFill} stroke={nickelStroke} strokeWidth="1" />
-        <rect x="272" y="58" width="8" height="30" rx="2" fill={nickelStroke} stroke="#334155" strokeWidth="1.2" />
-        <circle cx="278" cy="64" r="5" fill="#fef08a" stroke={nickelStroke} strokeWidth="1.5" />
-        <line x1="120" y1="88" x2="200" y2="88" stroke="#000" strokeWidth="3.5" />
+        {/* Rounded turtle-deck rear trunk */}
+        <path d="M 76,146 Q 84,124 125,122 L 152,120 L 152,154 Q 144,158 124,136 104,155 Z" fill={bodyFill} stroke="#1c1917" strokeWidth="1.8" />
+        {/* Upright coupe greenhouse with sunvisor */}
+        <polygon points="148,68 214,64 218,108 148,108" fill={glassFill} stroke="#1c1917" strokeWidth="1.8" />
+        <polygon points="212,62 230,72 224,76 212,68" fill="#1c1917" stroke="#475569" strokeWidth="1" />
+        {/* Lower cabin door */}
+        <polygon points="148,108 226,106 228,156 148,154" fill={bodyFill} stroke="#1c1917" strokeWidth="2" />
+        {/* Hood & nickel radiator with motometer */}
+        <polygon points="226,106 282,110 318,134 270,130" fill={bodyFill} stroke="#1c1917" strokeWidth="1.8" />
+        <polygon points="282,110 318,134 318,162 282,148" fill={nickelStroke} stroke="#334155" strokeWidth="2" />
+        {/* Nickel motometer temperature gauge on radiator cap */}
+        <circle cx="300" cy="118" r="3.5" fill={nickelStroke} stroke="#334155" strokeWidth="1" />
+        {/* Twin headlights */}
+        <circle cx="324" cy="138" r="7.5" fill={nickelStroke} stroke="#334155" strokeWidth="1.2" />
+        <circle cx="324" cy="138" r="5" fill="#fef08a" />
+        <circle cx="282" cy="124" r="6" fill={nickelStroke} stroke="#334155" strokeWidth="1.2" />
+        <circle cx="282" cy="124" r="4" fill="#fef08a" />
       </g>
     );
   }
 
   // =========================================================================
   // DECADE 3: 1930-1939 (ART DECO & STREAMLINE MODERNE)
+  // Teardrop aerodynamic silhouettes, waterfall grilles, bullet headlamps
   // =========================================================================
   if (decade === 3) {
     if (segment === "utility") {
-      // 1930s Sculpted Art Deco Stepside Pickup
+      // Art Deco Curvaceous Pickup (bulbous front fenders, waterfall truck grille, stepside bed)
       return (
         <g id="body-d3-utility">
-          <rect x="48" y="62" width="112" height="24" rx="2" fill={bodyFill} stroke={chromeStroke} strokeWidth="1.4" />
-          <path d="M 66 86 Q 72 68 92 68 Q 112 68 118 86" stroke="#09090b" strokeWidth="4.5" fill="none" />
-          <path d="M 160 86 L 160 44 Q 166 40 192 40 Q 212 40 220 54 L 234 68 L 280 70 Q 284 76 280 88 L 160 88 Z" fill={bodyFill} stroke={chromeStroke} strokeWidth="1.5" />
-          <path d="M 166 48 L 204 48 L 216 66 L 166 66 Z" fill={glassFill} stroke={chromeStroke} strokeWidth="1" />
-          <path d="M 276 66 Q 285 76 280 90 L 270 90 Z" fill={chromeStroke} stroke="#334155" strokeWidth="1.2" />
-          <circle cx="276" cy="68" r="4.5" fill="#fef08a" stroke={chromeStroke} strokeWidth="1.2" />
-          <path d="M 195 88 Q 215 64 255 64 Q 280 72 286 88" stroke="#09090b" strokeWidth="4.5" fill="none" />
+          {/* Stepside steel pickup bed */}
+          <polygon points="70,146 70,112 188,108 188,154 144,158 124,136 104,155" fill={bodyFill} stroke="#1c1917" strokeWidth="1.8" />
+          {/* High rounded Art Deco cab & split vee-windshield */}
+          <path d="M 188,108 L 195,68 Q 205,58 240,62 L 255,108 Z" fill={glassFill} stroke="#1c1917" strokeWidth="1.8" />
+          <polygon points="188,108 255,108 258,156 188,154" fill={bodyFill} stroke="#1c1917" strokeWidth="2" />
+          {/* Curvaceous hood & waterfall grille prow */}
+          <polygon points="255,108 296,112 330,136 274,130" fill={bodyFill} stroke="#1c1917" strokeWidth="1.8" />
+          {/* Art Deco waterfall grille with fine chrome vertical bars */}
+          <path d="M 296,112 Q 316,110 330,136 L 330,162 L 296,148 Z" fill="#0f172a" stroke={chromeStroke} strokeWidth="2" />
+          <line x1="305" y1="120" x2="305" y2="152" stroke={chromeStroke} strokeWidth="1.5" />
+          <line x1="314" y1="125" x2="314" y2="156" stroke={chromeStroke} strokeWidth="1.5" />
+          <line x1="322" y1="130" x2="322" y2="160" stroke={chromeStroke} strokeWidth="1.5" />
+          {/* Teardrop bullet headlights molded into fender crowns */}
+          <path d="M 334,134 Q 342,138 334,142 Z" fill={chromeStroke} />
+          <circle cx="334" cy="138" r="6" fill="#fef08a" stroke={chromeStroke} strokeWidth="1" />
+          <circle cx="292" cy="125" r="5" fill="#fef08a" stroke={chromeStroke} strokeWidth="1" />
         </g>
       );
     }
     if (segment === "luxury") {
-      // 1930s V12/V16 Streamline Grand Coupe (Fender skirts, chrome spears, sweeping teardrop)
+      // Grand V12 Aero Speedster (ultra-long dramatic hood, enclosed rear wheels with chrome chevron spats)
       return (
         <g id="body-d3-luxury">
-          <path d="M 45 86 Q 52 50 100 36 Q 165 28 208 42 L 230 62 L 284 66 Q 290 74 286 86 L 45 86 Z" fill={bodyFill} stroke={chromeStroke} strokeWidth="1.8" />
-          <path d="M 108 42 L 152 38 L 152 62 L 100 62 Z" fill={glassFill} stroke={chromeStroke} strokeWidth="1" />
-          <path d="M 158 38 L 204 42 L 218 62 L 158 62 Z" fill={glassFill} stroke={chromeStroke} strokeWidth="1" />
-          {/* Chrome Spear along entire flank */}
-          <line x1="50" y1="62" x2="280" y2="64" stroke={chromeStroke} strokeWidth="2" />
-          {/* Covered Rear Fender Skirt */}
-          <path d="M 70 86 Q 72 68 92 68 Q 112 68 114 86 Z" fill={bodyFill} stroke={chromeStroke} strokeWidth="1.2" />
-          {/* Teardrop Waterfall Grille */}
-          <path d="M 280 64 Q 290 74 284 88 L 274 88 Z" fill={chromeStroke} stroke="#334155" strokeWidth="1.5" />
-          <circle cx="276" cy="62" r="5" fill="#fef08a" stroke={chromeStroke} strokeWidth="1.2" />
-          <path d="M 195 88 Q 215 60 255 62 Q 282 70 288 88" stroke="#09090b" strokeWidth="4.5" fill="none" />
+          {/* Swept teardrop aerodynamic body */}
+          <path d="M 68,144 Q 85,100 135,100 L 235,96 Q 248,96 256,110 L 302,114 L 338,134 L 280,162 Q 220,160 144,158 Q 124,136 104,155 Z" fill={bodyFill} stroke="#1c1917" strokeWidth="1.8" />
+          {/* Enclosed rear wheel spat with Art Deco chrome chevrons */}
+          <ellipse cx="124" cy="158" rx="20" ry="18" fill={bodyFill} stroke={chromeStroke} strokeWidth="1.5" />
+          <path d="M 115,152 L 124,158 L 133,152 M 115,158 L 124,164 L 133,158" stroke={chromeStroke} strokeWidth="2" fill="none" />
+          {/* Chopped raked split windshield */}
+          <polygon points="225,72 250,72 258,110 232,110" fill={glassFill} stroke={chromeStroke} strokeWidth="1.8" />
+          {/* Massive raked chrome prow grille */}
+          <path d="M 302,114 Q 324,110 338,134 L 338,164 L 302,148 Z" fill="#0f172a" stroke={chromeStroke} strokeWidth="2.5" />
+          <line x1="312" y1="120" x2="312" y2="152" stroke={chromeStroke} strokeWidth="1.5" />
+          <line x1="322" y1="124" x2="322" y2="156" stroke={chromeStroke} strokeWidth="1.5" />
+          <line x1="330" y1="128" x2="330" y2="160" stroke={chromeStroke} strokeWidth="1.5" />
+          {/* Streamlined bullet headlights */}
+          <ellipse cx="342" cy="136" rx="6" ry="8" fill="#fef08a" stroke={chromeStroke} strokeWidth="1.5" />
+          <ellipse cx="298" cy="122" rx="5" ry="6.5" fill="#fef08a" stroke={chromeStroke} strokeWidth="1.5" />
         </g>
       );
     }
     if (segment === "family") {
-      // 1930s Art Deco Aerodyne Sedan (Split windshield, bustle trunk, pontoon fenders)
+      // Aerodyne 4-Door Sedan (swept ponton fenders, Art Deco prow grille, split vee-windshield, rear bustle)
       return (
         <g id="body-d3-family">
-          <path d="M 50 86 Q 56 54 105 38 Q 170 32 205 46 L 225 64 L 278 68 Q 284 76 280 88 L 50 88 Z" fill={bodyFill} stroke={chromeStroke} strokeWidth="1.6" />
-          <path d="M 112 44 L 152 40 L 152 64 L 105 64 Z" fill={glassFill} stroke={chromeStroke} strokeWidth="1" />
-          <path d="M 158 40 L 202 44 L 216 64 L 158 64 Z" fill={glassFill} stroke={chromeStroke} strokeWidth="1" />
-          <line x1="56" y1="65" x2="274" y2="67" stroke={chromeStroke} strokeWidth="1.5" />
-          <path d="M 276 66 Q 285 75 282 90 L 273 90 Z" fill={chromeStroke} stroke="#334155" strokeWidth="1.5" />
-          <circle cx="274" cy="64" r="4.5" fill="#fef08a" stroke={chromeStroke} strokeWidth="1.2" />
-          <path d="M 46 88 Q 55 58 95 64 Q 120 72 135 90" stroke="#09090b" strokeWidth="4" fill="none" />
-          <path d="M 195 90 Q 215 62 255 64 Q 280 72 286 90" stroke="#09090b" strokeWidth="4" fill="none" />
+          {/* Streamlined fastback sedan roofline */}
+          <path d="M 72,144 Q 85,92 135,90 L 222,86 Q 236,86 244,106 L 244,156 Q 180,158 144,158 Q 124,136 104,155 Z" fill={bodyFill} stroke="#1c1917" strokeWidth="2" />
+          {/* Curved side windows with chrome divider */}
+          <polygon points="120,92 216,88 222,110 120,112" fill={glassFill} stroke={chromeStroke} strokeWidth="1.2" />
+          {/* Hood & rounded prow grille */}
+          <polygon points="244,106 294,110 328,134 274,130" fill={bodyFill} stroke="#1c1917" strokeWidth="1.8" />
+          <path d="M 294,110 Q 315,108 328,134 L 328,162 L 294,148 Z" fill="#0f172a" stroke={chromeStroke} strokeWidth="2" />
+          <line x1="305" y1="120" x2="305" y2="152" stroke={chromeStroke} strokeWidth="1.5" />
+          <line x1="316" y1="124" x2="316" y2="156" stroke={chromeStroke} strokeWidth="1.5" />
+          {/* Bullet headlights */}
+          <circle cx="332" cy="136" r="7.5" fill="#fef08a" stroke={chromeStroke} strokeWidth="1.5" />
+          <circle cx="290" cy="122" r="6" fill="#fef08a" stroke={chromeStroke} strokeWidth="1.5" />
         </g>
       );
     }
-    // 1930s Economy: Streamline Sloping Fastback Beetle/Coupe
+    // Economy: Streamline Fastback Coupe (swept teardrop rear, waterfall grille, teardrop bullet lights)
     return (
       <g id="body-d3-economy">
-        <path d="M 50 86 Q 58 48 115 36 Q 165 30 196 46 L 220 64 L 268 68 Q 274 76 270 88 L 50 88 Z" fill={bodyFill} stroke={chromeStroke} strokeWidth="1.5" />
-        <path d="M 116 42 Q 155 38 185 48 L 195 64 L 110 64 Z" fill={glassFill} stroke={chromeStroke} strokeWidth="1" />
-        <path d="M 268 66 Q 276 74 272 88 L 264 88 Z" fill={chromeStroke} stroke="#334155" strokeWidth="1.2" />
-        <circle cx="266" cy="65" r="4.5" fill="#fef08a" stroke={chromeStroke} strokeWidth="1.2" />
-        <path d="M 46 88 Q 55 58 95 64 Q 120 72 132 90" stroke="#09090b" strokeWidth="4" fill="none" />
-        <path d="M 195 90 Q 215 62 250 64 Q 272 72 278 90" stroke="#09090b" strokeWidth="4" fill="none" />
+        <path d="M 74,144 Q 92,106 142,104 L 226,102 Q 238,102 246,114 L 288,116 L 322,136 L 274,162 Q 220,160 144,158 Q 124,136 104,155 Z" fill={bodyFill} stroke="#1c1917" strokeWidth="1.8" />
+        <polygon points="152,104 220,102 226,118 152,118" fill={glassFill} stroke="#1c1917" strokeWidth="1.2" />
+        <polygon points="246,114 288,116 322,136 270,132" fill={bodyFill} stroke="#1c1917" strokeWidth="1.8" />
+        <path d="M 288,116 Q 308,114 322,136 L 322,162 L 288,148 Z" fill="#0f172a" stroke={chromeStroke} strokeWidth="2" />
+        <circle cx="326" cy="138" r="7" fill="#fef08a" stroke={chromeStroke} strokeWidth="1.2" />
+        <circle cx="284" cy="125" r="5.5" fill="#fef08a" stroke={chromeStroke} strokeWidth="1.2" />
       </g>
     );
   }
 
   // =========================================================================
-  // DECADE 4: 1940-1949 (POST-WAR PONTON ERA)
+  // DECADE 4: 1940-1949 (POST-WAR PONTON & HEAVY CHROME)
+  // Fully integrated fenders, horizontal die-cast grilles, massive bumpers
   // =========================================================================
   if (decade === 4) {
     if (segment === "utility") {
-      // 1940s Heavy-Duty Workhorse Truck
+      // Heavy-Duty Commercial Work Truck (massive bulbous alligator hood, 5-bar horizontal grille)
       return (
         <g id="body-d4-utility">
-          <rect x="46" y="60" width="116" height="26" rx="2" fill={bodyFill} stroke={chromeStroke} strokeWidth="1.5" />
-          <path d="M 68 86 Q 72 68 92 68 Q 112 68 116 86" stroke="#09090b" strokeWidth="5" fill="none" />
-          <path d="M 160 86 L 160 44 Q 166 40 195 40 Q 216 40 224 56 L 236 68 L 284 70 L 284 88 L 160 88 Z" fill={bodyFill} stroke={chromeStroke} strokeWidth="1.5" />
-          <path d="M 166 46 L 202 46 L 216 66 L 166 66 Z" fill={glassFill} stroke={chromeStroke} strokeWidth="1" />
-          {/* Horizontal Bar Heavy Grille */}
-          <rect x="278" y="70" width="8" height="18" rx="2" fill={chromeStroke} stroke="#334155" strokeWidth="1" />
-          <line x1="278" y1="74" x2="286" y2="74" stroke="#0f172a" strokeWidth="1" />
-          <line x1="278" y1="78" x2="286" y2="78" stroke="#0f172a" strokeWidth="1" />
-          <line x1="278" y1="82" x2="286" y2="82" stroke="#0f172a" strokeWidth="1" />
-          <circle cx="276" cy="66" r="4.5" fill="#fef08a" stroke={chromeStroke} strokeWidth="1.2" />
+          {/* Deep steel commercial bed */}
+          <polygon points="68,146 68,112 188,108 188,154 144,158 124,136 104,155" fill={bodyFill} stroke="#1c1917" strokeWidth="2" />
+          {/* High-visibility curved cab with quarter windows */}
+          <path d="M 188,108 L 196,65 Q 206,56 244,58 L 260,106 Z" fill={glassFill} stroke="#1c1917" strokeWidth="2" />
+          <polygon points="188,106 260,106 264,156 188,154" fill={bodyFill} stroke="#1c1917" strokeWidth="2" />
+          {/* Massive alligator-mouth bulbous hood */}
+          <polygon points="260,106 304,110 338,136 276,132" fill={bodyFill} stroke="#1c1917" strokeWidth="2" />
+          {/* 5-bar stamped chrome horizontal truck grille */}
+          <polygon points="304,110 338,136 338,162 304,148" fill="#0f172a" stroke={chromeStroke} strokeWidth="2.5" />
+          <line x1="305" y1="120" x2="337" y2="142" stroke={chromeStroke} strokeWidth="2.5" />
+          <line x1="305" y1="128" x2="337" y2="148" stroke={chromeStroke} strokeWidth="2.5" />
+          <line x1="305" y1="136" x2="337" y2="154" stroke={chromeStroke} strokeWidth="2.5" />
+          {/* Round headlamps recessed into fender crowns */}
+          <circle cx="342" cy="136" r="7.5" fill="#fef08a" stroke={chromeStroke} strokeWidth="1.5" />
+          <circle cx="298" cy="122" r="6" fill="#fef08a" stroke={chromeStroke} strokeWidth="1.5" />
+          {/* Heavy stamped bumper bar */}
+          <line x1="285" y1="152" x2="344" y2="166" stroke={chromeStroke} strokeWidth="6" />
         </g>
       );
     }
     if (segment === "luxury") {
-      // 1940s Continental Club Coupe / Post-War Limousine (Low roofline, thick rocker chrome)
+      // Continental Club Coupe (long hood, square chrome eggcrate grille, continental spare tire)
       return (
         <g id="body-d4-luxury">
-          <path d="M 44 86 Q 50 60 92 50 Q 155 36 210 46 L 235 64 L 286 66 L 286 86 L 44 86 Z" fill={bodyFill} stroke={chromeStroke} strokeWidth="1.8" />
-          <path d="M 102 52 Q 155 42 202 50 L 218 64 L 98 64 Z" fill={glassFill} stroke={chromeStroke} strokeWidth="1" />
-          {/* Thick Lower Rocker Chrome */}
-          <line x1="46" y1="84" x2="284" y2="84" stroke={chromeStroke} strokeWidth="2.5" />
-          {/* Rear Wheel Skirt with Crest */}
-          <path d="M 70 86 Q 72 68 92 68 Q 112 68 114 86 Z" fill={bodyFill} stroke={chromeStroke} strokeWidth="1.2" />
-          <circle cx="92" cy="74" r="2" fill="#ef4444" />
-          <rect x="282" y="68" width="8" height="18" rx="2" fill={chromeStroke} stroke="#334155" strokeWidth="1" />
-          <circle cx="282" cy="72" r="4" fill="#fef08a" stroke={chromeStroke} strokeWidth="1" />
+          {/* Continental spare tire housing mounted on rear bumper */}
+          <ellipse cx="68" cy="134" rx="12" ry="18" fill="#1c1917" stroke={chromeStroke} strokeWidth="2" />
+          {/* Long elegant ponton body */}
+          <path d="M 76,146 Q 90,88 140,86 L 235,84 Q 248,84 256,102 L 305,106 L 342,130 L 282,162 Q 220,160 144,158 Q 124,136 104,155 Z" fill={bodyFill} stroke="#1c1917" strokeWidth="2" />
+          {/* Low profile coupe greenhouse */}
+          <polygon points="135,86 226,84 234,106 135,108" fill={glassFill} stroke={chromeStroke} strokeWidth="1.5" />
+          {/* Broad hood & square die-cast chrome eggcrate grille */}
+          <polygon points="256,102 305,106 342,130 280,126" fill={bodyFill} stroke="#1c1917" strokeWidth="2" />
+          <polygon points="305,106 342,130 342,162 305,148" fill="#0f172a" stroke={chromeStroke} strokeWidth="2.5" />
+          {/* Eggcrate mesh */}
+          <line x1="306" y1="120" x2="341" y2="140" stroke={chromeStroke} strokeWidth="2" />
+          <line x1="306" y1="132" x2="341" y2="148" stroke={chromeStroke} strokeWidth="2" />
+          <line x1="318" y1="112" x2="318" y2="152" stroke={chromeStroke} strokeWidth="1.5" />
+          <line x1="330" y1="120" x2="330" y2="156" stroke={chromeStroke} strokeWidth="1.5" />
+          {/* Chrome headlights */}
+          <circle cx="346" cy="132" r="8" fill="#fef08a" stroke={chromeStroke} strokeWidth="1.5" />
+          <circle cx="300" cy="118" r="6.5" fill="#fef08a" stroke={chromeStroke} strokeWidth="1.5" />
+          {/* Wide lower body chrome rocker molding */}
+          <line x1="144" y1="158" x2="276" y2="162" stroke={chromeStroke} strokeWidth="3" />
         </g>
       );
     }
     if (segment === "family") {
-      // 1940s 4-Door Post-War Cruiser
+      // Post-War Torpedo Cruiser Sedan (broad rounded hood, wide chrome grille with heavy bumper guards)
       return (
         <g id="body-d4-family">
-          <path d="M 46 86 Q 52 56 100 46 Q 160 38 208 48 L 228 64 L 282 66 L 282 86 L 46 86 Z" fill={bodyFill} stroke={chromeStroke} strokeWidth="1.6" />
-          <path d="M 104 48 L 150 44 L 150 64 L 98 64 Z" fill={glassFill} stroke={chromeStroke} strokeWidth="1" />
-          <path d="M 156 44 L 198 48 L 212 64 L 156 64 Z" fill={glassFill} stroke={chromeStroke} strokeWidth="1" />
-          <rect x="278" y="70" width="8" height="16" rx="2" fill={chromeStroke} stroke="#334155" strokeWidth="1" />
-          <circle cx="278" cy="72" r="4" fill="#fef08a" stroke={chromeStroke} strokeWidth="1" />
-          <line x1="50" y1="82" x2="280" y2="82" stroke={chromeStroke} strokeWidth="1.5" />
+          <path d="M 72,146 Q 86,88 136,86 L 230,84 Q 242,84 250,104 L 300,108 L 336,132 L 278,162 Q 220,160 144,158 Q 124,136 104,155 Z" fill={bodyFill} stroke="#1c1917" strokeWidth="2" />
+          <polygon points="125,86 220,84 228,108 125,110" fill={glassFill} stroke={chromeStroke} strokeWidth="1.5" />
+          <polygon points="250,104 300,108 336,132 276,128" fill={bodyFill} stroke="#1c1917" strokeWidth="2" />
+          <polygon points="300,108 336,132 336,162 300,148" fill="#0f172a" stroke={chromeStroke} strokeWidth="2.5" />
+          <line x1="301" y1="122" x2="335" y2="142" stroke={chromeStroke} strokeWidth="2.5" />
+          <line x1="301" y1="134" x2="335" y2="150" stroke={chromeStroke} strokeWidth="2.5" />
+          {/* Twin vertical bumper guards ("overriders") */}
+          <rect x="312" y="146" width="5" height="18" rx="2" fill={chromeStroke} stroke="#334155" strokeWidth="1" />
+          <rect x="330" y="152" width="5" height="18" rx="2" fill={chromeStroke} stroke="#334155" strokeWidth="1" />
+          <circle cx="340" cy="134" r="7.5" fill="#fef08a" stroke={chromeStroke} strokeWidth="1.5" />
+          <circle cx="296" cy="120" r="6" fill="#fef08a" stroke={chromeStroke} strokeWidth="1.5" />
         </g>
       );
     }
-    // 1940s Economy: Compact Ponton Coupe
+    // Economy: Ponton Fastback 2-Door (smooth ponton styling, horizontal die-cast grille slats)
     return (
       <g id="body-d4-economy">
-        <path d="M 48 86 Q 54 52 105 44 Q 155 38 198 50 L 218 64 L 272 66 L 272 86 L 48 86 Z" fill={bodyFill} stroke={chromeStroke} strokeWidth="1.5" />
-        <path d="M 108 46 Q 150 40 190 50 L 204 64 L 102 64 Z" fill={glassFill} stroke={chromeStroke} strokeWidth="1" />
-        <rect x="268" y="70" width="8" height="16" rx="2" fill={chromeStroke} stroke="#334155" strokeWidth="1" />
-        <circle cx="268" cy="72" r="4" fill="#fef08a" stroke={chromeStroke} strokeWidth="1" />
+        <path d="M 74,146 Q 90,98 140,96 L 225,94 Q 236,94 245,108 L 292,112 L 326,134 L 274,162 Q 220,160 144,158 Q 124,136 104,155 Z" fill={bodyFill} stroke="#1c1917" strokeWidth="1.8" />
+        <polygon points="142,96 215,94 222,112 142,114" fill={glassFill} stroke="#1c1917" strokeWidth="1.2" />
+        <polygon points="245,108 292,112 326,134 272,130" fill={bodyFill} stroke="#1c1917" strokeWidth="1.8" />
+        <polygon points="292,112 326,134 326,162 292,148" fill="#0f172a" stroke={chromeStroke} strokeWidth="2" />
+        <line x1="293" y1="126" x2="325" y2="144" stroke={chromeStroke} strokeWidth="2" />
+        <line x1="293" y1="136" x2="325" y2="152" stroke={chromeStroke} strokeWidth="2" />
+        <circle cx="330" cy="136" r="7" fill="#fef08a" stroke={chromeStroke} strokeWidth="1.2" />
+        <circle cx="288" cy="122" r="5.5" fill="#fef08a" stroke={chromeStroke} strokeWidth="1.2" />
       </g>
     );
   }
 
   // =========================================================================
-  // DECADE 5: 1950-1959 (GOLDEN JET-AGE CHROME & TAILFINS)
+  // DECADE 5: 1950-1959 (JET-AGE & TAILFIN EXTRAVAGANZA)
+  // Panoramic wraparound glass, soaring tailfins, Dagmar bumper bullets
   // =========================================================================
   if (decade === 5) {
     if (segment === "utility") {
-      // 1950s Classic Stepside Pickup (Chevy 3100 / Ford F-100 style)
+      // Stepside Custom Pickup (domed hood with chrome windsplits, smiling chrome grille, stepside bed)
       return (
         <g id="body-d5-utility">
-          <rect x="46" y="64" width="116" height="24" rx="2" fill={bodyFill} stroke={chromeStroke} strokeWidth="1.5" />
-          <path d="M 68 88 Q 72 68 92 68 Q 112 68 116 88" stroke="#09090b" strokeWidth="5" fill="none" />
-          <path d="M 160 88 L 160 48 Q 166 44 196 44 Q 214 44 224 58 L 238 68 L 285 70 Q 288 78 285 88 L 160 88 Z" fill={bodyFill} stroke={chromeStroke} strokeWidth="1.6" />
-          <path d="M 166 50 L 198 48 L 220 66 L 166 66 Z" fill={glassFill} stroke={chromeStroke} strokeWidth="1" />
-          <rect x="280" y="72" width="8" height="16" rx="2" fill={chromeStroke} stroke="#475569" strokeWidth="1" />
-          <circle cx="282" cy="76" r="3.5" fill="#fef08a" stroke="#fff" strokeWidth="1" />
-          <line x1="240" y1="78" x2="284" y2="78" stroke={chromeStroke} strokeWidth="2" />
+          {/* Stepside bed with white roof cab */}
+          <polygon points="68,146 68,110 188,106 188,154 144,158 124,136 104,155" fill={bodyFill} stroke="#1c1917" strokeWidth="2" />
+          {/* Panoramic wraparound cab roof in two-tone white */}
+          <path d="M 188,106 L 195,62 Q 206,52 245,54 L 260,102 Z" fill={twoTone} stroke={chromeStroke} strokeWidth="1.8" />
+          <polygon points="194,66 238,62 255,102 194,104" fill={glassFill} stroke="#1c1917" strokeWidth="1.5" />
+          <polygon points="188,104 260,102 264,156 188,154" fill={bodyFill} stroke="#1c1917" strokeWidth="2" />
+          {/* High domed hood with twin chrome windsplit spears */}
+          <polygon points="260,102 305,106 340,132 276,128" fill={bodyFill} stroke="#1c1917" strokeWidth="2" />
+          <line x1="270" y1="108" x2="315" y2="120" stroke={chromeStroke} strokeWidth="2" />
+          <line x1="285" y1="106" x2="330" y2="122" stroke={chromeStroke} strokeWidth="2" />
+          {/* Smiling wide chrome truck grille */}
+          <polygon points="305,106 340,132 340,162 305,148" fill="#0f172a" stroke={chromeStroke} strokeWidth="2.5" />
+          <path d="M 306,126 Q 324,136 339,142" stroke={chromeStroke} strokeWidth="4" fill="none" />
+          <circle cx="344" cy="132" r="7.5" fill="#fef08a" stroke={chromeStroke} strokeWidth="1.5" />
+          <circle cx="300" cy="118" r="6" fill="#fef08a" stroke={chromeStroke} strokeWidth="1.5" />
         </g>
       );
     }
     if (segment === "luxury") {
-      // 1950s Eldorado/Fleetwood Grand Fin Cruiser (Towering fins, dual bullet taillights, Dagmar bumpers)
+      // Grand Fin Imperial Coupe (soaring shark tailfins, dual Dagmar bumper bullets, quad headlamps)
       return (
         <g id="body-d5-luxury">
-          {/* Rocket Tailfin */}
-          <path d="M 40 52 Q 52 64 62 88 L 288 88 Q 292 78 288 68 L 246 66 L 216 44 L 120 44 L 88 62 L 40 52 Z" fill={bodyFill} stroke={chromeStroke} strokeWidth="1.8" />
-          {/* Wraparound Glass */}
-          <polygon points="94,62 122,46 214,46 240,62 94,62" fill={glassFill} stroke={chromeStroke} strokeWidth="1.2" />
-          {/* Dual Red Rocket Bullet Taillights */}
-          <circle cx="41" cy="54" r="3" fill="#ef4444" stroke="#fff" strokeWidth="0.8" />
-          <circle cx="43" cy="62" r="3" fill="#ef4444" stroke="#fff" strokeWidth="0.8" />
-          {/* Grand Chrome Dagmar Bumper Bullets */}
-          <rect x="284" y="68" width="9" height="20" rx="2" fill={chromeStroke} stroke="#334155" strokeWidth="1.2" />
-          <circle cx="286" cy="72" r="3.5" fill="#fef08a" stroke="#fff" strokeWidth="1" />
-          <circle cx="286" cy="82" r="3.5" fill="#fef08a" stroke="#fff" strokeWidth="1" />
-          {/* Stainless Side Spear */}
-          <path d="M 48 70 L 140 70 L 210 76 L 285 76" stroke={chromeStroke} strokeWidth="2.5" fill="none" />
+          {/* Soaring shark tailfin rising high over rear quarter */}
+          <path d="M 64,88 L 92,106 L 90,146 L 64,142 Z" fill={bodyFill} stroke={chromeStroke} strokeWidth="2" />
+          <line x1="64" y1="88" x2="90" y2="146" stroke={chromeStroke} strokeWidth="2.5" />
+          {/* Ruby red bullet tail light lens */}
+          <ellipse cx="64" cy="94" rx="3.5" ry="5" fill="#ef4444" stroke={chromeStroke} strokeWidth="1" />
+          {/* Pillarless hardtop greenhouse with wraparound dogleg windshield */}
+          <path d="M 90,106 L 120,70 L 228,66 L 255,98 L 90,106 Z" fill={twoTone} stroke={chromeStroke} strokeWidth="2" />
+          <polygon points="125,74 220,70 248,98 125,104" fill={glassFill} stroke={chromeStroke} strokeWidth="1.5" />
+          {/* Lower fuselage body with two-tone sweep spear */}
+          <polygon points="90,106 255,98 260,156 144,158 124,136 104,155 90,146" fill={bodyFill} stroke="#1c1917" strokeWidth="2" />
+          <path d="M 90,126 Q 180,128 260,136" stroke={chromeStroke} strokeWidth="3" fill="none" />
+          {/* Massive front clip with eggcrate grille */}
+          <polygon points="255,98 308,102 344,128 280,124" fill={bodyFill} stroke="#1c1917" strokeWidth="2" />
+          <polygon points="308,102 344,128 344,162 308,148" fill="#0f172a" stroke={chromeStroke} strokeWidth="2.5" />
+          {/* Dual front Dagmar chrome bumper bullets */}
+          <ellipse cx="320" cy="148" rx="6" ry="8" fill={chromeStroke} stroke="#334155" strokeWidth="1.5" />
+          <ellipse cx="344" cy="154" rx="6" ry="8" fill={chromeStroke} stroke="#334155" strokeWidth="1.5" />
+          {/* Quad chrome headlamps */}
+          <circle cx="346" cy="126" r="5" fill="#fef08a" stroke={chromeStroke} strokeWidth="1" />
+          <circle cx="340" cy="132" r="5" fill="#fef08a" stroke={chromeStroke} strokeWidth="1" />
+          <circle cx="304" cy="114" r="4.5" fill="#fef08a" stroke={chromeStroke} strokeWidth="1" />
+          <circle cx="298" cy="120" r="4.5" fill="#fef08a" stroke={chromeStroke} strokeWidth="1" />
         </g>
       );
     }
     if (segment === "family") {
-      // 1950s 4-Door Hardtop Cruiser (Two-tone roof, prominent rocket fins)
+      // Hardtop Cruiser Sedan (pillarless hardtop, swept rocket tailfins with ruby lenses, sweep spear)
       return (
         <g id="body-d5-family">
-          <path d="M 45 60 Q 55 68 62 88 L 285 88 Q 288 78 285 70 L 245 68 L 215 46 L 125 46 L 95 64 L 45 60 Z" fill={bodyFill} stroke={chromeStroke} strokeWidth="1.6" />
-          {/* Two-Tone Roof */}
-          <path d="M 95 64 L 125 46 L 215 46 L 245 68 Z" fill="url(#bodyTwoTone)" opacity="0.35" />
-          <polygon points="100,64 128,48 212,48 238,64 100,64" fill={glassFill} stroke={chromeStroke} strokeWidth="1" />
-          <circle cx="46" cy="62" r="2.5" fill="#ef4444" />
-          <rect x="280" y="70" width="8" height="18" rx="2" fill={chromeStroke} stroke="#475569" strokeWidth="1" />
-          <circle cx="282" cy="74" r="3" fill="#fef08a" stroke="#fff" strokeWidth="1" />
-          <circle cx="282" cy="82" r="3" fill="#fef08a" stroke="#fff" strokeWidth="1" />
-          <line x1="52" y1="74" x2="282" y2="76" stroke={chromeStroke} strokeWidth="2" />
+          {/* Swept rocket tailfin */}
+          <path d="M 68,102 L 95,116 L 92,146 L 68,142 Z" fill={bodyFill} stroke={chromeStroke} strokeWidth="1.8" />
+          <ellipse cx="68" cy="106" rx="3" ry="4.5" fill="#ef4444" stroke={chromeStroke} strokeWidth="1" />
+          {/* Two-tone hardtop roof */}
+          <path d="M 95,116 L 125,76 L 225,72 L 250,102 L 95,116 Z" fill={twoTone} stroke={chromeStroke} strokeWidth="1.8" />
+          <polygon points="130,80 218,76 244,102 130,108" fill={glassFill} stroke={chromeStroke} strokeWidth="1.5" />
+          <polygon points="95,116 250,102 255,156 144,158 124,136 104,155 92,146" fill={bodyFill} stroke="#1c1917" strokeWidth="2" />
+          {/* Side chrome sweep spear */}
+          <path d="M 95,130 Q 180,132 254,138" stroke={chromeStroke} strokeWidth="2.5" fill="none" />
+          <polygon points="250,102 302,106 338,130 276,126" fill={bodyFill} stroke="#1c1917" strokeWidth="2" />
+          <polygon points="302,106 338,130 338,162 302,148" fill="#0f172a" stroke={chromeStroke} strokeWidth="2.5" />
+          <circle cx="342" cy="128" r="7" fill="#fef08a" stroke={chromeStroke} strokeWidth="1.2" />
+          <circle cx="298" cy="116" r="5.5" fill="#fef08a" stroke={chromeStroke} strokeWidth="1.2" />
         </g>
       );
     }
-    // 1950s Economy: Tri-Five 2-Door Post Coupe
+    // Economy: 2-Door Post Sedan (compact two-tone, chrome side spear, small tasteful fin tips)
     return (
       <g id="body-d5-economy">
-        <path d="M 48 64 Q 56 70 62 88 L 278 88 Q 282 78 278 70 L 238 68 L 208 48 L 128 48 L 102 64 L 48 64 Z" fill={bodyFill} stroke={chromeStroke} strokeWidth="1.5" />
-        <polygon points="106,64 130,50 204,50 232,64 106,64" fill={glassFill} stroke={chromeStroke} strokeWidth="1" />
-        <circle cx="49" cy="66" r="2.5" fill="#ef4444" />
-        <rect x="274" y="70" width="8" height="18" rx="2" fill={chromeStroke} stroke="#475569" strokeWidth="1" />
-        <circle cx="276" cy="74" r="3" fill="#fef08a" stroke="#fff" strokeWidth="1" />
-        <line x1="54" y1="76" x2="276" y2="76" stroke={chromeStroke} strokeWidth="1.8" />
+        <path d="M 72,120 L 92,126 L 90,146 L 72,142 Z" fill={bodyFill} stroke={chromeStroke} strokeWidth="1.5" />
+        <path d="M 92,126 L 130,86 L 220,82 L 244,106 L 92,126 Z" fill={twoTone} stroke={chromeStroke} strokeWidth="1.5" />
+        <polygon points="134,90 214,86 238,106 134,112" fill={glassFill} stroke="#1c1917" strokeWidth="1.2" />
+        <polygon points="92,126 244,106 248,156 144,158 124,136 104,155 90,146" fill={bodyFill} stroke="#1c1917" strokeWidth="1.8" />
+        <line x1="92" y1="134" x2="246" y2="138" stroke={chromeStroke} strokeWidth="2" />
+        <polygon points="244,106 294,110 328,132 272,128" fill={bodyFill} stroke="#1c1917" strokeWidth="1.8" />
+        <polygon points="294,110 328,132 328,162 294,148" fill="#0f172a" stroke={chromeStroke} strokeWidth="2" />
+        <circle cx="332" cy="130" r="6.5" fill="#fef08a" stroke={chromeStroke} strokeWidth="1.2" />
+        <circle cx="290" cy="118" r="5" fill="#fef08a" stroke={chromeStroke} strokeWidth="1.2" />
       </g>
     );
   }
 
   // =========================================================================
-  // DECADE 6: 1960-1969 (SPACE-AGE, MUSCLE & COKE-BOTTLE)
+  // DECADE 6: 1960-1969 (MUSCLE, COKE-BOTTLE & CRISP LINEAR)
+  // Narrow redline tires, Torq-Thrust mags, knife-edge fenders, hidden headlights
   // =========================================================================
   if (decade === 6) {
     if (segment === "utility") {
-      // 1960s Fleetside Smooth-Sided Pickup (Continuous steel bed, flat hood with power ridges)
+      // Fleetside Smooth-Bed Pickup (broad flat hood with power bulge, full-width fleetside bed)
       return (
         <g id="body-d6-utility">
-          <rect x="46" y="66" width="120" height="22" rx="1.5" fill={bodyFill} stroke={chromeStroke} strokeWidth="1.5" />
-          <line x1="46" y1="74" x2="166" y2="74" stroke={chromeStroke} strokeWidth="1.5" />
-          <path d="M 166 88 L 166 48 L 216 48 L 232 64 L 286 68 L 286 88 L 166 88 Z" fill={bodyFill} stroke={chromeStroke} strokeWidth="1.5" />
-          <polygon points="172,64 172,50 212,50 228,64" fill={glassFill} stroke={chromeStroke} strokeWidth="1" />
-          <rect x="282" y="70" width="8" height="16" rx="1.5" fill={chromeStroke} stroke="#334155" strokeWidth="1" />
-          <circle cx="284" cy="74" r="3" fill="#fef08a" />
-          <circle cx="284" cy="82" r="3" fill="#fef08a" />
+          {/* Smooth full-width steel fleetside bed */}
+          <polygon points="68,146 68,110 190,106 190,154 144,158 124,136 104,155" fill={bodyFill} stroke="#1c1917" strokeWidth="2" />
+          {/* Clean linear cab with thin drip moldings */}
+          <polygon points="190,66 238,64 255,104 190,106" fill={glassFill} stroke="#1c1917" strokeWidth="1.8" />
+          <polygon points="190,106 255,104 258,156 190,154" fill={bodyFill} stroke="#1c1917" strokeWidth="2" />
+          {/* Wide hood with center power bulge */}
+          <polygon points="255,104 305,106 342,130 276,128" fill={bodyFill} stroke="#1c1917" strokeWidth="2" />
+          <line x1="270" y1="112" x2="325" y2="124" stroke="#1c1917" strokeWidth="2" />
+          {/* Stamped aluminum wide truck grille */}
+          <polygon points="305,106 342,130 342,162 305,148" fill="#0f172a" stroke={chromeStroke} strokeWidth="2" />
+          <circle cx="344" cy="130" r="7" fill="#fef08a" stroke={chromeStroke} strokeWidth="1.5" />
+          <circle cx="302" cy="118" r="5.5" fill="#fef08a" stroke={chromeStroke} strokeWidth="1.5" />
         </g>
       );
     }
     if (segment === "luxury") {
-      // 1960s Slab-Sided Continental/Riviera Style Coupe (Razor fender blades, concealed headlights)
+      // Slab-Sided Formal Executive Coupe (knife-blade razor fender peaks, hidden headlamp doors, formal C-pillar)
       return (
         <g id="body-d6-luxury">
-          <path d="M 44 86 L 44 64 L 98 62 L 135 46 L 215 46 L 255 64 L 290 66 L 290 86 L 44 86 Z" fill={bodyFill} stroke={chromeStroke} strokeWidth="1.8" />
-          <polygon points="102,62 138,48 212,48 248,62" fill={glassFill} stroke={chromeStroke} strokeWidth="1.2" />
-          {/* Razor Blade Fender Chrome Line */}
-          <line x1="44" y1="64" x2="290" y2="66" stroke={chromeStroke} strokeWidth="2" />
-          {/* Concealed Headlight Grille */}
-          <rect x="284" y="68" width="8" height="16" rx="1" fill="#0f172a" stroke={chromeStroke} strokeWidth="1.2" />
-          <line x1="284" y1="72" x2="292" y2="72" stroke={chromeStroke} strokeWidth="1" />
-          <line x1="284" y1="76" x2="292" y2="76" stroke={chromeStroke} strokeWidth="1" />
-          <line x1="284" y1="80" x2="292" y2="80" stroke={chromeStroke} strokeWidth="1" />
-          <rect x="42" y="68" width="4" height="12" fill="#ef4444" />
+          {/* Formal notchback roof with broad formal C-pillar */}
+          <polygon points="102,112 135,74 218,72 245,104 102,112" fill={bodyFill} stroke="#1c1917" strokeWidth="2" />
+          <polygon points="140,78 212,76 238,104 140,106" fill={glassFill} stroke={chromeStroke} strokeWidth="1.2" />
+          {/* Knife-blade razor-edge fender peaks running full length of body */}
+          <path d="M 68,144 L 68,118 L 344,126 L 344,162 L 280,162 Q 220,160 144,158 Q 124,136 104,155 Z" fill={bodyFill} stroke="#1c1917" strokeWidth="2" />
+          <line x1="68" y1="118" x2="344" y2="126" stroke={chromeStroke} strokeWidth="2.5" />
+          {/* Long hood & wide black mesh grille with hidden headlights */}
+          <polygon points="245,104 306,106 344,126 278,124" fill={bodyFill} stroke="#1c1917" strokeWidth="2" />
+          <polygon points="306,106 344,126 344,158 306,146" fill="#020617" stroke={chromeStroke} strokeWidth="2" />
+          {/* Hidden headlamp vacuum door louvers */}
+          <line x1="312" y1="116" x2="312" y2="148" stroke="#334155" strokeWidth="2" />
+          <line x1="334" y1="126" x2="334" y2="154" stroke="#334155" strokeWidth="2" />
+          {/* Heavy chrome bumper */}
+          <line x1="285" y1="150" x2="346" y2="162" stroke={chromeStroke} strokeWidth="5" />
         </g>
       );
     }
     if (segment === "family") {
-      // 1960s Full-Size Hardtop Sedan (Coke-bottle hip, quad horizontal headlights)
+      // Full-Size Coke-Bottle Hardtop Sedan (seductive Coke-bottle hip wave over rear wheel, quad headlamps)
       return (
         <g id="body-d6-family">
-          <path d="M 46 86 L 46 66 Q 72 64 96 64 L 132 48 L 218 48 L 252 64 L 288 66 L 288 86 L 46 86 Z" fill={bodyFill} stroke={chromeStroke} strokeWidth="1.6" />
-          <polygon points="100,63 134,50 214,50 246,63" fill={glassFill} stroke={chromeStroke} strokeWidth="1" />
-          <line x1="46" y1="70" x2="288" y2="70" stroke={chromeStroke} strokeWidth="1.5" />
-          <rect x="282" y="70" width="8" height="16" rx="1.5" fill={chromeStroke} stroke="#334155" strokeWidth="1" />
-          <circle cx="284" cy="74" r="2.8" fill="#fef08a" />
-          <circle cx="284" cy="82" r="2.8" fill="#fef08a" />
-          <circle cx="47" cy="72" r="2" fill="#ef4444" />
+          {/* Semi-fastback roofline */}
+          <polygon points="98,114 135,76 225,74 250,104 98,114" fill={bodyFill} stroke="#1c1917" strokeWidth="2" />
+          <polygon points="140,80 218,78 244,104 140,108" fill={glassFill} stroke={chromeStroke} strokeWidth="1.2" />
+          {/* Seductive Coke-bottle hip wave rising over rear wheel */}
+          <path d="M 70,144 L 70,118 Q 105,116 124,110 Q 155,116 250,104 L 304,106 L 340,128 L 278,162 Q 220,160 144,158 Q 124,136 104,155 Z" fill={bodyFill} stroke="#1c1917" strokeWidth="2" />
+          <polygon points="250,104 304,106 340,128 276,126" fill={bodyFill} stroke="#1c1917" strokeWidth="2" />
+          <polygon points="304,106 340,128 340,158 304,146" fill="#0f172a" stroke={chromeStroke} strokeWidth="2" />
+          {/* Quad horizontal headlamps */}
+          <circle cx="344" cy="126" r="4.5" fill="#fef08a" stroke={chromeStroke} strokeWidth="1" />
+          <circle cx="335" cy="130" r="4.5" fill="#fef08a" stroke={chromeStroke} strokeWidth="1" />
+          <circle cx="304" cy="114" r="4" fill="#fef08a" stroke={chromeStroke} strokeWidth="1" />
+          <circle cx="296" cy="118" r="4" fill="#fef08a" stroke={chromeStroke} strokeWidth="1" />
         </g>
       );
     }
-    // 1960s Economy: Compact Sedan (Crisp horizontal brow, clean decklid)
+    // Economy: Notchback Compact 2-Door (clean crisp horizontal lines, thin roof pillars, dual round headlights)
     return (
       <g id="body-d6-economy">
-        <path d="M 48 86 L 48 68 L 102 66 L 136 50 L 210 50 L 244 66 L 280 68 L 280 86 L 48 86 Z" fill={bodyFill} stroke={chromeStroke} strokeWidth="1.5" />
-        <polygon points="106,65 138,52 206,52 238,65" fill={glassFill} stroke={chromeStroke} strokeWidth="1" />
-        <rect x="274" y="70" width="8" height="16" rx="1.5" fill={chromeStroke} stroke="#334155" strokeWidth="1" />
-        <circle cx="276" cy="75" r="3" fill="#fef08a" />
+        <polygon points="105,116 138,82 216,80 240,106 105,116" fill={bodyFill} stroke="#1c1917" strokeWidth="1.8" />
+        <polygon points="142,86 210,84 234,106 142,110" fill={glassFill} stroke="#1c1917" strokeWidth="1.2" />
+        <path d="M 74,144 L 74,120 L 328,126 L 328,160 L 274,162 Q 220,160 144,158 Q 124,136 104,155 Z" fill={bodyFill} stroke="#1c1917" strokeWidth="1.8" />
+        <polygon points="240,106 294,108 328,126 272,126" fill={bodyFill} stroke="#1c1917" strokeWidth="1.8" />
+        <polygon points="294,108 328,126 328,156 294,146" fill="#0f172a" stroke={chromeStroke} strokeWidth="1.8" />
+        <circle cx="330" cy="126" r="6" fill="#fef08a" stroke={chromeStroke} strokeWidth="1" />
+        <circle cx="292" cy="114" r="5" fill="#fef08a" stroke={chromeStroke} strokeWidth="1" />
       </g>
     );
   }
 
   // =========================================================================
-  // DECADE 7: 1970-1979 (MALAISE, ANGULAR & IMPACT BUMPERS)
+  // DECADE 7: 1970-1979 (MALAISE ERA, WEDGE & IMPACT BUMPERS)
+  // Black radial tires, rallye mag dishes, 5-mph impact bumpers, opera windows
   // =========================================================================
   if (decade === 7) {
     if (segment === "utility") {
-      // 1970s Heavy-Duty Squarebody Pickup (Chisel-edged, dual tanks)
+      // Squarebody Heavy Pickup Truck (chiselled boxy lines, double-stacked rectangular headlamps)
       return (
         <g id="body-d7-utility">
-          <rect x="46" y="64" width="122" height="24" rx="1" fill={bodyFill} stroke="#334155" strokeWidth="1.5" />
-          <line x1="46" y1="72" x2="168" y2="72" stroke="#0f172a" strokeWidth="1.5" />
-          <path d="M 166 88 L 166 46 L 214 46 L 232 66 L 288 68 L 288 88 L 166 88 Z" fill={bodyFill} stroke="#334155" strokeWidth="1.5" />
-          <polygon points="172,64 172,48 210,48 226,64" fill={glassFill} stroke="#0f172a" strokeWidth="1" />
-          {/* Heavy 5-mph Impact Bumper */}
-          <rect x="44" y="82" width="10" height="7" rx="1" fill="#09090b" stroke="#475569" strokeWidth="1" />
-          <rect x="282" y="80" width="10" height="8" rx="1" fill="#09090b" stroke="#475569" strokeWidth="1" />
-          <rect x="282" y="70" width="8" height="12" fill={chromeStroke} />
-          <rect x="284" y="72" width="5" height="4" fill="#f8fafc" />
+          {/* Chiselled squarebody cargo bed */}
+          <polygon points="68,146 68,108 190,106 190,154 144,158 124,136 104,155" fill={bodyFill} stroke="#1c1917" strokeWidth="2" />
+          <polygon points="190,66 238,64 256,104 190,106" fill={glassFill} stroke="#1c1917" strokeWidth="1.8" />
+          <polygon points="190,106 256,104 258,156 190,154" fill={bodyFill} stroke="#1c1917" strokeWidth="2" />
+          {/* Flat chiselled hood with horizontal character line */}
+          <polygon points="256,104 306,106 342,128 276,126" fill={bodyFill} stroke="#1c1917" strokeWidth="2" />
+          {/* Eggcrate grille with double-stacked rectangular headlamps */}
+          <polygon points="306,106 342,128 342,160 306,148" fill="#0f172a" stroke={chromeStroke} strokeWidth="2" />
+          {/* Stacked rectangular headlamps */}
+          <rect x="338" y="122" width="7" height="5" fill="#fef08a" stroke="#475569" strokeWidth="0.8" />
+          <rect x="338" y="129" width="7" height="5" fill="#fef08a" stroke="#475569" strokeWidth="0.8" />
+          <rect x="300" y="112" width="6" height="4.5" fill="#fef08a" stroke="#475569" strokeWidth="0.8" />
+          <rect x="300" y="118" width="6" height="4.5" fill="#fef08a" stroke="#475569" strokeWidth="0.8" />
+          {/* Massive heavy steel bumper with black rubber impact strip */}
+          <line x1="282" y1="152" x2="346" y2="164" stroke="#1c1917" strokeWidth="6" />
+          <line x1="282" y1="152" x2="346" y2="164" stroke={chromeStroke} strokeWidth="4" />
         </g>
       );
     }
     if (segment === "luxury") {
-      // 1970s Personal Luxury Coupe (Mark IV style: Stand-up ornament, vinyl roof with opera window)
+      // Personal Luxury Coupe (stand-up vertical die-cast grille, opera window, vinyl half-roof)
       return (
         <g id="body-d7-luxury">
-          <path d="M 46 86 L 46 66 L 105 66 L 140 48 L 215 48 L 255 66 L 292 68 L 292 88 L 46 88 Z" fill={bodyFill} stroke="#334155" strokeWidth="1.6" />
-          {/* Padded Vinyl Landau Roof */}
-          <path d="M 105 66 L 140 48 L 175 48 L 175 66 Z" fill="#18181b" />
-          <ellipse cx="125" cy="56" rx="4" ry="6" fill={glassFill} stroke={chromeStroke} strokeWidth="1" />
-          <polygon points="178,65 178,50 212,50 248,65" fill={glassFill} stroke="#0f172a" strokeWidth="1" />
-          {/* Stand-up Hood Ornament & Massive Grille */}
-          <rect x="286" y="68" width="8" height="18" rx="1" fill={chromeStroke} stroke="#334155" strokeWidth="1" />
-          <line x1="284" y1="68" x2="284" y2="62" stroke={chromeStroke} strokeWidth="1.5" />
-          <circle cx="284" cy="61" r="1.5" fill={chromeStroke} />
-          <rect x="284" y="82" width="10" height="7" rx="1" fill="#09090b" />
+          {/* Padded vinyl landau half-roof with oval opera window */}
+          <polygon points="98,114 135,76 218,74 246,106 98,114" fill="#09090b" stroke="#1c1917" strokeWidth="2" />
+          {/* Opera window */}
+          <ellipse cx="125" cy="94" rx="4" ry="7" fill={glassFill} stroke={chromeStroke} strokeWidth="1" />
+          <polygon points="145,80 210,78 238,106 145,108" fill={glassFill} stroke={chromeStroke} strokeWidth="1.2" />
+          {/* Long hood / short deck proportions */}
+          <path d="M 68,144 L 68,118 L 344,126 L 344,162 L 280,162 Q 220,160 144,158 Q 124,136 104,155 Z" fill={bodyFill} stroke="#1c1917" strokeWidth="2" />
+          <polygon points="246,106 306,108 344,128 278,126" fill={bodyFill} stroke="#1c1917" strokeWidth="2" />
+          {/* Stand-up tall neoclassical vertical die-cast grille */}
+          <polygon points="314,102 338,118 338,154 314,144" fill="#0f172a" stroke={chromeStroke} strokeWidth="2.5" />
+          <line x1="322" y1="108" x2="322" y2="148" stroke={chromeStroke} strokeWidth="1.5" />
+          <line x1="330" y1="114" x2="330" y2="152" stroke={chromeStroke} strokeWidth="1.5" />
+          {/* Stacked rectangular headlights */}
+          <rect x="340" y="124" width="6" height="5" fill="#fef08a" stroke="#475569" strokeWidth="0.8" />
+          <rect x="340" y="131" width="6" height="5" fill="#fef08a" stroke="#475569" strokeWidth="0.8" />
+          {/* 5-mph heavy impact bumper with rubber bumper guards */}
+          <line x1="285" y1="152" x2="348" y2="164" stroke={chromeStroke} strokeWidth="5.5" />
+          <rect x="336" y="146" width="4" height="14" rx="1" fill="#09090b" />
         </g>
       );
     }
     if (segment === "family") {
-      // 1970s Malaise 4-Door Sedan (5-mph aluminum bumpers, opera windows)
+      // Malaise Formal Sedan (vinyl landau roof, opera window, 5-mph extruded chrome bumpers)
       return (
         <g id="body-d7-family">
-          <path d="M 46 86 L 46 68 L 108 66 L 142 50 L 218 50 L 256 66 L 290 68 L 290 88 L 46 88 Z" fill={bodyFill} stroke="#334155" strokeWidth="1.5" />
-          <polygon points="112,65 144,52 214,52 250,65" fill={glassFill} stroke="#0f172a" strokeWidth="1" />
-          <line x1="178" y1="52" x2="178" y2="65" stroke="#334155" strokeWidth="2" />
-          <rect x="42" y="80" width="10" height="7" rx="1" fill="#94a3b8" stroke="#09090b" strokeWidth="1" />
-          <rect x="284" y="80" width="10" height="7" rx="1" fill="#94a3b8" stroke="#09090b" strokeWidth="1" />
-          <rect x="284" y="70" width="8" height="12" fill="#cbd5e1" />
+          <polygon points="96,114 132,76 222,74 248,106 96,114" fill="#1c1917" stroke="#334155" strokeWidth="2" />
+          <rect x="118" y="90" width="7" height="11" rx="1" fill={glassFill} stroke={chromeStroke} strokeWidth="1" />
+          <polygon points="138,80 214,78 240,106 138,108" fill={glassFill} stroke={chromeStroke} strokeWidth="1.2" />
+          <path d="M 68,144 L 68,118 L 338,126 L 338,162 L 278,162 Q 220,160 144,158 Q 124,136 104,155 Z" fill={bodyFill} stroke="#1c1917" strokeWidth="2" />
+          <polygon points="248,106 304,108 338,128 276,126" fill={bodyFill} stroke="#1c1917" strokeWidth="2" />
+          <polygon points="304,108 338,128 338,158 304,146" fill="#0f172a" stroke={chromeStroke} strokeWidth="2" />
+          <rect x="340" y="124" width="7" height="6" fill="#fef08a" stroke="#475569" strokeWidth="0.8" />
+          <rect x="298" y="112" width="6" height="5" fill="#fef08a" stroke="#475569" strokeWidth="0.8" />
+          <line x1="282" y1="152" x2="344" y2="164" stroke={chromeStroke} strokeWidth="5" />
         </g>
       );
     }
-    // 1970s Economy: Hatchback / Subcompact
+    // Economy: 3-Door Liftback Hatchback (crisp wedge front, polyurethane impact bumpers, louvered glass)
     return (
       <g id="body-d7-economy">
-        <path d="M 52 86 L 52 64 L 110 64 L 146 50 L 210 50 L 250 66 L 282 72 L 282 88 L 52 88 Z" fill={bodyFill} stroke="#334155" strokeWidth="1.5" />
-        <polygon points="114,63 148,52 206,52 242,65" fill={glassFill} stroke="#0f172a" strokeWidth="1" />
-        <rect x="48" y="80" width="8" height="7" rx="1" fill="#09090b" />
-        <rect x="278" y="80" width="8" height="7" rx="1" fill="#09090b" />
+        <polygon points="98,118 138,84 218,82 245,108 98,118" fill={bodyFill} stroke="#1c1917" strokeWidth="1.8" />
+        <polygon points="144,88 210,86 238,108 144,112" fill={glassFill} stroke="#1c1917" strokeWidth="1.2" />
+        {/* Sloping wedge nose */}
+        <polygon points="245,108 296,112 330,132 272,128" fill={bodyFill} stroke="#1c1917" strokeWidth="1.8" />
+        <path d="M 74,144 L 74,122 L 330,132 L 330,160 L 274,162 Q 220,160 144,158 Q 124,136 104,155 Z" fill={bodyFill} stroke="#1c1917" strokeWidth="1.8" />
+        {/* Black polyurethane 5-mph front & rear bumpers */}
+        <line x1="68" y1="140" x2="80" y2="142" stroke="#1c1917" strokeWidth="5.5" />
+        <line x1="285" y1="150" x2="336" y2="162" stroke="#1c1917" strokeWidth="5.5" />
+        <rect x="330" y="128" width="7" height="6" fill="#fef08a" stroke="#1c1917" strokeWidth="1" />
+        <rect x="290" y="116" width="6" height="5" fill="#fef08a" stroke="#1c1917" strokeWidth="1" />
       </g>
     );
   }
 
   // =========================================================================
-  // DECADE 8: 1980-1989 (WEDGE, TURBO & ORIGAMI AERODYNAMICS)
+  // DECADE 8: 1980-1989 (ORIGAMI, WEDGE & TURBO ERA)
+  // Sharp angular origami lines, turbofan aero rims, Sacco boards, redline accents
   // =========================================================================
   if (decade === 8) {
     if (segment === "utility") {
-      // 1980s Turbodiesel Work Truck (Squarebody with utility roll-bar)
+      // Turbodiesel Dually Heavy Truck (wide flared dually fenders, cab clearance lights, tubular bed rack)
       return (
         <g id="body-d8-utility">
-          <rect x="48" y="64" width="120" height="24" rx="1.5" fill={bodyFill} stroke="#334155" strokeWidth="1.5" />
-          <line x1="110" y1="64" x2="110" y2="48" stroke="#09090b" strokeWidth="2.5" />
-          <line x1="110" y1="48" x2="166" y2="64" stroke="#09090b" strokeWidth="2" />
-          <path d="M 166 88 L 166 46 L 215 46 L 235 66 L 290 70 L 290 88 L 166 88 Z" fill={bodyFill} stroke="#334155" strokeWidth="1.5" />
-          <polygon points="172,64 172,48 212,48 230,64" fill={glassFill} stroke="#0f172a" strokeWidth="1.2" />
-          <rect x="282" y="70" width="8" height="14" rx="1" fill={chromeStroke} stroke="#334155" strokeWidth="1" />
-          <rect x="284" y="72" width="5" height="4" fill="#f8fafc" />
-          <rect x="284" y="78" width="5" height="4" fill="#f8fafc" />
-          <rect x="46" y="82" width="10" height="6" rx="1" fill="#09090b" />
-          <rect x="284" y="82" width="8" height="6" rx="1" fill="#09090b" />
+          {/* Flared dually rear fender box */}
+          <polygon points="66,146 66,108 190,106 190,154 144,158 124,136 104,155" fill={bodyFill} stroke="#1c1917" strokeWidth="2" />
+          {/* Tubular steel roll bar / bed rack */}
+          <line x1="182" y1="72" x2="182" y2="106" stroke="#475569" strokeWidth="3" />
+          <line x1="182" y1="72" x2="145" y2="106" stroke="#475569" strokeWidth="3" />
+          {/* Square cab with amber roof clearance lights */}
+          <polygon points="190,66 238,64 256,104 190,106" fill={glassFill} stroke="#1c1917" strokeWidth="1.8" />
+          <circle cx="210" cy="62" r="1.5" fill="#f59e0b" />
+          <circle cx="225" cy="61" r="1.5" fill="#f59e0b" />
+          <circle cx="240" cy="60" r="1.5" fill="#f59e0b" />
+          <polygon points="190,106 256,104 258,156 190,154" fill={bodyFill} stroke="#1c1917" strokeWidth="2" />
+          {/* Angular aerodynamic hood */}
+          <polygon points="256,104 306,108 344,128 276,126" fill={bodyFill} stroke="#1c1917" strokeWidth="2" />
+          {/* Chrome truck grille & twin halogen beams */}
+          <polygon points="306,108 344,128 344,160 306,148" fill="#0f172a" stroke={chromeStroke} strokeWidth="2" />
+          <rect x="338" y="124" width="8" height="6" fill="#fef08a" stroke="#475569" strokeWidth="0.8" />
+          <rect x="300" y="114" width="7" height="5" fill="#fef08a" stroke="#475569" strokeWidth="0.8" />
+          <line x1="282" y1="152" x2="346" y2="164" stroke={chromeStroke} strokeWidth="5.5" />
         </g>
       );
     }
     if (segment === "luxury") {
-      // 1980s Autobahn Executive Cruiser (W126 style: aerodynamic fluted lights, lower cladding)
+      // Autobahn Executive Flagship Sedan (fluted ribbed lower cladding "Sacco boards", flush headlights)
       return (
         <g id="body-d8-luxury">
-          <path d="M 48 86 L 48 68 L 102 66 L 140 46 L 222 46 L 265 66 L 292 72 L 292 88 L 48 88 Z" fill={bodyFill} stroke="#334155" strokeWidth="1.6" />
-          <polygon points="108,65 142,48 218,48 258,65" fill={glassFill} stroke="#0f172a" strokeWidth="1.2" />
-          {/* Sacco Board Lower Two-Tone Cladding */}
-          <line x1="48" y1="80" x2="292" y2="80" stroke="#09090b" strokeWidth="4" />
-          <rect x="285" y="70" width="8" height="10" rx="1" fill="#f8fafc" stroke="#64748b" strokeWidth="1" />
-          <rect x="46" y="72" width="4" height="12" fill="#ef4444" />
+          {/* Aerodynamic formal sedan glasshouse */}
+          <polygon points="102,112 138,76 226,74 252,104 102,112" fill={bodyFill} stroke="#1c1917" strokeWidth="2" />
+          <polygon points="144,80 220,78 244,104 144,108" fill={glassFill} stroke="#0f172a" strokeWidth="1.5" />
+          {/* Main body flank */}
+          <path d="M 68,144 L 68,116 L 344,124 L 344,160 L 280,162 Q 220,160 144,158 Q 124,136 104,155 Z" fill={bodyFill} stroke="#1c1917" strokeWidth="2" />
+          {/* Contrasting grey ribbed lower-body cladding ("Sacco boards") */}
+          <polygon points="144,142 276,144 276,160 144,158" fill="#475569" stroke="#1e293b" strokeWidth="1" />
+          <line x1="144" y1="148" x2="276" y2="150" stroke="#334155" strokeWidth="1" />
+          <line x1="144" y1="154" x2="276" y2="156" stroke="#334155" strokeWidth="1" />
+          {/* Sloped aerodynamic hood & flush glass composite headlights */}
+          <polygon points="252,104 306,106 344,124 278,124" fill={bodyFill} stroke="#1c1917" strokeWidth="2" />
+          <polygon points="306,106 344,124 344,154 306,144" fill="#0f172a" stroke={chromeStroke} strokeWidth="1.8" />
+          <polygon points="336,120 348,126 346,136 334,130" fill="#fef08a" stroke="#64748b" strokeWidth="1" />
+          <polygon points="298,110 308,114 306,122 296,118" fill="#fef08a" stroke="#64748b" strokeWidth="1" />
+          {/* Integrated aerodynamic front bumper */}
+          <line x1="282" y1="150" x2="346" y2="160" stroke="#334155" strokeWidth="5.5" />
         </g>
       );
     }
     if (segment === "family") {
-      // 1980s Aerodynamic Breakthrough Wedge Sedan (Audi 100 / Taurus style)
+      // Aero Wedge 4-Door Sedan (flush aerodynamic headlamps, color-keyed bumpers, trunk lip spoiler)
       return (
         <g id="body-d8-family">
-          <path d="M 48 86 L 48 68 L 102 66 L 142 46 L 220 46 L 264 66 L 290 74 L 290 88 L 48 88 Z" fill={bodyFill} stroke="#334155" strokeWidth="1.5" />
-          <polygon points="108,65 144,48 216,48 258,65" fill={glassFill} stroke="#0f172a" strokeWidth="1.2" />
-          <line x1="52" y1="78" x2="288" y2="78" stroke="#09090b" strokeWidth="2.5" />
-          <polygon points="266,68 286,72 286,78 266,76" fill="#f8fafc" stroke="#64748b" strokeWidth="1" />
+          <polygon points="98,114 135,76 226,74 252,104 98,114" fill={bodyFill} stroke="#1c1917" strokeWidth="2" />
+          <polygon points="140,80 220,78 244,104 140,108" fill={glassFill} stroke="#0f172a" strokeWidth="1.5" />
+          <path d="M 68,144 L 68,118 L 340,126 L 340,160 L 278,162 Q 220,160 144,158 Q 124,136 104,155 Z" fill={bodyFill} stroke="#1c1917" strokeWidth="2" />
+          <polygon points="252,104 304,106 340,126 276,124" fill={bodyFill} stroke="#1c1917" strokeWidth="2" />
+          <rect x="334" y="122" width="9" height="7" fill="#fef08a" stroke="#475569" strokeWidth="1" />
+          <rect x="296" y="112" width="8" height="6" fill="#fef08a" stroke="#475569" strokeWidth="1" />
+          <line x1="280" y1="150" x2="342" y2="162" stroke="#334155" strokeWidth="5" />
         </g>
       );
     }
-    // 1980s Economy: Boxy 3-Door Hot Hatch
+    // Economy: Origami Hot-Hatch (angular boxy body, red accent grille stripe, chin spoiler, hatch spoiler)
     return (
       <g id="body-d8-economy">
-        <path d="M 52 86 L 52 64 L 110 64 L 148 46 L 216 46 L 260 68 L 286 76 L 286 88 L 52 88 Z" fill={bodyFill} stroke="#334155" strokeWidth="1.5" />
-        <polygon points="115,63 150,48 212,48 252,65" fill={glassFill} stroke="#0f172a" strokeWidth="1.2" />
-        {/* Integrated Rear Roof Spoiler */}
-        <line x1="140" y1="46" x2="148" y2="46" stroke="#000" strokeWidth="2.5" />
-        <rect x="48" y="78" width="10" height="8" rx="1.5" fill="#09090b" />
-        <rect x="280" y="78" width="8" height="8" rx="1.5" fill="#09090b" />
-        <line x1="56" y1="78" x2="280" y2="78" stroke="#09090b" strokeWidth="2.5" />
+        <polygon points="95,116 132,80 222,78 248,104 95,116" fill={bodyFill} stroke="#1c1917" strokeWidth="1.8" />
+        <polygon points="138,84 214,82 240,104 138,108" fill={glassFill} stroke="#0f172a" strokeWidth="1.2" />
+        {/* Rear hatch roof spoiler */}
+        <line x1="90" y1="112" x2="105" y2="114" stroke="#1c1917" strokeWidth="3" />
+        <path d="M 72,144 L 72,120 L 332,128 L 332,160 L 274,162 Q 220,160 144,158 Q 124,136 104,155 Z" fill={bodyFill} stroke="#1c1917" strokeWidth="1.8" />
+        <polygon points="248,104 298,108 332,128 272,126" fill={bodyFill} stroke="#1c1917" strokeWidth="1.8" />
+        {/* Hot-Hatch Red Accent Grille Stripe */}
+        <line x1="298" y1="126" x2="332" y2="136" stroke="#ef4444" strokeWidth="2" />
+        <rect x="326" y="124" width="8" height="6" fill="#fef08a" stroke="#1c1917" strokeWidth="1" />
+        <rect x="290" y="114" width="7" height="5" fill="#fef08a" stroke="#1c1917" strokeWidth="1" />
+        {/* Lower chin airdam spoiler */}
+        <line x1="274" y1="156" x2="336" y2="164" stroke="#09090b" strokeWidth="4" />
       </g>
     );
   }
 
   // =========================================================================
-  // DECADE 9: 1990-1999 (ORGANIC BIODESIGN & AERO FLUIDITY)
+  // DECADE 9: 1990-1999 (BIODESIGN, ORGANIC CURVES & FLUIDITY)
+  // Silver monoblock alloy wheels, smooth organic surfaces, projector HID optics
   // =========================================================================
   if (decade === 9) {
     if (segment === "utility") {
-      // 1990s Rounded Fleetside Pickup
+      // Rounded Fleetside Sport Truck (aerodynamic contours, color-matched smooth bumper with fog lamps)
       return (
         <g id="body-d9-utility">
-          <rect x="48" y="62" width="118" height="24" rx="2" fill={bodyFill} stroke="#334155" strokeWidth="1.4" />
-          <path d="M 166 86 L 166 44 Q 170 42 210 42 L 250 62 L 288 66 L 288 86 L 166 86 Z" fill={bodyFill} stroke="#334155" strokeWidth="1.4" />
-          <polygon points="172,62 172,46 208,46 242,62" fill={glassFill} stroke="#0f172a" strokeWidth="1" />
-          <rect x="280" y="66" width="8" height="12" rx="1" fill="#f8fafc" stroke="#64748b" strokeWidth="1" />
+          {/* Rounded aerodynamic cargo box */}
+          <path d="M 68,146 Q 68,108 100,108 L 190,106 L 190,154 Q 165,156 144,158 Q 124,136 104,155 Z" fill={bodyFill} stroke="#1c1917" strokeWidth="2" />
+          <polygon points="190,66 238,64 256,104 190,106" fill={glassFill} stroke="#0f172a" strokeWidth="1.8" />
+          <polygon points="190,106 256,104 258,156 190,154" fill={bodyFill} stroke="#1c1917" strokeWidth="2" />
+          {/* Rounded contour hood */}
+          <polygon points="256,104 306,106 342,128 276,126" fill={bodyFill} stroke="#1c1917" strokeWidth="2" />
+          {/* Smooth oval aerodynamic grille */}
+          <polygon points="306,106 342,128 342,158 306,146" fill="#0f172a" stroke="#475569" strokeWidth="1.5" />
+          {/* Aerodynamic wrap headlamps */}
+          <path d="M 334,122 Q 346,128 344,136 L 332,130 Z" fill="#e0f2fe" stroke="#64748b" strokeWidth="1" />
+          <path d="M 298,112 Q 308,116 306,122 L 296,118 Z" fill="#e0f2fe" stroke="#64748b" strokeWidth="1" />
+          {/* Integrated color-matched bumper with round fog lamps */}
+          <line x1="282" y1="150" x2="346" y2="162" stroke={bodyFill} strokeWidth="6" />
+          <circle cx="336" cy="158" r="2.5" fill="#fef08a" />
+          <circle cx="296" cy="148" r="2" fill="#fef08a" />
         </g>
       );
     }
     if (segment === "luxury") {
-      // 1990s Flagship Executive Sedan (LS400/W140 style: rock solid proportions)
+      // Flagship Executive Sedan (crystal clear lenses, multi-layer pearl paint, whisper-quiet greenhouse)
       return (
         <g id="body-d9-luxury">
-          <path d="M 48 86 Q 50 68 98 64 Q 155 42 220 46 L 268 64 L 292 72 L 292 88 L 48 88 Z" fill={bodyFill} stroke={chromeStroke} strokeWidth="1.4" />
-          <path d="M 104 63 Q 155 46 215 48 L 260 64 L 100 64 Z" fill={glassFill} stroke="#0f172a" strokeWidth="1.2" />
-          <line x1="50" y1="80" x2="290" y2="80" stroke={chromeStroke} strokeWidth="1.5" />
-          <rect x="284" y="68" width="8" height="10" rx="1" fill="#f8fafc" stroke="#94a3b8" strokeWidth="1" />
+          {/* Organic aerodynamic greenhouse */}
+          <path d="M 104,112 Q 135,74 175,72 L 226,72 Q 242,72 254,104 L 104,112 Z" fill={bodyFill} stroke="#1c1917" strokeWidth="2" />
+          <polygon points="144,78 222,76 246,104 144,108" fill={glassFill} stroke="#0f172a" strokeWidth="1.5" />
+          {/* Monolithic fluid body side */}
+          <path d="M 68,144 Q 68,114 100,114 L 315,116 Q 345,120 345,158 L 280,162 Q 220,160 144,158 Q 124,136 104,155 Z" fill={bodyFill} stroke="#1c1917" strokeWidth="2" />
+          <polygon points="254,104 308,106 345,124 278,124" fill={bodyFill} stroke="#1c1917" strokeWidth="2" />
+          {/* Crystal clear projector headlamp assemblies */}
+          <polygon points="334,120 348,124 346,134 332,128" fill="#e0f2fe" stroke="#38bdf8" strokeWidth="1" />
+          <circle cx="340" cy="126" r="2" fill="#38bdf8" />
+          <polygon points="296,110 308,112 306,120 294,116" fill="#e0f2fe" stroke="#38bdf8" strokeWidth="1" />
+          <circle cx="302" cy="114" r="1.5" fill="#38bdf8" />
+          {/* Integrated smooth bumper */}
+          <line x1="282" y1="150" x2="348" y2="160" stroke={bodyFill} strokeWidth="6" />
         </g>
       );
     }
     if (segment === "family") {
-      // 1990s Sleek Biodesign Sedan (Oval greenhouse, integrated door handles)
+      // Sleek Aerodynamic Family Sedan (cab-forward design, slim projector lamps, full-width taillight bar)
       return (
         <g id="body-d9-family">
-          <path d="M 48 86 Q 52 66 98 60 Q 155 40 216 48 L 265 64 Q 288 72 290 86 L 48 86 Z" fill={bodyFill} stroke="#334155" strokeWidth="1.4" />
-          <path d="M 104 59 Q 158 43 212 50 L 254 64 L 100 64 Z" fill={glassFill} stroke="#0f172a" strokeWidth="1" />
-          <polygon points="266,66 286,72 284,78 266,76" fill="#f8fafc" stroke="#64748b" strokeWidth="1" />
+          <path d="M 100,114 Q 130,74 175,72 L 226,72 Q 245,72 254,104 L 100,114 Z" fill={bodyFill} stroke="#1c1917" strokeWidth="2" />
+          <polygon points="140,78 220,76 246,104 140,108" fill={glassFill} stroke="#0f172a" strokeWidth="1.5" />
+          <path d="M 68,144 Q 68,116 100,116 L 315,118 Q 342,122 342,158 L 278,162 Q 220,160 144,158 Q 124,136 104,155 Z" fill={bodyFill} stroke="#1c1917" strokeWidth="2" />
+          <polygon points="254,104 306,106 342,126 276,124" fill={bodyFill} stroke="#1c1917" strokeWidth="2" />
+          <polygon points="332,122 344,126 342,134 330,128" fill="#e0f2fe" stroke="#64748b" strokeWidth="1" />
+          <polygon points="296,112 306,114 304,120 294,116" fill="#e0f2fe" stroke="#64748b" strokeWidth="1" />
+          <line x1="280" y1="150" x2="344" y2="160" stroke={bodyFill} strokeWidth="5.5" />
         </g>
       );
     }
-    // 1990s Economy: Rounded Aerodynamic Bubble Hatch
+    // Economy: Biodesign Bubble Hatchback (smooth oval jellybean body, integrated bumpers, cat-eye lamps)
     return (
       <g id="body-d9-economy">
-        <path d="M 50 86 Q 52 64 100 58 Q 150 42 208 46 L 255 66 Q 280 74 282 86 L 50 86 Z" fill={bodyFill} stroke="#334155" strokeWidth="1.4" />
-        <path d="M 105 57 Q 152 45 204 48 L 246 66 L 100 66 Z" fill={glassFill} stroke="#0f172a" strokeWidth="1" />
-        <ellipse cx="274" cy="72" rx="6" ry="4" fill="#f8fafc" stroke="#94a3b8" strokeWidth="1" />
+        <path d="M 98,116 Q 130,76 170,76 L 222,76 Q 240,76 250,104 L 98,116 Z" fill={bodyFill} stroke="#1c1917" strokeWidth="1.8" />
+        <polygon points="138,82 216,80 242,104 138,108" fill={glassFill} stroke="#0f172a" strokeWidth="1.2" />
+        <path d="M 72,144 Q 72,120 98,120 L 310,120 Q 334,124 334,158 L 274,162 Q 220,160 144,158 Q 124,136 104,155 Z" fill={bodyFill} stroke="#1c1917" strokeWidth="1.8" />
+        <polygon points="250,104 300,108 334,128 272,126" fill={bodyFill} stroke="#1c1917" strokeWidth="1.8" />
+        {/* Cat-eye smooth headlights */}
+        <ellipse cx="328" cy="128" rx="6" ry="4" fill="#e0f2fe" stroke="#64748b" strokeWidth="1" />
+        <ellipse cx="292" cy="116" rx="5" ry="3.5" fill="#e0f2fe" stroke="#64748b" strokeWidth="1" />
       </g>
     );
   }
 
   // =========================================================================
-  // DECADE 10: 2000-2009 (NEW EDGE & HIGH BELTLINE)
+  // DECADE 10: 2000-2009 (NEW EDGE & HIGH-TECH OPTICS)
+  // Sharp intersecting creases, clear multi-reflector optics, twin-spoke alloys
   // =========================================================================
   if (decade === 10) {
     if (segment === "utility") {
-      // 2000s Full-Size Crew Cab Pickup (Towering chrome grille, flared squared arches)
+      // Super-Duty Crew Cab Truck (massive multi-beam composite headlights, honeycombed grille, 4 doors)
       return (
         <g id="body-d10-utility">
-          <path d="M 48 86 L 48 60 L 165 60 L 165 86 Z" fill={bodyFill} stroke={chromeStroke} strokeWidth="1.2" />
-          <path d="M 165 86 L 165 44 Q 170 42 215 42 L 255 60 L 290 64 L 290 86 L 165 86 Z" fill={bodyFill} stroke={chromeStroke} strokeWidth="1.4" />
-          <polygon points="172,62 172,46 212,46 246,62" fill={glassFill} stroke="#0f172a" strokeWidth="1" />
-          <rect x="282" y="64" width="8" height="14" rx="1" fill="#f8fafc" stroke="#334155" strokeWidth="1" />
+          <polygon points="68,146 68,106 180,104 180,154 144,158 124,136 104,155" fill={bodyFill} stroke="#1c1917" strokeWidth="2" />
+          {/* 4-door crew cab */}
+          <polygon points="180,64 238,62 258,104 180,106" fill={glassFill} stroke="#0f172a" strokeWidth="1.8" />
+          <line x1="210" y1="64" x2="210" y2="154" stroke="#1c1917" strokeWidth="2" />
+          <polygon points="180,106 258,104 260,156 180,154" fill={bodyFill} stroke="#1c1917" strokeWidth="2" />
+          {/* Imposing tall hood */}
+          <polygon points="258,104 308,106 345,128 276,126" fill={bodyFill} stroke="#1c1917" strokeWidth="2" />
+          {/* Honeycomb heavy-duty grille with chrome surround */}
+          <polygon points="308,106 345,128 345,160 308,148" fill="#0f172a" stroke={chromeStroke} strokeWidth="2" />
+          {/* Multi-beam composite headlights */}
+          <rect x="338" y="122" width="9" height="12" fill="#e0f2fe" stroke="#64748b" strokeWidth="1" />
+          <rect x="300" y="112" width="7" height="10" fill="#e0f2fe" stroke="#64748b" strokeWidth="1" />
+          <line x1="282" y1="152" x2="348" y2="164" stroke={chromeStroke} strokeWidth="6" />
         </g>
       );
     }
     if (segment === "luxury") {
-      // 2000s Executive Sports Sedan (Halo rings, wide stance, dual exhausts)
+      // High-Performance Executive Sedan (bi-xenon headlights, triple lower air intakes, flared arches)
       return (
         <g id="body-d10-luxury">
-          <path d="M 46 84 Q 50 64 96 56 Q 155 38 218 46 L 268 64 Q 288 72 292 84 L 46 84 Z" fill={bodyFill} stroke={chromeStroke} strokeWidth="1.4" />
-          <path d="M 104 56 Q 158 40 214 48 L 256 64 L 100 64 Z" fill={glassFill} stroke="#0f172a" strokeWidth="1" />
-          <polygon points="268,66 288,72 284,76 266,74" fill="#67e8f9" stroke="#0891b2" strokeWidth="1" />
-          <line x1="48" y1="84" x2="54" y2="84" stroke={chromeStroke} strokeWidth="3" />
+          <path d="M 104,112 Q 135,72 178,70 L 228,70 Q 244,70 256,104 L 104,112 Z" fill={bodyFill} stroke="#1c1917" strokeWidth="2" />
+          <polygon points="144,76 222,74 248,104 144,108" fill={glassFill} stroke="#0f172a" strokeWidth="1.5" />
+          <path d="M 68,144 Q 68,114 100,114 L 315,116 Q 346,120 346,158 L 280,162 Q 220,160 144,158 Q 124,136 104,155 Z" fill={bodyFill} stroke="#1c1917" strokeWidth="2" />
+          <polygon points="256,104 308,106 346,124 278,124" fill={bodyFill} stroke="#1c1917" strokeWidth="2" />
+          {/* Clear multi-reflector bi-xenon headlights */}
+          <polygon points="334,120 350,124 348,136 332,130" fill="#bae6fd" stroke="#0284c7" strokeWidth="1.2" />
+          <circle cx="342" cy="128" r="2.5" fill="#38bdf8" />
+          <polygon points="296,110 308,112 306,122 294,118" fill="#bae6fd" stroke="#0284c7" strokeWidth="1.2" />
+          <circle cx="302" cy="116" r="2" fill="#38bdf8" />
+          {/* Triple aggressive lower air intakes */}
+          <rect x="332" y="148" width="12" height="6" rx="1" fill="#020617" />
+          <rect x="312" y="144" width="14" height="6" rx="1" fill="#020617" />
         </g>
       );
     }
     if (segment === "family") {
-      // 2000s Midsize Family Sedan (High trunk deck, clear projectors)
+      // Midsize Sports Sedan (high-waisted muscular stance, swept jewel headlights, clear taillights)
       return (
         <g id="body-d10-family">
-          <path d="M 48 84 Q 52 64 96 58 Q 155 40 215 48 L 266 64 Q 288 72 290 84 L 48 84 Z" fill={bodyFill} stroke="#334155" strokeWidth="1.4" />
-          <path d="M 104 58 Q 158 42 212 50 L 254 64 L 100 64 Z" fill={glassFill} stroke="#0f172a" strokeWidth="1" />
-          <polygon points="266,66 286,72 284,76 266,74" fill="#f8fafc" stroke="#64748b" strokeWidth="1" />
+          <path d="M 100,114 Q 130,72 175,70 L 226,70 Q 245,70 255,104 L 100,114 Z" fill={bodyFill} stroke="#1c1917" strokeWidth="2" />
+          <polygon points="140,76 220,74 246,104 140,108" fill={glassFill} stroke="#0f172a" strokeWidth="1.5" />
+          <path d="M 68,144 Q 68,114 100,114 L 315,116 Q 342,120 342,158 L 278,162 Q 220,160 144,158 Q 124,136 104,155 Z" fill={bodyFill} stroke="#1c1917" strokeWidth="2" />
+          <polygon points="255,104 306,106 342,126 276,124" fill={bodyFill} stroke="#1c1917" strokeWidth="2" />
+          <polygon points="332,122 346,126 344,136 330,130" fill="#bae6fd" stroke="#0284c7" strokeWidth="1" />
+          <polygon points="296,112 306,114 304,122 294,118" fill="#bae6fd" stroke="#0284c7" strokeWidth="1" />
+          <line x1="280" y1="150" x2="344" y2="160" stroke={bodyFill} strokeWidth="5.5" />
         </g>
       );
     }
-    // 2000s Economy: New Edge Euro Compact (Triangular headlights, high roofline)
+    // Economy: New Edge Sport Compact (intersecting sharp creases & tense curves, triangular headlights)
     return (
       <g id="body-d10-economy">
-        <path d="M 50 84 Q 52 62 100 54 Q 150 42 210 46 L 258 66 Q 284 74 286 84 L 50 84 Z" fill={bodyFill} stroke="#334155" strokeWidth="1.4" />
-        <path d="M 105 54 Q 152 44 206 48 L 248 66 L 100 66 Z" fill={glassFill} stroke="#0f172a" strokeWidth="1" />
-        <polygon points="258,66 282,72 280,78 258,74" fill="#f8fafc" stroke="#64748b" strokeWidth="1" />
+        <polygon points="98,116 132,74 222,72 250,104 98,116" fill={bodyFill} stroke="#1c1917" strokeWidth="1.8" />
+        <polygon points="138,78 216,76 242,104 138,108" fill={glassFill} stroke="#0f172a" strokeWidth="1.2" />
+        <path d="M 72,144 L 72,118 L 334,124 L 334,158 L 274,162 Q 220,160 144,158 Q 124,136 104,155 Z" fill={bodyFill} stroke="#1c1917" strokeWidth="1.8" />
+        <polygon points="250,104 300,106 334,126 272,124" fill={bodyFill} stroke="#1c1917" strokeWidth="1.8" />
+        {/* Sharp triangular New Edge headlights */}
+        <polygon points="326,122 338,126 334,136 324,130" fill="#bae6fd" stroke="#0284c7" strokeWidth="1" />
+        <polygon points="290,112 300,114 298,122 288,118" fill="#bae6fd" stroke="#0284c7" strokeWidth="1" />
       </g>
     );
   }
 
   // =========================================================================
-  // DECADE 11: 2010-2019 (KINETIC SCULPTING & LED ERA)
+  // DECADE 11: 2010-2019 (KINETIC SCULPTING, LED & SPINDLE/HEX GRILLES)
+  // Low-profile tires, diamond-cut bi-color alloys, signature LED DRL blades
   // =========================================================================
   if (decade === 11) {
     if (segment === "utility") {
-      // 2010s Modern Heavy-Duty Commercial Truck (C-clamp LED headlights, massive grille)
+      // Modern Heavy Duty Trail Boss (massive vertical front presence, dual-tier C-shaped LED lighting)
       return (
         <g id="body-d11-utility">
-          <path d="M 48 84 L 48 58 L 165 58 L 165 84 Z" fill={bodyFill} stroke={chromeStroke} strokeWidth="1.2" />
-          <path d="M 165 84 L 165 42 Q 170 40 215 40 L 255 58 L 292 62 L 292 84 L 165 84 Z" fill={bodyFill} stroke={chromeStroke} strokeWidth="1.2" />
-          <polygon points="172,60 172,44 212,44 246,60" fill={glassFill} stroke="#0f172a" strokeWidth="1" />
-          {/* C-Clamp Signature LED Headlight */}
-          <path d="M 284 62 L 290 62 L 290 78 L 284 78 Z" fill="#38bdf8" stroke="#e0f2fe" strokeWidth="1" />
-          <rect x="282" y="66" width="6" height="8" rx="1" fill="#0f172a" />
+          <polygon points="68,146 68,104 180,102 180,154 144,158 124,136 104,155" fill={bodyFill} stroke="#1c1917" strokeWidth="2" />
+          <polygon points="180,62 238,60 258,102 180,104" fill={glassFill} stroke="#0f172a" strokeWidth="1.8" />
+          <polygon points="180,104 258,102 260,156 180,154" fill={bodyFill} stroke="#1c1917" strokeWidth="2" />
+          <polygon points="258,102 310,104 348,126 276,124" fill={bodyFill} stroke="#1c1917" strokeWidth="2" />
+          <polygon points="310,104 348,126 348,160 310,148" fill="#0f172a" stroke="#475569" strokeWidth="2" />
+          {/* C-shaped signature LED daytime running light bracket */}
+          <path d="M 346,120 L 340,120 L 340,138 L 346,138" stroke="#38bdf8" strokeWidth="2.5" fill="none" />
+          <path d="M 308,110 L 304,110 L 304,124 L 308,124" stroke="#38bdf8" strokeWidth="2" fill="none" />
+          <line x1="282" y1="152" x2="350" y2="164" stroke="#1e293b" strokeWidth="6" />
         </g>
       );
     }
     if (segment === "luxury") {
-      // 2010s Grand Coupe / Flagship Luxury Sedan (Matrix LED blades, panoramic glass)
+      // Flagship Grand Coupe (adaptive matrix full-LED headlights, side air breather vents, panoramic roof)
       return (
         <g id="body-d11-luxury">
-          <path d="M 46 84 Q 50 62 94 54 Q 155 34 216 46 L 270 62 Q 290 70 294 84 L 46 84 Z" fill={bodyFill} stroke={chromeStroke} strokeWidth="1.4" />
-          <path d="M 102 54 Q 158 38 212 48 L 258 63 L 98 63 Z" fill={glassFill} stroke="#0f172a" strokeWidth="1" />
-          {/* Matrix LED Blade */}
-          <path d="M 270 63 Q 290 70 292 72 L 286 76 Z" fill="#38bdf8" stroke="#e0f2fe" strokeWidth="1.2" />
-          <path d="M 48 66 Q 46 72 50 76" stroke="#ef4444" strokeWidth="2.5" fill="none" />
+          {/* Flowing four-door grand coupe silhouette */}
+          <path d="M 104,112 Q 135,70 180,68 L 230,68 Q 246,68 258,102 L 104,112 Z" fill={bodyFill} stroke="#1c1917" strokeWidth="2" />
+          <polygon points="144,74 224,72 250,102 144,106" fill={glassFill} stroke="#0f172a" strokeWidth="1.5" />
+          <path d="M 68,144 Q 68,112 100,112 L 315,114 Q 348,118 348,158 L 280,162 Q 220,160 144,158 Q 124,136 104,155 Z" fill={bodyFill} stroke="#1c1917" strokeWidth="2" />
+          {/* Front fender air breather vent */}
+          <path d="M 276,140 L 272,148 L 276,148" stroke="#38bdf8" strokeWidth="2" fill="none" />
+          <polygon points="258,102 310,104 348,122 278,122" fill={bodyFill} stroke="#1c1917" strokeWidth="2" />
+          {/* Razor-sharp adaptive matrix LED blade headlights */}
+          <polygon points="334,118 350,122 346,132 332,126" fill="#0284c7" stroke="#38bdf8" strokeWidth="1.5" />
+          <line x1="335" y1="120" x2="350" y2="124" stroke="#ffffff" strokeWidth="2" />
+          <polygon points="296,108 308,110 304,118 294,114" fill="#0284c7" stroke="#38bdf8" strokeWidth="1.5" />
+          <line x1="297" y1="110" x2="308" y2="112" stroke="#ffffff" strokeWidth="1.5" />
         </g>
       );
     }
     if (segment === "family") {
-      // 2010s Fastback Crossover / Sedan (Cascading hexagonal grille, dual crease waistline)
+      // Fastback Crossover / Coupe SUV (hexagonal 3D mesh grille, slim LED eyebrow lights, skidplate)
       return (
         <g id="body-d11-family">
-          <path d="M 48 84 Q 52 64 96 56 Q 155 38 216 48 L 268 64 Q 288 72 290 84 L 48 84 Z" fill={bodyFill} stroke="#334155" strokeWidth="1.2" />
-          <path d="M 105 56 Q 160 40 212 50 L 252 65 L 100 65 Z" fill={glassFill} stroke="#0f172a" strokeWidth="1" />
-          <path d="M 265 66 Q 285 72 288 74 L 284 78 Z" fill="#38bdf8" stroke="#e0f2fe" strokeWidth="1" />
-          <path d="M 50 68 Q 48 74 52 78" stroke="#ef4444" strokeWidth="2" fill="none" />
+          <path d="M 100,114 Q 130,70 175,68 L 226,68 Q 245,68 256,102 L 100,114 Z" fill={bodyFill} stroke="#1c1917" strokeWidth="2" />
+          <polygon points="140,74 220,72 248,102 140,106" fill={glassFill} stroke="#0f172a" strokeWidth="1.5" />
+          <path d="M 68,144 Q 68,112 100,112 L 315,114 Q 344,118 344,158 L 278,162 Q 220,160 144,158 Q 124,136 104,155 Z" fill={bodyFill} stroke="#1c1917" strokeWidth="2" />
+          <polygon points="256,102 308,104 344,124 276,122" fill={bodyFill} stroke="#1c1917" strokeWidth="2" />
+          <polygon points="308,104 344,124 344,156 308,146" fill="#0f172a" stroke="#475569" strokeWidth="1.5" />
+          <line x1="334" y1="120" x2="348" y2="124" stroke="#38bdf8" strokeWidth="2.5" />
+          <line x1="296" y1="110" x2="308" y2="112" stroke="#38bdf8" strokeWidth="2" />
         </g>
       );
     }
-    // 2010s Economy: Dynamic Kinetic Hatchback (Floating roof, sharp swage lines)
+    // Economy: Kinetic Sculpted Hatchback (faceted bumper, LED DRL fangs, floating roof C-pillar)
     return (
       <g id="body-d11-economy">
-        <path d="M 50 84 Q 52 62 98 54 Q 150 40 210 46 L 260 64 Q 284 72 286 84 L 50 84 Z" fill={bodyFill} stroke="#334155" strokeWidth="1.2" />
-        <path d="M 104 54 Q 152 42 206 48 L 248 64 L 100 64 Z" fill={glassFill} stroke="#0f172a" strokeWidth="1" />
-        <path d="M 260 65 Q 280 72 282 74 L 278 78 Z" fill="#38bdf8" stroke="#e0f2fe" strokeWidth="1" />
+        <polygon points="98,116 132,72 222,70 250,102 98,116" fill={bodyFill} stroke="#1c1917" strokeWidth="1.8" />
+        <polygon points="138,76 216,74 242,102 138,106" fill={glassFill} stroke="#0f172a" strokeWidth="1.2" />
+        {/* Blackened floating C-pillar */}
+        <polygon points="125,76 135,74 130,110 120,112" fill="#09090b" />
+        <path d="M 72,144 L 72,116 L 334,122 L 334,158 L 274,162 Q 220,160 144,158 Q 124,136 104,155 Z" fill={bodyFill} stroke="#1c1917" strokeWidth="1.8" />
+        <polygon points="250,102 300,104 334,124 272,122" fill={bodyFill} stroke="#1c1917" strokeWidth="1.8" />
+        {/* Kinetic LED DRL Fang */}
+        <path d="M 340,122 L 330,124 L 332,136" stroke="#38bdf8" strokeWidth="2" fill="none" />
       </g>
     );
   }
 
   // =========================================================================
-  // DECADE 12: 2020-2026+ (ELECTRIC CYBER & NEO-AERO ERA)
+  // DECADE 12: 2020s+ (ELECTRIC CYBER, HORIZON LIGHTBARS & MINIMALIST CLEAN)
+  // Low-profile aero-blade EV rims, full-width horizon LED lightbars, digital masks
   // =========================================================================
-  // segment: utility (Next-Gen Electric Cyber-Truck)
   if (segment === "utility") {
+    // Cyber EV Tactical Pickup (monolithic planar faceted bodywork, full-width white LED lightbar)
     return (
       <g id="body-d12-utility">
-        <polygon points="46,84 46,58 160,56 220,38 260,56 295,62 295,84" fill={bodyFill} stroke="#38bdf8" strokeWidth="1.2" />
-        <polygon points="166,58 216,42 254,58" fill={glassFill} stroke="#0f172a" strokeWidth="1" />
-        {/* Full-Width Horizon Cyber LED Lightbar */}
-        <line x1="284" y1="64" x2="295" y2="64" stroke="#38bdf8" strokeWidth="3" />
-        <line x1="46" y1="60" x2="52" y2="60" stroke="#ef4444" strokeWidth="3" />
+        {/* Planar faceted angular bodywork */}
+        <polygon points="68,146 68,96 175,94 235,60 285,96 348,116 348,160 276,162 255,140 235,162 144,158 124,136 104,155" fill={bodyFill} stroke="#38bdf8" strokeWidth="1.5" />
+        <polygon points="182,94 232,64 278,94" fill={glassFill} stroke="#0f172a" strokeWidth="1.5" />
+        {/* Full-width front horizon cyber LED light bar */}
+        <line x1="285" y1="96" x2="348" y2="116" stroke="#ffffff" strokeWidth="3" />
+        <line x1="285" y1="96" x2="348" y2="116" stroke="#38bdf8" strokeWidth="5" opacity="0.4" />
+        {/* Cyber rear red taillight blade */}
+        <line x1="68" y1="96" x2="72" y2="96" stroke="#ef4444" strokeWidth="3" />
       </g>
     );
   }
-  // segment: luxury (Ultra-Luxury Electric Grand Tourer)
   if (segment === "luxury") {
+    // Ultra-Luxury Electric Grand Tourer (interactive illuminated digital mask, active splitters, smart roof)
     return (
       <g id="body-d12-luxury">
-        <path d="M 44 84 Q 48 60 92 52 Q 155 30 218 42 L 274 60 Q 295 68 296 84 L 44 84 Z" fill={bodyFill} stroke="#38bdf8" strokeWidth="1.4" />
-        <path d="M 100 52 Q 158 34 214 44 L 262 60 L 96 60 Z" fill={glassFill} stroke="#0f172a" strokeWidth="1" />
-        {/* Interactive Matrix Micro-LED Lightbar & Illuminated Logo */}
-        <path d="M 274 60 Q 295 68 296 72" stroke="#38bdf8" strokeWidth="3" fill="none" />
-        <circle cx="294" cy="74" r="2.5" fill="#38bdf8" />
-        <path d="M 45 64 Q 44 70 48 76" stroke="#ef4444" strokeWidth="3" fill="none" />
+        <path d="M 104,112 Q 135,66 182,64 L 232,64 Q 248,64 260,98 L 104,112 Z" fill={bodyFill} stroke="#38bdf8" strokeWidth="1.8" />
+        <polygon points="144,70 226,68 252,98 144,102" fill={glassFill} stroke="#0f172a" strokeWidth="1.5" />
+        <path d="M 68,144 Q 68,110 100,110 L 315,110 Q 350,114 350,158 L 280,162 Q 220,160 144,158 Q 124,136 104,155 Z" fill={bodyFill} stroke="#38bdf8" strokeWidth="1.8" />
+        <polygon points="260,98 312,100 350,118 280,118" fill={bodyFill} stroke="#38bdf8" strokeWidth="1.8" />
+        {/* Interactive full-width horizon LED light blade */}
+        <path d="M 306,104 Q 330,108 350,118" stroke="#ffffff" strokeWidth="2.5" fill="none" />
+        <path d="M 306,104 Q 330,108 350,118" stroke="#38bdf8" strokeWidth="4.5" fill="none" opacity="0.5" />
+        <circle cx="348" cy="118" r="3" fill="#38bdf8" />
       </g>
     );
   }
-  // segment: family (Aerodynamic Electric Crossover / Shooting Brake)
   if (segment === "family") {
+    // Aero Electric Shooting Brake / Crossover (panoramic glass canopy, illuminated light strip)
     return (
       <g id="body-d12-family">
-        <path d="M 46 84 Q 50 62 94 54 Q 155 34 218 44 L 270 62 Q 292 70 294 84 L 46 84 Z" fill={bodyFill} stroke="#38bdf8" strokeWidth="1.2" />
-        <path d="M 102 54 Q 158 36 214 46 L 258 62 L 98 62 Z" fill={glassFill} stroke="#0f172a" strokeWidth="1" />
-        <line x1="274" y1="64" x2="294" y2="66" stroke="#38bdf8" strokeWidth="2.5" />
-        <line x1="46" y1="66" x2="52" y2="66" stroke="#ef4444" strokeWidth="2.5" />
+        <path d="M 100,114 Q 130,66 175,64 L 228,64 Q 246,64 258,98 L 100,114 Z" fill={bodyFill} stroke="#38bdf8" strokeWidth="1.5" />
+        <polygon points="140,70 222,68 250,98 140,102" fill={glassFill} stroke="#0f172a" strokeWidth="1.5" />
+        <path d="M 68,144 Q 68,110 100,110 L 315,112 Q 346,116 346,158 L 278,162 Q 220,160 144,158 Q 124,136 104,155 Z" fill={bodyFill} stroke="#38bdf8" strokeWidth="1.5" />
+        <polygon points="258,98 310,100 346,120 276,118" fill={bodyFill} stroke="#38bdf8" strokeWidth="1.5" />
+        <line x1="308" y1="104" x2="346" y2="120" stroke="#38bdf8" strokeWidth="2.5" />
       </g>
     );
   }
-  // segment: economy (Urban EV Aerodynamic Hatchback)
+  // Economy: Urban EV Aero Hatchback (closed smooth aerodynamic shield, horizon lightbar)
   return (
     <g id="body-d12-economy">
-      <path d="M 48 84 Q 50 60 96 52 Q 150 36 212 44 L 264 62 Q 288 70 290 84 L 48 84 Z" fill={bodyFill} stroke="#38bdf8" strokeWidth="1.2" />
-      <path d="M 102 52 Q 152 38 208 46 L 252 62 L 98 62 Z" fill={glassFill} stroke="#0f172a" strokeWidth="1" />
-      <line x1="268" y1="64" x2="288" y2="66" stroke="#38bdf8" strokeWidth="2.5" />
-      <line x1="48" y1="66" x2="54" y2="66" stroke="#ef4444" strokeWidth="2.5" />
+      <polygon points="98,116 132,68 222,66 252,98 98,116" fill={bodyFill} stroke="#38bdf8" strokeWidth="1.5" />
+      <polygon points="138,72 216,70 244,98 138,102" fill={glassFill} stroke="#0f172a" strokeWidth="1.2" />
+      <path d="M 72,144 L 72,112 L 336,118 L 336,158 L 274,162 Q 220,160 144,158 Q 124,136 104,155 Z" fill={bodyFill} stroke="#38bdf8" strokeWidth="1.5" />
+      <polygon points="252,98 302,100 336,120 272,118" fill={bodyFill} stroke="#38bdf8" strokeWidth="1.5" />
+      <line x1="300" y1="104" x2="336" y2="120" stroke="#38bdf8" strokeWidth="2.5" />
     </g>
   );
 }
