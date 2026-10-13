@@ -47,8 +47,41 @@ export function TopTimelineBar(): React.JSX.Element {
     <header className="sticky top-0 z-30 border-b border-[var(--border-subtle)] bg-[var(--paper)]/95 shadow-sm backdrop-blur-sm">
       {/* 1. TOP STATS BAR */}
       <div className="flex flex-wrap items-center justify-between gap-3 px-4 py-2 border-b border-[var(--border-subtle)]/70 text-xs">
-        {/* Left: Company Crest, Name & Financial Status */}
-        <div className="flex flex-wrap items-center gap-3">
+        {/* Left: New Game button, Company Crest, Name & Financial Status */}
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+          {/* Reset / New Game button in the far left corner */}
+          <button
+            type="button"
+            onClick={async () => {
+              const msg =
+                lang === 'en'
+                  ? 'Start a new game from 1900? All current progress will be reset.'
+                  : lang === 'uk'
+                  ? 'Почати нову кампанію заново з 1900 року? Весь поточний прогрес буде скинуто.'
+                  : lang === 'de'
+                  ? 'Neues Spiel ab 1900 starten? Der aktuelle Spielstand wird zurückgesetzt.'
+                  : 'Начать новую кампанию заново с 1900 года? Весь текущий прогресс будет сброшен.';
+              if (window.confirm(msg)) {
+                await resetGame();
+              }
+            }}
+            className="flex items-center gap-1.5 rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-nested)] hover:bg-rose-500/10 hover:border-rose-500/40 hover:text-rose-600 dark:hover:text-rose-400 px-2.5 py-1 text-xs font-serif text-[var(--ink-muted)] shadow-2xs transition cursor-pointer"
+            title={
+              lang === 'en'
+                ? 'Restart game from 1900'
+                : lang === 'uk'
+                ? 'Перезапустити гру заново з 1900 року'
+                : lang === 'de'
+                ? 'Spiel ab 1900 neu starten'
+                : 'Перезапустить игру заново с 1900 года'
+            }
+          >
+            <span className="text-xs">🔄</span>
+            <span className="hidden sm:inline font-bold">
+              {lang === 'en' ? 'New Game' : lang === 'uk' ? 'Нова гра' : lang === 'de' ? 'Neues Spiel' : 'Новая игра'}
+            </span>
+          </button>
+
           {/* Company Crest and Settings Button */}
           <button
             type="button"
@@ -188,39 +221,6 @@ export function TopTimelineBar(): React.JSX.Element {
             <span>📖</span>
             <span className="hidden sm:inline">
               {lang === 'en' ? 'Guide' : lang === 'uk' ? 'Довідка' : lang === 'de' ? 'Handbuch' : 'Справка'}
-            </span>
-          </button>
-
-          {/* Reset / New Game button */}
-          <button
-            type="button"
-            onClick={async () => {
-              const msg =
-                lang === 'en'
-                  ? 'Start a new game from 1900? All current progress will be reset.'
-                  : lang === 'uk'
-                  ? 'Почати нову кампанію заново з 1900 року? Весь поточний прогрес буде скинуто.'
-                  : lang === 'de'
-                  ? 'Neues Spiel ab 1900 starten? Der aktuelle Spielstand wird zurückgesetzt.'
-                  : 'Начать новую кампанию заново с 1900 года? Весь текущий прогресс будет сброшен.';
-              if (window.confirm(msg)) {
-                await resetGame();
-              }
-            }}
-            className="flex items-center gap-1 rounded border border-stone-300 bg-white/70 hover:bg-red-50 hover:border-red-300 hover:text-red-800 px-2 py-1 text-xs font-serif text-stone-600 shadow-2xs transition cursor-pointer"
-            title={
-              lang === 'en'
-                ? 'Restart game from 1900'
-                : lang === 'uk'
-                ? 'Перезапустити гру заново з 1900 року'
-                : lang === 'de'
-                ? 'Spiel ab 1900 neu starten'
-                : 'Перезапустить игру заново с 1900 года'
-            }
-          >
-            <span>🔄</span>
-            <span className="hidden lg:inline">
-              {lang === 'en' ? 'Restart' : lang === 'uk' ? 'Нова гра' : lang === 'de' ? 'Neustart' : 'Новая игра'}
             </span>
           </button>
 
