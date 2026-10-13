@@ -1,6 +1,6 @@
 'use client';
 
-import React from "react";
+import React, { useState } from "react";
 import type { VehicleSegment } from "@ait/shared-types";
 import { CarVisualDefs } from "./car-visual/defs";
 import { CarWheel } from "./car-visual/wheelRenderer";
@@ -32,7 +32,7 @@ export function getDecadeIndex(year: number): number {
 
 export function getDecadeName(decade: number): string {
   const names = [
-    "1900s • Horseless Buggy",
+    "1900s • Horseless Carriage",
     "1910s • Brass Torpedo",
     "1920s • Roaring Twenties",
     "1930s • Art Deco Streamline",
@@ -58,6 +58,12 @@ export function CarVisualThumbnail({
 }: Props): React.JSX.Element {
   const decade = getDecadeIndex(designYear);
   const uid = `${segment}-d${decade}`;
+  const [imageError, setImageError] = useState(false);
+
+  // Determine base path for GitHub Pages or local development
+  const isGhPages = typeof window !== "undefined" && window.location.pathname.startsWith("/Auto-game");
+  const base = isGhPages ? "/Auto-game" : "";
+  const photoUrl = `${base}/cars/d${decade}.jpg`;
 
   return (
     <div
@@ -65,52 +71,58 @@ export function CarVisualThumbnail({
       style={{ minHeight: "84px" }}
     >
       {/* Studio Showroom Vignette & Spotlight */}
-      <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-stone-950 via-stone-900/40 to-transparent pointer-events-none" />
-      <div className="absolute inset-0 bg-radial from-amber-500/10 via-transparent to-black/75 pointer-events-none" />
+      <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-stone-950 via-stone-900/40 to-transparent pointer-events-none z-1" />
+      <div className="absolute inset-0 bg-radial from-amber-500/10 via-transparent to-black/75 pointer-events-none z-1" />
 
       {/* ERA & SEGMENT WATERMARK */}
       {!hideWatermark && (
-        <div className="absolute top-1.5 left-2.5 text-[9px] font-mono font-bold tracking-wider text-stone-400 uppercase flex items-center gap-1.5 z-10 bg-black/50 px-2 py-0.5 rounded backdrop-blur-xs border border-white/10 shadow-xs">
-          <span className="text-amber-400">{designYear}</span>
-          <span>•</span>
-          <span className="text-stone-300">{segment}</span>
-          <span>•</span>
+        <div className="absolute top-2 left-2 text-[10px] font-mono font-bold tracking-wider text-stone-300 uppercase flex items-center gap-1.5 z-10 bg-black/60 px-2.5 py-1 rounded-md backdrop-blur-md border border-white/15 shadow-md">
+          <span className="text-amber-400 font-extrabold">{designYear}</span>
+          <span className="text-stone-500">•</span>
+          <span className="text-stone-200">{segment}</span>
+          <span className="text-stone-500 hidden sm:inline">•</span>
           <span className="text-stone-400 hidden sm:inline">{getDecadeName(decade)}</span>
         </div>
       )}
 
       {badge && (
-        <div className="absolute top-1.5 right-2.5 text-[9px] font-bold px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/40 z-10 shadow-xs">
+        <div className="absolute top-2 right-2 text-[10px] font-bold px-2 py-0.5 rounded-md bg-amber-500/25 text-amber-300 border border-amber-500/50 z-10 shadow-md backdrop-blur-md">
           {badge}
         </div>
       )}
 
-      {/* SVG CAR RENDER */}
-      <svg
-        viewBox="0 0 320 120"
-        className="w-full h-full max-h-[88%] object-contain drop-shadow-xl relative z-0"
-      >
-        {/* Shaders, Gradients & Filters */}
-        <CarVisualDefs uid={uid} segment={segment} decade={decade} />
-
-        {/* 1. GROUND CONTACT SHADOW & FLOOR SHEEN */}
-        <ellipse cx="160" cy="108" rx="135" ry="7" fill={`url(#groundShadow-${uid})`} />
-        <ellipse cx="160" cy="106" rx="115" ry="3.5" fill={`url(#floorSheen-${uid})`} opacity="0.6" />
-
-        {/* 2. ERA-SPECIFIC CAR BODY (52 UNIQUE SILHOUETTES) */}
-        <CarBody segment={segment} decade={decade} uid={uid} />
-
-        {/* 3. 3D SOFTBOX OVERHEAD SPECULAR HIGHLIGHT STREAK */}
-        <path d="M 60 70 Q 150 36 270 65" stroke={`url(#softboxSheen-${uid})`} strokeWidth="3" fill="none" opacity="0.7" />
-
-        {/* 4. WHEELS (HISTORICAL TIRE EVOLUTION & DETAILED RIMS) */}
-        <g id="wheelRear">
-          <CarWheel cx={92} cy={96} radius={18} decade={decade} uid={uid} />
-        </g>
-        <g id="wheelFront">
-          <CarWheel cx={242} cy={96} radius={18} decade={decade} uid={uid} />
-        </g>
-      </svg>
+      {/* 1. PHOTOREALISTIC 3/4 ANGLE HERO PHOTO */}
+      {!imageError ? (
+        <div className="relative w-full h-full flex items-center justify-center overflow-hidden">
+          <img
+            src={photoUrl}
+            alt={`${designYear} ${segment}`}
+            className="w-full h-full object-cover sm:object-contain object-center drop-shadow-2xl transition-transform duration-700 hover:scale-105"
+            onError={() => setImageError(true)}
+            loading="lazy"
+          />
+          {/* Subtle Ambient Vignette */}
+          <div className="absolute inset-0 bg-radial from-transparent via-transparent to-black/50 pointer-events-none" />
+        </div>
+      ) : (
+        /* 2. 3D VECTOR STUDIO RENDER FALLBACK */
+        <svg
+          viewBox="0 0 320 120"
+          className="w-full h-full max-h-[88%] object-contain drop-shadow-xl relative z-0"
+        >
+          <CarVisualDefs uid={uid} segment={segment} decade={decade} />
+          <ellipse cx="160" cy="108" rx="135" ry="7" fill={`url(#groundShadow-${uid})`} />
+          <ellipse cx="160" cy="106" rx="115" ry="3.5" fill={`url(#floorSheen-${uid})`} opacity="0.6" />
+          <CarBody segment={segment} decade={decade} uid={uid} />
+          <path d="M 60 70 Q 150 36 270 65" stroke={`url(#softboxSheen-${uid})`} strokeWidth="3" fill="none" opacity="0.7" />
+          <g id="wheelRear">
+            <CarWheel cx={92} cy={96} radius={18} decade={decade} uid={uid} />
+          </g>
+          <g id="wheelFront">
+            <CarWheel cx={242} cy={96} radius={18} decade={decade} uid={uid} />
+          </g>
+        </svg>
+      )}
     </div>
   );
 }
